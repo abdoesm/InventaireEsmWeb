@@ -20,7 +20,7 @@ app.post('/api/login', async (req, res) => {
     const loginResult = await UserDbHelper.validateLogin(username, password);
 
     if (loginResult.success) {
-      console.log("Login successful. Token generated:", loginResult.token); // 🔹 Debugging
+    //  console.log("Login successful. Token generated:", loginResult.token); // 🔹 Debugging
       return res.json({ success: true, token: loginResult.token });
     } else {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
