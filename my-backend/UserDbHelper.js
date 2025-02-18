@@ -9,7 +9,7 @@ const db = mysql.createConnection({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
 });
-
+const SECRET_KEY = process.env.JWT_SECRET ;
 db.connect((err) => {
   if (err) {
     console.log('Database connection error:', err);
@@ -18,7 +18,7 @@ db.connect((err) => {
   }
 });
 
-const SECRET_KEY = process.env.JWT_SECRET || 'your_secret_key';
+
 
 class UserDbHelper {
   constructor() {}
@@ -27,22 +27,31 @@ class UserDbHelper {
   async validateLogin(username, password) {
     console.log('validateLogin called');
     const query = 'SELECT id, role FROM user WHERE username = ? AND password = ?';
+  
     try {
       const [rows] = await db.promise().execute(query, [username, password]);
+  
       if (rows.length > 0) {
         const user = rows[0];
-
-        // Generate JWT token
+  
+        if (!user.role) {
+          console.error("⚠️ Role is missing in database for user:", username);
+          return { success: false, message: 'User role missing' };
+        }
+  
+        // ✅ Generate JWT token
         const token = jwt.sign({ id: user.id, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
-
+  
         return { success: true, token, role: user.role };
       }
+  
       return { success: false, message: 'Invalid username or password' };
     } catch (error) {
-      console.log(error);
+      console.error("Database error:", error);
       throw error;
     }
   }
+  
 
   // ✅ Get username by ID
   async getUserNameById(userId) {

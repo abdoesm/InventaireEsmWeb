@@ -1,4 +1,4 @@
-import './Login.css';
+import './assets/css/Login.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,7 +11,7 @@ const Login = ({ login }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
+      const response = await fetch('http://192.168.0.146:5000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -20,10 +20,9 @@ const Login = ({ login }) => {
       const data = await response.json();
   
       if (data.success) {
-        localStorage.setItem('token', data.token); // Store token
-        localStorage.setItem('role', data.role); // Store user role
-        login(data.token); // Update App state
-        navigate('/dashboard'); // Redirect
+        localStorage.setItem('token', data.token);
+        login(data.token);
+        navigate('/dashboard');
       } else {
         setError(data.message || 'Invalid username or password');
       }
@@ -33,13 +32,12 @@ const Login = ({ login }) => {
     }
   };
   
-
   return (
     <div className="login-container">
       <h2>Login</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label htmlFor="username">Username</label>
+      <form onSubmit={handleLogin} className="login-form">
+        <div className="form-group">
+          <label htmlFor="username">Username:</label>
           <input
             type="text"
             id="username"
@@ -48,8 +46,8 @@ const Login = ({ login }) => {
             required
           />
         </div>
-        <div>
-          <label htmlFor="password">Password</label>
+        <div className="form-group">
+          <label htmlFor="password">Password:</label>
           <input
             type="password"
             id="password"
@@ -58,8 +56,8 @@ const Login = ({ login }) => {
             required
           />
         </div>
-        {error && <p className="error">{error}</p>}
-        <button type="submit">Login</button>
+        {error && <p className="error-message">{error}</p>}
+        <button type="submit" className="login-button">Login</button>
       </form>
     </div>
   );
