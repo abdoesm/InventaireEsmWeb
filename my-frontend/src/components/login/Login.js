@@ -1,6 +1,7 @@
-import '../assets/css/Login.css';
+import '../../assets/css/Login.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Input from '../common/Input';
 
 const Login = ({ login }) => {
   const [username, setUsername] = useState('');
@@ -36,26 +37,19 @@ const Login = ({ login }) => {
     <div className="login-container">
       <h2>Login</h2>
       <form onSubmit={handleLogin} className="login-form">
-        <div className="form-group">
-          <label htmlFor="username">Username:</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+   
+        <Input
+          label="USERNAME"
+          name="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <Input
+          label="PASSWORD"
+          name="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
         {error && <p className="error-message">{error}</p>}
         <button type="submit" className="login-button">Login</button>
       </form>
