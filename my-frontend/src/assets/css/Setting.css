@@ -1,0 +1,68 @@
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+    padding: 20px;
+    position: relative;
+  }
+  
+  .title h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .icon-button {
+    position: absolute;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+  }
+  
+  .icon {
+    font-size: 30px;
+    color: #333;
+  }
+  
+  .home-btn {
+    top: 20px;
+    left: 20px;
+  }
+  
+  .logout-btn {
+    bottom: 20px;
+    right: 20px;
+  }
+  
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+  }
+  
+  .option-btn {
+    display: flex;
+    align-items: center;
+    background-color: #e3bd98;
+    color: #333;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    width: 220px;
+    justify-content: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+  }
+  
+  .option-btn .icon {
+    margin-right: 10px;
+  }
+  

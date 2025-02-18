@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { jwtDecode } from 'jwt-decode';
 import Login from './components/login/Login';
 import Dashboard from './components/pages/Dashboard';
+import Setting from './components/pages/Setting'; // 🔹 Import Settings Component
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -57,6 +58,7 @@ const App = () => {
         <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} replace />} />
         <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <Login login={login} />} />
         <Route path="/dashboard" element={user ? <Dashboard logout={logout} userRole={user.role} /> : <Navigate to="/login" replace />} />
+        <Route path="/settings" element={user ? <Setting logout={logout} /> : <Navigate to="/login" replace />} /> {/* 🔹 Added Settings Route */}
         <Route path="*" element={<div>404 - Page Not Found</div>} />
       </Routes>
     </Router>
