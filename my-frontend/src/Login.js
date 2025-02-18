@@ -1,29 +1,29 @@
 import './Login.css';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const Login = ({ login }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  // Handle the login request
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const response = await fetch('http://localhost:5000/api/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }), // Send credentials to backend
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
       });
-
+  
       const data = await response.json();
-
+  
       if (data.success) {
-        // Successful login
-        alert('Login successful');
-        // Optionally store user data or token, or redirect to another page
+        localStorage.setItem('token', data.token); // Store token
+        localStorage.setItem('role', data.role); // Store user role
+        login(data.token); // Update App state
+        navigate('/dashboard'); // Redirect
       } else {
         setError(data.message || 'Invalid username or password');
       }
@@ -32,6 +32,7 @@ const Login = () => {
       console.error(err);
     }
   };
+  
 
   return (
     <div className="login-container">

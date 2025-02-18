@@ -1,48 +1,70 @@
 const express = require('express');
-const cors = require('cors'); // Enable CORS
+const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const UserDbHelper = require('./UserDbHelper');
 
 const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors()); // Enable CORS for all routes
+app.use(cors());
 
-// Login endpoint
+const SECRET_KEY = process.env.JWT_SECRET || 'your_secret_key'; // Use environment variable for security
+
+// ✅ Middleware to check JWT token
+const authenticateToken = (req, res, next) => {
+  const token = req.header('Authorization')?.split(' ')[1]; // Get token from Authorization header
+
+  if (!token) return res.status(401).json({ success: false, message: 'Access Denied: No Token Provided' });
+
+  jwt.verify(token, SECRET_KEY, (err, user) => {
+    if (err) return res.status(403).json({ success: false, message: 'Invalid Token' });
+
+    req.user = user; // Attach user data to request
+    next();
+  });
+};
+
+// ✅ Login endpoint
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
 
-  // Input validation
   if (!username || !password) {
     return res.status(400).json({ success: false, message: 'Username and password are required' });
   }
 
   try {
-    const isValid = await UserDbHelper.validateLogin(username, password);
-    if (isValid) {
-      res.json({ success: true, message: 'Login successful' });
+    const result = await UserDbHelper.validateLogin(username, password);
+
+    if (result.success) {
+      res.json(result); // Send token and role to frontend
     } else {
-      res.status(401).json({ success: false, message: 'Invalid credentials' });
+      res.status(401).json(result);
     }
   } catch (error) {
-    console.error('Login error:', error); // Log the error
+    console.error('Login error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
-// Get all users
-app.get('/api/users', async (req, res) => {
+// ✅ Get all users (Protected Route)
+app.get('/api/users', authenticateToken, async (req, res) => {
   try {
     const users = await UserDbHelper.getUsers();
     res.json(users);
   } catch (error) {
-    console.error('Fetch users error:', error); // Log the error
+    console.error('Fetch users error:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch users' });
   }
 });
 
-// Start the server
-const PORT = process.env.PORT || 5000; // Use environment variable for port
+// ✅ Dashboard route (Example protected route)
+app.get('/api/dashboard', authenticateToken, (req, res) => {
+  res.json({ success: true, message: `Welcome to the dashboard, ${req.user.role}!` });
+});
+
+// ✅ Start the server
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

@@ -1,13 +1,14 @@
 const mysql = require('mysql2');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 // Database connection
 const db = mysql.createConnection({
-    host: process.env.DB_HOST, // Use environment variable for host
-    user: process.env.DB_USER, // Use environment variable for user
-    password: process.env.DB_PASSWORD, // Use environment variable for password
-    database: process.env.DB_NAME, // Use environment variable for database name
-  });
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+});
 
 db.connect((err) => {
   if (err) {
@@ -17,123 +18,119 @@ db.connect((err) => {
   }
 });
 
+const SECRET_KEY = process.env.JWT_SECRET || 'your_secret_key';
+
 class UserDbHelper {
   constructor() {}
 
-  // Validate user login
+  // ✅ Validate user login and return JWT token
   async validateLogin(username, password) {
     console.log('validateLogin called');
-    const query = 'SELECT id FROM user WHERE username = ? AND password = ?';
+    const query = 'SELECT id, role FROM user WHERE username = ? AND password = ?';
     try {
       const [rows] = await db.promise().execute(query, [username, password]);
       if (rows.length > 0) {
-        const userId = rows[0].id;
-        // Assuming SessionManager is implemented
-        // SessionManager.setActiveUserId(userId);
-        return true;
+        const user = rows[0];
+
+        // Generate JWT token
+        const token = jwt.sign({ id: user.id, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+
+        return { success: true, token, role: user.role };
       }
-      return false;
+      return { success: false, message: 'Invalid username or password' };
     } catch (error) {
       console.log(error);
       throw error;
     }
   }
-  // Get username by ID
+
+  // ✅ Get username by ID
   async getUserNameById(userId) {
-    logger.info('getUserNameById called');
+    console.log('getUserNameById called');
     const query = 'SELECT username FROM user WHERE id = ?';
     try {
       const [rows] = await db.promise().execute(query, [userId]);
-      if (rows.length > 0) {
-        return rows[0].username;
-      }
-      return null;
+      return rows.length > 0 ? rows[0].username : null;
     } catch (error) {
-        console.log(error);
+      console.log(error);
       throw error;
     }
   }
 
-  // Get user role by ID
+  // ✅ Get user role by ID
   async getUserRoleById(userId) {
-    logger.info('getUserRoleById called');
+    console.log('getUserRoleById called');
     const query = 'SELECT role FROM user WHERE id = ?';
     try {
       const [rows] = await db.promise().execute(query, [userId]);
-      if (rows.length > 0) {
-        return rows[0].role;
-      }
-      return null;
+      return rows.length > 0 ? rows[0].role : null;
     } catch (error) {
-        console.log(error);
+      console.log(error);
       throw error;
     }
   }
 
-  // Add a new user
+  // ✅ Get user ID by username
+  async getUserIdByName(username) {
+    console.log('getUserIdByName called');
+    const query = 'SELECT id FROM user WHERE username = ?';
+    try {
+      const [rows] = await db.promise().execute(query, [username]);
+      return rows.length > 0 ? rows[0].id : -1;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  // ✅ Add a new user
   async addUser(user) {
-    logger.info('addUser called');
+    console.log('addUser called');
     const query = 'INSERT INTO user (username, password, role) VALUES (?, ?, ?)';
     try {
       const [result] = await db.promise().execute(query, [user.username, user.password, user.role]);
       return result.affectedRows > 0;
     } catch (error) {
-      lconsole.log(error);
+      console.log(error);
       return false;
     }
   }
 
-  // Update an existing user
+  // ✅ Update an existing user
   async updateUser(user) {
-    logger.info('updateUser called');
+    console.log('updateUser called');
     const query = 'UPDATE user SET username = ?, password = ?, role = ? WHERE id = ?';
     try {
       const [result] = await db.promise().execute(query, [user.username, user.password, user.role, user.id]);
       return result.affectedRows > 0;
     } catch (error) {
-        console.log(error);
+      console.log(error);
       throw error;
     }
   }
 
-  // Get user ID by username
-  async getUserIdByName(username) {
-    logger.info('getUserIdByName called');
-    const query = 'SELECT id FROM user WHERE username = ?';
-    try {
-      const [rows] = await db.promise().execute(query, [username]);
-      if (rows.length > 0) {
-        return rows[0].id;
-      }
-      return -1; // Return -1 if user not found
-    } catch (error) {
-        console.log(error);
-      throw error;
-    }
-  }
-
-  // Get all users
+  // ✅ Get all users
   async getUsers() {
-    logger.info('getUsers called');
+    console.log('getUsers called');
     const query = 'SELECT id, username, password, role FROM user ORDER BY id DESC';
     try {
       const [rows] = await db.promise().execute(query);
       return rows;
     } catch (error) {
-        console.log(error);
+      console.log(error);
       throw error;
     }
   }
 
-  // Delete a user
+  // ✅ Delete a user
   async deleteUser(userId) {
-    logger.info('deleteUser called');
+    console.log('deleteUser called');
     const query = 'DELETE FROM user WHERE id = ?';
     try {
       const [result] = await db.promise().execute(query, [userId]);
       return result.affectedRows > 0;
     } catch (error) {
-        console.log(error);
+      console.log(error);
       throw error;
     }
   }
