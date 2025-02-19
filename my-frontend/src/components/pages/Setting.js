@@ -3,8 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { FaHome, FaDatabase, FaUsers, FaSignOutAlt } from "react-icons/fa";
 import "../../assets/css/Setting.css"; // Import the CSS file
 
-const Setting = () => {
+const Setting = ({logout}) => {
   const navigate = useNavigate();
+ 
+    const handleLogout = () => {
+      logout();
+      navigate("/");
+    };
 
   return (
     <div className="settings-container">
@@ -34,9 +39,9 @@ const Setting = () => {
       </div>
 
       {/* Logout Button */}
-      <button className="icon-button logout-btn" onClick={() => console.log("Logout Function Here")}>
-        <FaSignOutAlt className="icon" />
-      </button>
+         <button onClick={handleLogout} className="small-btn">
+                <FaSignOutAlt className="icon" />
+              </button>
     </div>
   );
 };

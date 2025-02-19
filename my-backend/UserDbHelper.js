@@ -1,5 +1,6 @@
 const mysql = require('mysql2');
 const jwt = require('jsonwebtoken');
+const bcrypt = require("bcrypt");
 require('dotenv').config();
 
 // Database connection
@@ -23,7 +24,6 @@ db.connect((err) => {
 class UserDbHelper {
   constructor() {}
 
-  // ✅ Validate user login and return JWT token
   async validateLogin(username, password) {
     console.log('validateLogin called');
     const query = 'SELECT id, role FROM user WHERE username = ? AND password = ?';
@@ -51,6 +51,8 @@ class UserDbHelper {
       throw error;
     }
   }
+  
+
   
 
   // ✅ Get username by ID
@@ -94,10 +96,14 @@ class UserDbHelper {
 
   // ✅ Add a new user
   async addUser(user) {
-    console.log('addUser called');
-    const query = 'INSERT INTO user (username, password, role) VALUES (?, ?, ?)';
+    console.log("addUser called");
+    const query = "INSERT INTO user (username, password, role) VALUES (?, ?, ?)";
+    
     try {
-      const [result] = await db.promise().execute(query, [user.username, user.password, user.role]);
+      // 🔹 Hash password before storing in the database
+      const hashedPassword = await bcrypt.hash(user.password, 10);
+  
+      const [result] = await db.promise().execute(query, [user.username, hashedPassword, user.role]);
       return result.affectedRows > 0;
     } catch (error) {
       console.log(error);
@@ -105,23 +111,42 @@ class UserDbHelper {
     }
   }
 
-  // ✅ Update an existing user
-  async updateUser(user) {
-    console.log('updateUser called');
-    const query = 'UPDATE user SET username = ?, password = ?, role = ? WHERE id = ?';
-    try {
-      const [result] = await db.promise().execute(query, [user.username, user.password, user.role, user.id]);
-      return result.affectedRows > 0;
-    } catch (error) {
-      console.log(error);
-      throw error;
+
+async updateUser(user) {
+  console.log('updateUser called:', user);
+  //if (!user) console.log("sqd")
+  
+  let query;
+  let values;
+
+  try {
+    if (user.password && user.password.trim() !== "") {
+      // Hash only if a new password is provided and is not empty
+      const hashedPassword = await bcrypt.hash(user.password, 10);
+      query = 'UPDATE user SET username = ?, password = ?, role = ? WHERE id = ?';
+      values = [user.username, hashedPassword, user.role, user.id];
+    } else {
+      // Update only username and role if password is not provided
+      query = 'UPDATE user SET username = ?, role = ? WHERE id = ?';
+      values = [user.username, user.role, user.id];
     }
+
+    console.log("Executing query:", query, "with values:", values);
+
+    const [result] = await db.promise().execute(query, values);
+    return result.affectedRows > 0;
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw error;
   }
+}
+
+  
 
   // ✅ Get all users
   async getUsers() {
     console.log('getUsers called');
-    const query = 'SELECT id, username, password, role FROM user ORDER BY id DESC';
+    const query = 'SELECT id, username, role FROM user ORDER BY id DESC';
     try {
       const [rows] = await db.promise().execute(query);
       return rows;
@@ -143,6 +168,9 @@ class UserDbHelper {
       throw error;
     }
   }
+
+
+  
 }
 
 module.exports = new UserDbHelper();
