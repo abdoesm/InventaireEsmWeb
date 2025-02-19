@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const UpdateUserForm = ({ onClose, user, fetchUsers }) => {
   const [username, setUsername] = useState(user.username);
@@ -12,8 +13,6 @@ const UpdateUserForm = ({ onClose, user, fetchUsers }) => {
       alert("Unauthorized: No token found.");
       return;
     }
-
-    console.log("Token:", token); // Debugging
 
     try {
       const response = await fetch(`http://192.168.0.146:5000/api/users/${user.id}`, {
@@ -38,25 +37,46 @@ const UpdateUserForm = ({ onClose, user, fetchUsers }) => {
   };
 
   return (
-    <div className="modal">
-      <form onSubmit={handleUpdate}>
-        <h2>تحديث المستخدم</h2>
-        <input 
-          type="text" 
-          value={username} 
-          onChange={(e) => setUsername(e.target.value)} 
-          required 
-        />
-        
-        <select value={role} onChange={(e) => setRole(e.target.value)} required>
-          <option value="User">User</option>
-          <option value="Admin">Admin</option>
-          <option value="Moderator">Editor</option>
-        </select>
+    <div className="modal fade show d-block" tabIndex="-1" role="dialog">
+      <div className="modal-dialog modal-dialog-centered" role="document">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title">تحديث المستخدم</h5>
+            <button type="button" className="btn-close" onClick={onClose}></button>
+          </div>
+          <div className="modal-body">
+            <form onSubmit={handleUpdate}>
+              {/* Username Input */}
+              <div className="mb-3">
+                <label className="form-label">اسم المستخدم</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              </div>
 
-        <button type="submit">تحديث</button>
-        <button type="button" onClick={onClose}>إلغاء</button>
-      </form>
+              {/* Role Selection */}
+              <div className="mb-3">
+                <label className="form-label">الدور</label>
+                <select className="form-select" value={role} onChange={(e) => setRole(e.target.value)} required>
+                  <option value="User">User</option>
+                  <option value="Admin">Admin</option>
+                  <option value="Editor">Editor</option>
+                </select>
+              </div>
+
+              {/* Buttons */}
+              <div className="modal-footer">
+                <button type="submit" className="btn btn-primary">تحديث</button>
+                <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
