@@ -12,9 +12,9 @@ const UpdateUserForm = ({ onClose, user, fetchUsers }) => {
       alert("Unauthorized: No token found.");
       return;
     }
-  
+
     console.log("Token:", token); // Debugging
-  
+
     try {
       const response = await fetch(`http://192.168.0.146:5000/api/users/${user.id}`, {
         method: "PUT",
@@ -24,28 +24,38 @@ const UpdateUserForm = ({ onClose, user, fetchUsers }) => {
         },
         body: JSON.stringify({ username, role }),
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to update user");
       }
-  
+
       fetchUsers();
       onClose();
     } catch (error) {
       alert(error.message);
     }
   };
-  
 
   return (
     <div className="modal">
       <form onSubmit={handleUpdate}>
         <h2>تحديث المستخدم</h2>
-        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
-        <input type="text" value={role} onChange={(e) => setRole(e.target.value)} required />
+        <input 
+          type="text" 
+          value={username} 
+          onChange={(e) => setUsername(e.target.value)} 
+          required 
+        />
+        
+        <select value={role} onChange={(e) => setRole(e.target.value)} required>
+          <option value="User">User</option>
+          <option value="Admin">Admin</option>
+          <option value="Moderator">Editor</option>
+        </select>
+
         <button type="submit">تحديث</button>
-        <button onClick={onClose}>إلغاء</button>
+        <button type="button" onClick={onClose}>إلغاء</button>
       </form>
     </div>
   );

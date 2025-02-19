@@ -7,7 +7,7 @@ import AddUserForm from "./AddUserForm";
 import UpdateUserForm from "./UpdateUserForm";
 import DeleteUserForm from "./DeleteUserForm";
 
-import "../../assets/css/dataTables.jqueryui.min.css";
+//import "assets/css/users/dataTables.jqueryui.min.css";
 
 DataTable.use(DT);
 

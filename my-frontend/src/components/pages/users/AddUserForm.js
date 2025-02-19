@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../../assets/css/Adduser.css";
+import "../../../assets/css/users/Adduser.css";
 
 const AddUserForm = ({ onClose, fetchUsers }) => {
   const [username, setUsername] = useState("");
@@ -39,7 +39,7 @@ const AddUserForm = ({ onClose, fetchUsers }) => {
           <select value={role} onChange={(e) => setRole(e.target.value)}>
             <option value="User">User</option>
             <option value="Admin">Admin</option>
-            <option value="Moderator">Moderator</option>
+            <option value="Editor">Editor</option>
           </select>
           <div className="flex justify-between">
             <button type="submit" className="btn btn-add">إضافة</button>

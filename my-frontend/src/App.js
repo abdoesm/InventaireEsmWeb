@@ -4,7 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import Login from './components/login/Login';
 import Dashboard from './components/pages/Dashboard';
 import Setting from './components/pages/Setting'; 
-import Users from "./components/pages/Users"; 
+import Users from "./components/pages/users/Users"; 
 const App = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
