@@ -1,6 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { FaBoxOpen, FaFileInvoice, FaClipboardList, FaMapMarkerAlt, FaUsers, FaCog, FaSignOutAlt, FaWarehouse, FaTruck, FaBoxes, FaClipboardCheck, FaCubes } from "react-icons/fa";
+import { FaBoxOpen, FaFileInvoice, FaClipboardList, 
+  FaMapMarkerAlt, FaUsers, FaCog, FaSignOutAlt, FaWarehouse,
+   FaTruck, FaBoxes, FaClipboardCheck, FaCubes } from "react-icons/fa";
 import "../../assets/css/Dashboard.css"; // Add CSS for styling
 
 const Dashboard = ({ logout }) => {

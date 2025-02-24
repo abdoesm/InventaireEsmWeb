@@ -24,7 +24,7 @@ db.connect((err) => {
 class UserDbHelper {
   constructor() {}
 
-  async validateLogin(username, password) {
+ /*  async validateLogin(username, password) {
     console.log('validateLogin called');
     const query = 'SELECT id, role FROM user WHERE username = ? AND password = ?';
   
@@ -50,9 +50,42 @@ class UserDbHelper {
       console.error("Database error:", error);
       throw error;
     }
-  }
+  } */
   
-
+    async validateLogin(username, password) {
+      console.log('validateLogin called');
+      const query = 'SELECT id, role, password FROM user WHERE username = ?';
+      
+      try {
+        const [rows] = await db.promise().execute(query, [username]);
+    
+        if (rows.length === 0) {
+          return { success: false, message: 'Invalid username or password' };
+        }
+    
+        const user = rows[0];
+    
+        // ✅ Compare input password (plain text) with stored hashed password
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+          return { success: false, message: 'Invalid username or password' };
+        }
+    
+        if (!user.role) {
+          console.error("⚠️ Role is missing in database for user:", username);
+          return { success: false, message: 'User role missing' };
+        }
+    
+        // ✅ Generate JWT token
+        const token = jwt.sign({ id: user.id, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+    
+        return { success: true, token, role: user.role };
+      } catch (error) {
+        console.error("Database error:", error);
+        throw error;
+      }
+    }
+    
   
 
   // ✅ Get username by ID
@@ -93,25 +126,25 @@ class UserDbHelper {
       throw error;
     }
   }
-
-  // ✅ Add a new user
   async addUser(user) {
-    console.log("addUser called");
+    console.log("addUser called with:", user);
     const query = "INSERT INTO user (username, password, role) VALUES (?, ?, ?)";
-    
+  
     try {
       // 🔹 Hash password before storing in the database
-      const hashedPassword = await bcrypt.hash(user.password, 10);
+      const hashedPassword = await bcrypt.hash(user.password);
+      console.log("Generated hashed password:", hashedPassword); // Debugging
   
       const [result] = await db.promise().execute(query, [user.username, hashedPassword, user.role]);
       return result.affectedRows > 0;
     } catch (error) {
-      console.log(error);
+      console.error("Error while adding user:", error);
       return false;
     }
   }
 
-
+  
+  
 async updateUser(user) {
   console.log('updateUser called:', user);
   //if (!user) console.log("sqd")

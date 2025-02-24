@@ -15,11 +15,11 @@ const App = () => {
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        console.log("Decoded Token:", decoded); // 🔹 Debugging
-
+    
         if (!decoded.role) {
           console.error("⚠️ Role is missing in token!");
-          localStorage.removeItem('token'); // Prevent corrupted token
+          // Prevent corrupted token
+          localStorage.removeItem('token'); 
           setUser(null);
         } else {
           setUser(decoded);
@@ -35,12 +35,8 @@ const App = () => {
   }, []);
 
   const login = (token) => {
-    console.log("🔹 Storing Token:", token); // Debug
     localStorage.setItem('token', token);
-
     const decoded = jwtDecode(token);
-    console.log("🔹 Decoded Token on Login:", decoded); // Debug
-
     setUser(decoded);
   };
 
