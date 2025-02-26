@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Bk_End_SRVR } from "../../../configs/conf";
 
-// ✅ Define Props Interface
 interface AddUserFormProps {
   onClose: () => void;
   fetchUsers: () => void;
@@ -18,7 +18,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onClose, fetchUsers }) => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch("http://192.168.0.146:5000/api/users", {
+      const response = await fetch(`${Bk_End_SRVR}:5000/api/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

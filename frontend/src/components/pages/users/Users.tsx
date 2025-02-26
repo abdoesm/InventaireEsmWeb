@@ -32,7 +32,7 @@ const Users: React.FC = () => {
         return;
       }
 
-      const response = await fetch("http://192.168.0.146:5000/api/users", {
+      const response = await fetch("http://localhost:5000/api/users", {
         headers: { Authorization: `Bearer ${token}` },
       });
 

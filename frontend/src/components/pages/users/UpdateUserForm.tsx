@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Bk_End_SRVR } from "../../../configs/conf";
 
 // ✅ Define Props Interface
 interface User {
@@ -28,7 +29,7 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({ onClose, user, fetchUse
     }
 
     try {
-      const response = await fetch(`http://192.168.0.146:5000/api/users/${user.id}`, {
+      const response = await fetch(`${Bk_End_SRVR}:5000/api/users/${user.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

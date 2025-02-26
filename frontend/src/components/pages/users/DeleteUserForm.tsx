@@ -1,5 +1,6 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Bk_End_SRVR } from "../../../configs/conf";
 
 // ✅ Define Props Interface
 interface User {
@@ -18,7 +19,7 @@ const DeleteUserForm: React.FC<DeleteUserFormProps> = ({ onClose, user, fetchUse
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(`http://192.168.0.146:5000/api/users/${user.id}`, {
+      const response = await fetch(`${Bk_End_SRVR}:5000/api/users/${user.id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

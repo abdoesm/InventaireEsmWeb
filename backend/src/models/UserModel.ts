@@ -4,18 +4,6 @@ import jwt from "jsonwebtoken";
 
 class UserModel {
     
- /*  static async validateLogin(username: string, password: string) {
-    const query = "SELECT id, username, password, role FROM user WHERE username = ?";
-    const [rows]: any = await pool.execute(query, [username]);
-    if (rows.length === 0) return { success: false, message: "Invalid username or password" };
-
-    const user = rows[0];
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return { success: false, message: "Invalid username or password" };
-
-    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET as string, { expiresIn: "1h" });
-    return { success: true, token, role: user.role };
-  } */
 
   static async validateLogin(username: string, password: string) {
     const query = "SELECT id, username, password, role FROM user WHERE username = ?";

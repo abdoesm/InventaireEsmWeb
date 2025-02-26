@@ -2,6 +2,7 @@ import '../../assets/css/Login.css';
 import React, { useState, FormEvent, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Input from '../common/Input';
+import { Bk_End_SRVR } from '../../configs/conf';
 
 interface LoginProps {
   login: (token: string) => void;
@@ -18,7 +19,7 @@ const Login: React.FC<LoginProps> = ({ login }) => {
     setError(""); // Clear previous errors
 
     try {
-      const response = await fetch('http://192.168.0.146:5000/api/login', {
+      const response = await fetch(`${Bk_End_SRVR}:5000/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
