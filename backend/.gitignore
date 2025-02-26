@@ -1,0 +1,12 @@
+
+# Node.js dependencies (in case someone installs outside backend/frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
+.env
+.DS_Store
+
+# Logs
+logs/
+*.log
+*.log.*
