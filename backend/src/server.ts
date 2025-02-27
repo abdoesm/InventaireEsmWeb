@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { loginUser, getUsers, addUser, updateUser, deleteUser } from "./controllers/userController";
 import  {verifyToken} from "./middleware/auth"; 
 import { backupDatabase } from "./controllers/backupController";
+import { getAllArticlesNames, getArticles, getArticleById, addArticle, addArticles, updateArticle, deleteArticle, getArticleIdByName, getTotalQuantityByArticleId, getTotalQuantitiesByArticle } from "./controllers/articleController";
 
 dotenv.config();
 
@@ -33,6 +34,18 @@ app.delete("/api/users/:id", verifyToken, deleteUser);
 
 // ✅ Backup Route
 app.get("/api/backup", verifyToken, backupDatabase);
+
+// ✅ Article Routes
+app.get("/api/articles/names", getAllArticlesNames);
+app.get("/api/articles", getArticles);
+app.get("/api/articles/:id", getArticleById);
+app.post("/api/articles", verifyToken, addArticle);
+app.post("/api/articles/bulk", verifyToken, addArticles);
+app.put("/api/articles/:id", verifyToken, updateArticle);
+app.delete("/api/articles/:id", verifyToken, deleteArticle);
+app.get("/api/articles/name/:name", getArticleIdByName);
+app.get("/api/articles/quantity/:id", getTotalQuantityByArticleId);
+app.get("/api/articles/quantities", getTotalQuantitiesByArticle);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
