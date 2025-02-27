@@ -38,7 +38,7 @@ const Dashboard: React.FC<DashboardProps> = ({ logout, userRole }) => {
     { path: "/inventaire", label: "الجرد", icon: <FaClipboardList />, roles: ["Admin", "User"], className: "inventaire" },
     { path: "/services", label: "المصالح", icon: <FaCog />, roles: ["Admin"], className: "services" },
     { path: "/employers", label: "العمال", icon: <FaUsers />, roles: ["Admin"], className: "employers" },
-    { path: "/products", label: "المواد", icon: <FaBoxes />, roles: ["Admin", "User"], className: "products" },
+    { path: "/articles", label: "المواد", icon: <FaBoxes />, roles: ["Admin", "User"], className: "articles" },
     { path: "/categories", label: "الفئات", icon: <FaCubes />, roles: ["Admin"], className: "categories" },
     { path: "/bon-retour", label: "وصول الارجاع", icon: <FaWarehouse />, roles: ["Admin"], className: "bon-retour" },
   ];

@@ -1,85 +1,93 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-import Login from './components/login/Login';
-import Dashboard from './components/pages/Dashboard';
-import Setting from './components/pages/Setting'; 
-import Users from "./components/pages/users/Users"; 
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import Login from "./components/login/Login";
+import Dashboard from "./components/pages/Dashboard";
+import Setting from "./components/pages/Setting";
+import Users from "./components/pages/users/Users";
+import Articles from "./components/pages/articles/articlesView"; // 🔹 Import Articles component
+
 interface JwtPayload {
   _id: string;
   role: string;
+  exp?: number; // Optional expiration field in JWT
 }
 
 type UserType = JwtPayload | null;
 
-const App = () => {
-  const [user, setUser] = useState<UserType>(null);
+const checkAuth = (): UserType => {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
 
+  try {
+    const decoded = jwtDecode<JwtPayload>(token);
+    if (decoded.exp && decoded.exp * 1000 < Date.now()) {
+      console.warn("⚠️ Token expired. Logging out...");
+      localStorage.removeItem("token");
+      return null;
+    }
+    return decoded;
+  } catch (error) {
+    console.error("Invalid token:", error);
+    localStorage.removeItem("token");
+    return null;
+  }
+};
+
+const App = () => {
+  const [user, setUser] = useState<UserType>(checkAuth());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-
-    if (token) {
-      try {
-        const decoded = jwtDecode<JwtPayload>(token); 
-    
-        if (!decoded.role) {
-          console.error("⚠️ Role is missing in token!");
-          // Prevent corrupted token
-          localStorage.removeItem('token'); 
-          setUser(null);
-        } else {
-          setUser(decoded);
-        }
-      } catch (error) {
-        console.error("Invalid token:", error);
-        localStorage.removeItem('token');
-        setUser(null);
-      }
-    }
-
+    setUser(checkAuth());
     setLoading(false);
   }, []);
 
   const login = (token: string) => {
     localStorage.setItem("token", token);
-    const decoded = jwtDecode<JwtPayload>(token);
-    setUser(decoded);
+    setUser(checkAuth());
   };
-  
 
   const logout = () => {
-    console.log("🔹 Logging out..."); // Debug
-    localStorage.removeItem('token');
+    console.log("🔹 Logging out...");
+    localStorage.removeItem("token");
     setUser(null);
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="loading-spinner">🔄 Loading...</div>;
 
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} replace />} />
         <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <Login login={login} />} />
-        <Route path="/dashboard" element={user ? <Dashboard logout={logout} userRole={user.role} /> : <Navigate to="/login" replace />} />
-        <Route path="/settings" element={user ? <Setting logout={logout} /> : <Navigate to="/login" replace />} /> {/* 🔹 Added Settings Route */}
-        <Route path="/users"
-  element={
-    user ? (
-      user.role === "Admin" ? (
-        <Users />
-      ) : (
-        <div>🚫 You are not authorized to access this page.</div>
-      )
-    ) : (
-      <Navigate to="/login" replace />
-    )
-  } />
+
+        <Route element={<ProtectedRoute user={user} logout={logout} />}>
+        <Route 
+  path="/dashboard" 
+  element={<Dashboard logout={logout} userRole={user?.role ?? "Guest"} />} 
+/>
+
+          <Route path="/settings" element={<Setting logout={logout} />} />
+          <Route path="/users" element={<AdminRoute user={user}><Users /></AdminRoute>} />
+          <Route path="/articles" element={user ? <Articles /> : <Navigate to="/login" replace />} />
+
+        </Route>
+
         <Route path="*" element={<div>404 - Page Not Found</div>} />
       </Routes>
     </Router>
   );
+};
+
+// ✅ Generic Protected Route Wrapper
+const ProtectedRoute: React.FC<{ user: UserType; logout: () => void }> = ({ user }) => {
+  return user ? <Outlet /> : <Navigate to="/login" replace />;
+};
+
+// ✅ Admin-only Route Wrapper
+const AdminRoute: React.FC<{ user: UserType; children: React.ReactNode }> = ({ user, children }) => {
+  return user?.role === "Admin" ? children : <div>🚫 You are not authorized to access this page.</div>;
 };
 
 export default App;
