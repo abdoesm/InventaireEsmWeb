@@ -86,8 +86,7 @@ const Users: React.FC = () => {
         </button>
       ),
       ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
+    
     },
     {
       name: "حذف",
@@ -103,8 +102,7 @@ const Users: React.FC = () => {
         </button>
       ),
       ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
+      
     },
   ];
 

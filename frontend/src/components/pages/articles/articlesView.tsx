@@ -71,33 +71,39 @@ const Articles: React.FC = () => {
     {
       name: "تعديل",
       cell: (row: Article) => (
-        <button onClick={() => { 
-          setSelectedArticle(row);
-           setShowUpdateForm(true); }}
-            className="btn btn-warning btn-sm">
+        <button
+          onClick={() => { 
+            setSelectedArticle(row);
+            setShowUpdateForm(true); 
+          }}
+          className="btn btn-warning btn-sm"
+        >
           <FaEdit />
         </button>
       ),
-      ignoreRowClick: true,
+      ignoreRowClick: true, 
       allowOverflow: true,
       button: true,
     },
     {
       name: "حذف",
       cell: (row: Article) => (
-        <button onClick={() => {
-           setSelectedArticle(row); 
-           setShowDeleteForm(true); }}
-            className="btn btn-danger btn-sm">
+        <button
+          onClick={() => {
+            setSelectedArticle(row);
+            setShowDeleteForm(true);
+          }}
+          className="btn btn-danger btn-sm"
+        >
           <FaTrash />
         </button>
       ),
-      ignoreRowClick: true,
+      ignoreRowClick: true, 
       allowOverflow: true,
       button: true,
     },
   ];
-
+  
   return (
     <div className="container mt-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
