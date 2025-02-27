@@ -5,7 +5,7 @@ import Login from "./components/login/Login";
 import Dashboard from "./components/pages/Dashboard";
 import Setting from "./components/pages/Setting";
 import Users from "./components/pages/users/Users";
-import Articles from "./components/pages/articles/articlesView"; // 🔹 Import Articles component
+import Articles from "./components/pages/articles/ArticlesView";
 
 interface JwtPayload {
   _id: string;

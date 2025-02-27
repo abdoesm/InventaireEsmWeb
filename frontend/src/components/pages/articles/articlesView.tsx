@@ -71,7 +71,10 @@ const Articles: React.FC = () => {
     {
       name: "تعديل",
       cell: (row: Article) => (
-        <button onClick={() => { setSelectedArticle(row); setShowUpdateForm(true); }} className="btn btn-warning btn-sm">
+        <button onClick={() => { 
+          setSelectedArticle(row);
+           setShowUpdateForm(true); }}
+            className="btn btn-warning btn-sm">
           <FaEdit />
         </button>
       ),
@@ -82,7 +85,10 @@ const Articles: React.FC = () => {
     {
       name: "حذف",
       cell: (row: Article) => (
-        <button onClick={() => { setSelectedArticle(row); setShowDeleteForm(true); }} className="btn btn-danger btn-sm">
+        <button onClick={() => {
+           setSelectedArticle(row); 
+           setShowDeleteForm(true); }}
+            className="btn btn-danger btn-sm">
           <FaTrash />
         </button>
       ),
@@ -100,7 +106,7 @@ const Articles: React.FC = () => {
         </button>
         <h2 className="fw-bold text-center">إدارة المقالات</h2>
       </div>
-
+  
       {loading ? (
         <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>
       ) : error ? (
@@ -116,22 +122,33 @@ const Articles: React.FC = () => {
           striped
         />
       )}
-
+  
       <div className="d-flex justify-content-center mt-3">
         <button className="btn btn-success" onClick={() => setShowAddForm(true)}>
           <FaPlus className="me-2" /> إضافة مقال
         </button>
       </div>
-
-      {showAddForm && <AddArticleForm onClose={() => setShowAddForm(false)} fetchArticles={fetchArticles} />}
-      {showUpdateForm && selectedArticle && (
-        <UpdateArticleForm onClose={() => setShowUpdateForm(false)} article={selectedArticle} fetchArticles={fetchArticles} />
+  
+      {showAddForm && (
+        <div className="modal">
+          <AddArticleForm onClose={() => setShowAddForm(false)} fetchArticles={fetchArticles} />
+        </div>
       )}
+  
+      {showUpdateForm && selectedArticle && (
+        <div className="modal">
+          <UpdateArticleForm onClose={() => setShowUpdateForm(false)} article={selectedArticle} fetchArticles={fetchArticles} />
+        </div>
+      )}
+  
       {showDeleteForm && selectedArticle && (
-        <DeleteArticleForm onClose={() => setShowDeleteForm(false)} article={selectedArticle} fetchArticles={fetchArticles} />
+        <div className="modal">
+          <DeleteArticleForm onClose={() => setShowDeleteForm(false)} article={selectedArticle} fetchArticles={fetchArticles} />
+        </div>
       )}
     </div>
   );
+  
 };
 
 export default Articles;
