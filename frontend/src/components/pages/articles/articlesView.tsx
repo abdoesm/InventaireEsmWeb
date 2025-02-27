@@ -82,8 +82,7 @@ const Articles: React.FC = () => {
         </button>
       ),
       ignoreRowClick: true, 
-      allowOverflow: true,
-      button: true,
+    
     },
     {
       name: "حذف",
@@ -99,8 +98,7 @@ const Articles: React.FC = () => {
         </button>
       ),
       ignoreRowClick: true, 
-      allowOverflow: true,
-      button: true,
+    
     },
   ];
   
@@ -136,21 +134,21 @@ const Articles: React.FC = () => {
       </div>
   
       {showAddForm && (
-        <div className="modal">
+     
           <AddArticleForm onClose={() => setShowAddForm(false)} fetchArticles={fetchArticles} />
-        </div>
+     
       )}
   
       {showUpdateForm && selectedArticle && (
-        <div className="modal">
+      
           <UpdateArticleForm onClose={() => setShowUpdateForm(false)} article={selectedArticle} fetchArticles={fetchArticles} />
-        </div>
+      
       )}
   
       {showDeleteForm && selectedArticle && (
-        <div className="modal">
+       
           <DeleteArticleForm onClose={() => setShowDeleteForm(false)} article={selectedArticle} fetchArticles={fetchArticles} />
-        </div>
+     
       )}
     </div>
   );
