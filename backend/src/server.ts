@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { loginUser, getUsers, addUser, updateUser, deleteUser } from "./controllers/userController";
 import  {verifyToken} from "./middleware/auth"; 
+import { backupDatabase } from "./controllers/backupController";
 
 dotenv.config();
 
@@ -29,6 +30,9 @@ app.get("/api/users", getUsers);
 app.post("/api/users", verifyToken, addUser);
 app.put("/api/users/:id", verifyToken, updateUser);
 app.delete("/api/users/:id", verifyToken, deleteUser);
+
+// ✅ Backup Route
+app.get("/api/backup", verifyToken, backupDatabase);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));

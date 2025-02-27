@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { FaHome, FaDatabase, FaUsers, FaSignOutAlt } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
+import axios from "axios";
 
 // ✅ Define Props Interface
 interface SettingProps {
@@ -16,6 +17,32 @@ const Setting: React.FC<SettingProps> = ({ logout }) => {
     navigate("/");
   };
 
+  const handleBackup = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("لم يتم العثور على رمز المصادقة. الرجاء تسجيل الدخول.");
+        return;
+      }
+  
+      const response = await axios.get("http://localhost:5000/api/backup", {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: "blob", // Important for file download
+      });
+  
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "backup.sql"); // ✅ Set filename
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Backup failed:", error);
+      alert("فشل النسخ الاحتياطي! تأكد من تشغيل السيرفر والمحاولة مرة أخرى.");
+    }
+  };
+  
   return (
     <div className="container d-flex flex-column justify-content-center align-items-center vh-100 bg-light">
       {/* Title */}
@@ -29,7 +56,7 @@ const Setting: React.FC<SettingProps> = ({ logout }) => {
       {/* Options */}
       <div className="d-flex flex-column gap-3">
         {/* Backup Data Button */}
-        <button className="btn btn-warning d-flex align-items-center px-4 py-2 shadow">
+        <button className="btn btn-warning d-flex align-items-center px-4 py-2 shadow" onClick={handleBackup}>
           <FaDatabase className="me-2" />
           <span>نسخ احتياطي</span>
         </button>

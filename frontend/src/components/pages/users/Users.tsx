@@ -6,6 +6,7 @@ import AddUserForm from "./AddUserForm";
 import UpdateUserForm from "./UpdateUserForm";
 import DeleteUserForm from "./DeleteUserForm";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Bk_End_SRVR } from "../../../configs/conf";
 
 interface User {
   id: number;
@@ -32,7 +33,7 @@ const Users: React.FC = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:5000/api/users", {
+      const response = await fetch(`${Bk_End_SRVR}:5000/api/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
