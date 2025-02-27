@@ -1,17 +1,23 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-
-import { 
-  FaBoxOpen, FaFileInvoice, FaClipboardList, FaMapMarkerAlt, FaUsers, 
-  FaCog, FaSignOutAlt, FaWarehouse, FaTruck, FaBoxes, FaClipboardCheck, FaCubes 
+import {
+  FaBoxOpen, FaFileInvoice, FaClipboardList, FaMapMarkerAlt, FaUsers,
+  FaCog, FaSignOutAlt, FaWarehouse, FaTruck, FaBoxes, FaClipboardCheck, FaCubes
 } from "react-icons/fa";
-
+import "bootstrap/dist/css/bootstrap.min.css";
 import "../../assets/css/Dashboard.css";
 
-// ✅ Define Props Interface
 interface DashboardProps {
   logout: () => void;
-  userRole: string;  // Accept user role
+  userRole: string;
+}
+
+interface MenuItem {
+  path: string;
+  label: string;
+  icon: React.ReactNode;
+  roles: string[];
+  className: string;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ logout, userRole }) => {
@@ -22,64 +28,66 @@ const Dashboard: React.FC<DashboardProps> = ({ logout, userRole }) => {
     navigate("/");
   };
 
+  const menuItems: MenuItem[] = [
+    { path: "/etat-stock", label: "حالة المخزون", icon: <FaBoxOpen />, roles: ["Admin", "User"], className: "etat-stock" },
+    { path: "/bon-entrees", label: "وصول الاستلام", icon: <FaFileInvoice />, roles: ["Admin", "User"], className: "bon-entrees" },
+    { path: "/bon-sorties", label: "وصول الإخراج", icon: <FaClipboardList />, roles: ["Admin"], className: "bon-sorties" },
+    { path: "/location", label: "الاماكن", icon: <FaMapMarkerAlt />, roles: ["Admin", "User"], className: "location" },
+    { path: "/adjustment", label: "تعديل المخزون", icon: <FaClipboardCheck />, roles: ["Admin"], className: "adjustment" },
+    { path: "/fornisseurs", label: "الموردين", icon: <FaTruck />, roles: ["Admin"], className: "fornisseurs" },
+    { path: "/inventaire", label: "الجرد", icon: <FaClipboardList />, roles: ["Admin", "User"], className: "inventaire" },
+    { path: "/services", label: "المصالح", icon: <FaCog />, roles: ["Admin"], className: "services" },
+    { path: "/employers", label: "العمال", icon: <FaUsers />, roles: ["Admin"], className: "employers" },
+    { path: "/products", label: "المواد", icon: <FaBoxes />, roles: ["Admin", "User"], className: "products" },
+    { path: "/categories", label: "الفئات", icon: <FaCubes />, roles: ["Admin"], className: "categories" },
+    { path: "/bon-retour", label: "وصول الارجاع", icon: <FaWarehouse />, roles: ["Admin"], className: "bon-retour" },
+  ];
+
+  const filteredMenu = menuItems.filter(item => item.roles.includes(userRole));
+
   return (
     <div className="dashboard-container">
-      <h2>مرحبا بك في لوحة التحكم</h2>
-      <p>🛠️ دور المستخدم: {userRole}</p> {/* Display user role for debugging */}
+      {/* Navbar */}
+      <nav className="navbar navbar-dark bg-dark mb-3 px-3 d-flex justify-content-between">
+        <h2 className="navbar-brand text-white">مرحبا بك في لوحة التحكم</h2>
+        <span className="text-light">🛠️ دور المستخدم: {userRole}</span>
+      </nav>
 
-      {/* Left Sidebar */}
-      <div className="sidebar left">
-        <button onClick={() => navigate("/etat-stock")} className="dashboard-btn etat-stock">
-          <FaBoxOpen className="icon" /> حالة المخزون
-        </button>
-        <button onClick={() => navigate("/bon-entrees")} className="dashboard-btn bon-entrees">
-          <FaFileInvoice className="icon" /> وصول الاستلام
-        </button>
-        <button onClick={() => navigate("/bon-sorties")} className="dashboard-btn bon-sorties">
-          <FaClipboardList className="icon" /> وصول الإخراج
-        </button>
-        <button onClick={() => navigate("/location")} className="dashboard-btn location">
-          <FaMapMarkerAlt className="icon" /> الاماكن
-        </button>
-        <button onClick={() => navigate("/adjustment")} className="dashboard-btn adjustment">
-          <FaClipboardCheck className="icon" /> تعديل المخزون
-        </button>
-        <button onClick={() => navigate("/fornisseurs")} className="dashboard-btn fornisseurs">
-          <FaTruck className="icon" /> الموردين
-        </button>
+      <div className="dashboard-content">
+        {/* Sidebar */}
+        <aside className="sidebar">
+          <div className="menu-list">
+            {filteredMenu.map(({ path, className, label, icon }) => (
+              <button
+                key={path}
+                onClick={() => navigate(path)}
+                className={`menu-item ${className}`}
+              >
+                {icon} <span className="menu-text">{label}</span>
+              </button>
+            ))}
+          </div>
+        </aside>
+
+        {/* Main Content */}
+        <main className="main-content">
+          {/* Your dashboard main content here */}
+        </main>
       </div>
 
-      {/* Right Sidebar */}
-      <div className="sidebar right">
-        <button onClick={() => navigate("/inventaire")} className="dashboard-btn inventaire">
-          <FaClipboardList className="icon" /> الجرد
-        </button>
-        <button onClick={() => navigate("/services")} className="dashboard-btn services">
-          <FaCog className="icon" /> المصالح
-        </button>
-        <button onClick={() => navigate("/employers")} className="dashboard-btn employers">
-          <FaUsers className="icon" /> العمال
-        </button>
-        <button onClick={() => navigate("/products")} className="dashboard-btn product">
-          <FaBoxes className="icon" /> المواد
-        </button>
-        <button onClick={() => navigate("/categories")} className="dashboard-btn category">
-          <FaCubes className="icon" /> الفئات
-        </button>
-        <button onClick={() => navigate("/bon-retour")} className="dashboard-btn bon-retour">
-          <FaWarehouse className="icon" /> وصول الارجاع
-        </button>
-      </div>
+      {/* Footer */}
+    {/* Footer */}
+<footer>
+  <div className="footer-buttons">
+    <button onClick={handleLogout} className="btn btn-danger btn-sm">
+      <FaSignOutAlt className="me-1" /> تسجيل الخروج
+    </button>
+    <button onClick={() => navigate("/settings")} className="btn btn-secondary btn-sm">
+      <FaCog className="me-1" /> الإعدادات
+    </button>
+  </div>
+</footer>
 
-      {/* Bottom Actions */}
-      <div className="dashboard-bottom">
-        <button onClick={handleLogout} className="small-btn">
-          <FaSignOutAlt className="icon" />
-        </button>
-        <button onClick={() => navigate("/settings")} className="small-btn">
-          <FaCog className="icon" />
-        </button>
-      </div>
     </div>
   );
 };

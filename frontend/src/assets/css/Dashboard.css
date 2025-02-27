@@ -1,83 +1,88 @@
+/* General Layout */
 .dashboard-container {
-    display: flex;
-    height: 100vh;
-    justify-content: space-between;
-    background-color: #f8f9fa;
-  }
-  
-  /* Sidebar Styling */
-  .sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    padding: 20px;
-    width: 250px;
-    background-color: #ffffff;
-    border-right: 1px solid #ddd;
-  }
-  
-  /* Dashboard Buttons */
-  .dashboard-btn {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background-color: #e9ecef;
-    border: none;
-    padding: 12px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s;
-    border-radius: 5px;
-  }
-  
-  .dashboard-btn:hover {
-    background-color: #ced4da;
-  }
-  
-  /* Icons */
-  .icon {
-    font-size: 20px;
-    color: #495057;
-  }
-  
-  /* Main Content */
-  .dashboard-content {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 24px;
-    font-weight: bold;
-    color: #343a40;
-  }
-  
-  /* Bottom Buttons */
-  .dashboard-bottom {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    display: flex;
-    gap: 10px;
-  }
-  
-  .small-btn {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-  }
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Dashboard Content Layout */
+.dashboard-content {
+  display: flex;
+  flex-grow: 1;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background-color: #f8f9fa;
+  padding: 15px;
+  height: 100%;
+  border-right: 2px solid #ccc;
+}
+
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.menu-item:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
+}
+
+.menu-text {
+  margin-left: 10px;
+}
+
+/* Main Content */
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+}
+
+footer {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  background: none;
+}
+
+.footer-buttons {
+  display: flex;
+  gap: 10px;
+}
 
 
-  .etat-stock { background-color: #c7c8cb; } /* Light Gray */
-  .bon-entrees { background-color: #7ea642; } /* Green */
-  .bon-sorties { background-color: #c48264; } /* Brownish Orange */
-  .location { background-color: #e6b955; } /* Golden Yellow */
-  .inventaire { background-color: #c7c8cb; } /* Light Gray */
-  .services { background-color: #7ea642; } /* Green */
-  .employers { background-color: #c48264; } /* Brownish Orange */
-  .adjustment { background-color: #ed8759; } /* Coral */
-  .fornisseurs { background-color: #999573; } /* Olive Gray */
-  .product { background-color: #e6b955; } /* Golden Yellow */
-  .category { background-color: #ed8759; } /* Coral */
-  .bon-retour { background-color: #999573; } /* Olive Gray */
-  
+/* Button Colors */
+.etat-stock { background-color: #c7c8cb; } /* Light Gray */
+.bon-entrees { background-color: #7ea642; } /* Green */
+.bon-sorties { background-color: #c48264; } /* Brownish Orange */
+.location { background-color: #e6b955; } /* Golden Yellow */
+.inventaire { background-color: #c7c8cb; } /* Light Gray */
+.services { background-color: #7ea642; } /* Green */
+.employers { background-color: #c48264; } /* Brownish Orange */
+.adjustment { background-color: #ed8759; } /* Coral */
+.fornisseurs { background-color: #999573; } /* Olive Gray */
+.products { background-color: #e6b955; } /* Golden Yellow */
+.categories { background-color: #ed8759; } /* Coral */
+.bon-retour { background-color: #999573; } /* Olive Gray */
