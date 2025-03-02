@@ -6,6 +6,7 @@ import  {verifyToken} from "./middleware/auth";
 import { backupDatabase } from "./controllers/backupController";
 import { getAllArticlesNames, getArticles, getArticleById, addArticle, addArticles, updateArticle, deleteArticle, getArticleIdByName, getTotalQuantityByArticleId, getTotalQuantitiesByArticle } from "./controllers/articleController";
 import { addCategory, deleteCategory, getCategories, getCategoryById,  updateCategory } from "./controllers/categoryController";
+import { getAllEmployers, getEmployerById, createEmployer, updateEmployer, deleteEmployer } from "./controllers/employerController";
 
 dotenv.config();
 
@@ -53,6 +54,13 @@ app.post("/api/categories", verifyToken, addCategory);
 app.put("/api/categories/:id", verifyToken, updateCategory);
 app.delete("/api/categories/:id", verifyToken, deleteCategory);
 app.get("/api/categories/:id", getCategoryById);
+
+// ✅ Employer Routes
+app.get("/api/employers", getAllEmployers);
+app.get("/api/employers/:id", getEmployerById);
+app.post("/api/employers", verifyToken, createEmployer);
+app.put("/api/employers/:id", verifyToken, updateEmployer);
+app.delete("/api/employers/:id", verifyToken, deleteEmployer);
 
 
 const PORT = process.env.PORT || 5000;

@@ -7,6 +7,7 @@ import Setting from "./components/pages/Setting";
 import Users from "./components/pages/users/UsersView";
 import Articles from "./components/pages/articles/ArticlesView";
 import Categories from "./components/pages/categories/CategoryView";
+import Employers from "./components/pages/employers/EmployersView";
 
 interface JwtPayload {
   _id: string;
@@ -73,6 +74,7 @@ const App = () => {
           <Route path="/users" element={<AdminRoute user={user}><Users /></AdminRoute>} />
           <Route path="/articles" element={user ? <Articles /> : <Navigate to="/login" replace />} />
           <Route path="/categories" element={user ? <Categories /> : <Navigate to="/login" replace />} />
+          <Route path="/employers" element={user ? <Employers /> : <Navigate to="/login" replace />} />
           
         </Route>
 
