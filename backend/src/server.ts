@@ -5,6 +5,7 @@ import { loginUser, getUsers, addUser, updateUser, deleteUser } from "./controll
 import  {verifyToken} from "./middleware/auth"; 
 import { backupDatabase } from "./controllers/backupController";
 import { getAllArticlesNames, getArticles, getArticleById, addArticle, addArticles, updateArticle, deleteArticle, getArticleIdByName, getTotalQuantityByArticleId, getTotalQuantitiesByArticle } from "./controllers/articleController";
+import { addCategory, deleteCategory, getCategories, getCategoryById,  updateCategory } from "./controllers/categoryController";
 
 dotenv.config();
 
@@ -46,6 +47,13 @@ app.delete("/api/articles/:id", verifyToken, deleteArticle);
 app.get("/api/articles/name/:name", getArticleIdByName);
 app.get("/api/articles/quantity/:id", getTotalQuantityByArticleId);
 app.get("/api/articles/quantities", getTotalQuantitiesByArticle);
+
+app.get("/api/categories", getCategories);
+app.post("/api/categories", verifyToken, addCategory);
+app.put("/api/categories/:id", verifyToken, updateCategory);
+app.delete("/api/categories/:id", verifyToken, deleteCategory);
+app.get("/api/categories/:id", getCategoryById);
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));

@@ -4,8 +4,9 @@ import { jwtDecode } from "jwt-decode";
 import Login from "./components/login/Login";
 import Dashboard from "./components/pages/Dashboard";
 import Setting from "./components/pages/Setting";
-import Users from "./components/pages/users/Users";
+import Users from "./components/pages/users/UsersView";
 import Articles from "./components/pages/articles/ArticlesView";
+import Categories from "./components/pages/categories/CategoryView";
 
 interface JwtPayload {
   _id: string;
@@ -71,7 +72,8 @@ const App = () => {
           <Route path="/settings" element={<Setting logout={logout} />} />
           <Route path="/users" element={<AdminRoute user={user}><Users /></AdminRoute>} />
           <Route path="/articles" element={user ? <Articles /> : <Navigate to="/login" replace />} />
-
+          <Route path="/categories" element={user ? <Categories /> : <Navigate to="/login" replace />} />
+          
         </Route>
 
         <Route path="*" element={<div>404 - Page Not Found</div>} />

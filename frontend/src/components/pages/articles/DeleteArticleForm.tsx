@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import { Article } from "../../../models/articleTypes"; // Import the Article type
 
@@ -9,6 +9,8 @@ type Props = {
 };
 
 const DeleteArticleForm: React.FC<Props> = ({ onClose, fetchArticles, article }) => {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const handleDelete = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -16,13 +18,26 @@ const DeleteArticleForm: React.FC<Props> = ({ onClose, fetchArticles, article })
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!response.ok) throw new Error("Failed to delete article");
+  
+      const data = await response.json(); // Parse JSON response
+  
+      if (!response.ok) {
+        setErrorMessage(
+          data.error === "لا يمكن حذف العنصر لأنه مستخدم في الإدخالات."
+            ? "لا يمكن حذف هذا العنصر لأنه مرتبط بإدخالات أخرى."
+            : "فشل في حذف العنصر."
+        );
+        return;
+      }
+  
       fetchArticles();
       onClose();
     } catch (err) {
+      setErrorMessage("حدث خطأ في الشبكة. يرجى المحاولة مرة أخرى.");
       console.error((err as Error).message);
     }
   };
+  
 
   return (
     <div className="modal fade show d-block" tabIndex={-1} role="dialog">
@@ -33,6 +48,7 @@ const DeleteArticleForm: React.FC<Props> = ({ onClose, fetchArticles, article })
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
           <div className="modal-body">
+            {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
             <p>هل أنت متأكد أنك تريد حذف العنصر <strong>{article.name}</strong>؟</p>
           </div>
           <div className="modal-footer">
@@ -47,7 +63,6 @@ const DeleteArticleForm: React.FC<Props> = ({ onClose, fetchArticles, article })
       </div>
     </div>
   );
-  
 };
 
 export default DeleteArticleForm;

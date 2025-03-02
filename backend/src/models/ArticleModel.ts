@@ -1,6 +1,16 @@
 import { ResultSetHeader } from "mysql2";
 import pool from "../config/db";
 
+interface Article {
+    id?: number;
+    name: string;
+    unite: string;
+    remarque: string;
+    description: string;
+    idCategory: number;
+    minQuantity: number;
+}
+
 export class ArticleModel {
     async getAllArticlesNames(): Promise<string[]> {
         try {
@@ -84,17 +94,30 @@ export class ArticleModel {
             return false;
         }
     }
-
     async deleteArticle(id: number): Promise<boolean> {
         try {
-            const query = "DELETE FROM article WHERE id = ?";
-            const [result] = await pool.execute(query, [id]);
+            console.log("Checking dependencies before deleting article: " + id);
+            
+            // Check if the article is referenced in 'entree'
+            const checkQuery = "SELECT COUNT(*) as count FROM entree WHERE id_article = ?";
+            const [rows]: any = await pool.execute(checkQuery, [id]);
+            
+            if (rows[0].count > 0) {
+                console.warn(`Cannot delete article ${id}, it is referenced in entree.`);
+                return false; // Prevent deletion
+            }
+    
+            // Proceed with deletion
+            const deleteQuery = "DELETE FROM article WHERE id = ?";
+            const [result] = await pool.execute(deleteQuery, [id]);
+    
             return (result as ResultSetHeader).affectedRows > 0;
         } catch (error) {
             console.error(`Error deleting article with ID ${id}:`, error);
             return false;
         }
     }
+    
 
     async getArticleIdByName(name: string): Promise<number> {
         try {
@@ -181,12 +204,3 @@ export class ArticleModel {
     }
 }
 
-interface Article {
-    id?: number;
-    name: string;
-    unite: string;
-    remarque: string;
-    description: string;
-    idCategory: number;
-    minQuantity: number;
-}

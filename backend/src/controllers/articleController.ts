@@ -3,7 +3,7 @@ import { ArticleModel } from "../models/ArticleModel";
 
 const articleModel = new ArticleModel();
 
-export const getAllArticlesNames = async (req: Request, res: Response) => {
+export const getAllArticlesNames = async (_req: Request, res: Response) => {
     console.log("getAllArticlesNames")
     try {
         const names = await articleModel.getAllArticlesNames();
@@ -13,7 +13,7 @@ export const getAllArticlesNames = async (req: Request, res: Response) => {
     }
 };
 
-export const getArticles = async (req: Request, res: Response) => {
+export const getArticles = async (_req: Request, res: Response) => {
     try {
         const articles = await articleModel.getArticles();
         res.json(articles);
@@ -79,15 +79,17 @@ export const deleteArticle = async (req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id);
         const success = await articleModel.deleteArticle(id);
+
         if (success) {
             res.json({ message: "Article deleted successfully." });
         } else {
-            res.status(400).json({ error: "Failed to delete article." });
+            res.status(400).json({ error: "لا يمكن حذف العنصر لأنه مستخدم في الإدخالات." });
         }
     } catch (error) {
-        res.status(500).json({ error: "Internal server error." });
+        res.status(500).json({ error: "حدث خطأ داخلي في الخادم." });
     }
 };
+
 
 export const getArticleIdByName = async (req: Request, res: Response) => {
     try {
@@ -108,7 +110,7 @@ export const getTotalQuantityByArticleId = async (req: Request, res: Response) =
     }
 };
 
-export const getTotalQuantitiesByArticle = async (req: Request, res: Response) => {
+export const getTotalQuantitiesByArticle = async (_req: Request, res: Response) => {
     try {
         const quantities = await articleModel.getTotalQuantitiesByArticle();
         res.json(quantities);
