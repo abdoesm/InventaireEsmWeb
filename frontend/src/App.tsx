@@ -8,6 +8,8 @@ import Users from "./components/pages/users/UsersView";
 import Articles from "./components/pages/articles/ArticlesView";
 import Categories from "./components/pages/categories/CategoryView";
 import Employers from "./components/pages/employers/EmployersView";
+import FournisseurView from "./components/pages/fornisseurs/FornisseursView";
+
 
 interface JwtPayload {
   _id: string;
@@ -75,6 +77,8 @@ const App = () => {
           <Route path="/articles" element={user ? <Articles /> : <Navigate to="/login" replace />} />
           <Route path="/categories" element={user ? <Categories /> : <Navigate to="/login" replace />} />
           <Route path="/employers" element={user ? <Employers /> : <Navigate to="/login" replace />} />
+          <Route path="/fornisseurs" element={user ? <FournisseurView /> : <Navigate to="/login" replace />} />
+          
           
         </Route>
 
