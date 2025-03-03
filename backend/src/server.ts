@@ -8,6 +8,7 @@ import userRoutes   from   "./routes/userRoutes"
 import  {verifyToken} from "./middleware/auth"; 
 import { backupDatabase } from "./controllers/backupController";
 import emplyerRoutes from "./routes/emplyerRoutes";
+import serviceRoutes from "./routes/serviceRoutes";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use(articleRoutes);
 app.use(categoryRoutes);
 app.use(emplyerRoutes);
 app.use(fournisseurRoutes);
+app.use("/api/services", serviceRoutes);
 
 app.get("/api/backup", verifyToken, backupDatabase);
 
