@@ -76,6 +76,8 @@ const FournisseurView: React.FC = () => {
     { name: "العنوان", selector: (row: Fournisseur) => row.ADDRESS, sortable: true },
     { name: "البريد الإلكتروني", selector: (row: Fournisseur) => row.EMAIL, sortable: true },
     { name: "RIB", selector: (row: Fournisseur) => row.RIB, sortable: true },
+    
+    // Fixed Buttons
     {
       name: "تعديل",
       cell: (row: Fournisseur) => (
@@ -90,6 +92,7 @@ const FournisseurView: React.FC = () => {
         </button>
       ),
       ignoreRowClick: true,
+      fixed: "right", // Fixes column to the right
     },
     {
       name: "حذف",
@@ -105,8 +108,10 @@ const FournisseurView: React.FC = () => {
         </button>
       ),
       ignoreRowClick: true,
+      fixed: "right", // Fixes column to the right
     },
   ];
+  
 
   return (
     <div className="container mt-5">
@@ -123,14 +128,18 @@ const FournisseurView: React.FC = () => {
         <p className="text-danger">{error}</p>
       ) : (
         <DataTable
-          title="قائمة الموردين"
-          columns={columns}
-          data={fournisseurs}
-          pagination
-          highlightOnHover
-          responsive
-          striped
-        />
+        title="قائمة الموردين"
+        columns={columns}
+        data={fournisseurs}
+        pagination
+        highlightOnHover
+        responsive
+        striped
+        fixedHeader
+        fixedHeaderScrollHeight="600px"
+        persistTableHead
+      />
+      
       )}
 
       <div className="d-flex justify-content-center mt-3">

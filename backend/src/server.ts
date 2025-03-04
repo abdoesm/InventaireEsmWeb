@@ -9,6 +9,7 @@ import  {verifyToken} from "./middleware/auth";
 import { backupDatabase } from "./controllers/backupController";
 import emplyerRoutes from "./routes/emplyerRoutes";
 import serviceRoutes from "./routes/serviceRoutes";
+import { loginUser } from "./controllers/userController";
 
 dotenv.config();
 
@@ -21,7 +22,13 @@ app.use((req, res, next) => {
   console.log(`🔹 ${req.method} Request to ${req.url}`);
   next();
 });
+// ✅ Authentication Route
+app.post("/api/login", loginUser);
 
+// ✅ Protected Route (Requires Auth)
+app.get("/api/protected", verifyToken, (req, res) => {
+  res.json({ success: true, message: "Access granted", user: req.user });
+});
 
 app.use('/api/users',userRoutes);
 app.use('/api/articles',articleRoutes);

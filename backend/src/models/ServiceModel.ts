@@ -20,6 +20,7 @@ export class ServiceModel {
     }
 
     async addService(service: Service): Promise<Service | null> {
+        console.log(service)
         const query = "INSERT INTO service (name, chef_service_id) VALUES (?, ?)";
         try {
             const [result] = await pool.execute<ResultSetHeader>(query, [service.name, service.chef_service_id]);
