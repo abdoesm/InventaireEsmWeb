@@ -7,45 +7,69 @@ type Props = {
   fetchFournisseurs: () => void;
 };
 
+const stage1Colmuns=[
+  { label: "RC", name: "RC" },
+  { label: "NIF", name: "NIF" },
+  { label: "AI", name: "AI" },
+  { label: "NIS", name: "NIS" },
+]
+const stage2Colmuns=[
+  { label: "رقم الهاتف", name: "TEL" },
+  { label: "الفاكس", name: "FAX" },
+  { label: "العنوان", name: "ADDRESS" },
+  { label: "البريد الإلكتروني", name: "EMAIL" },
+  { label: "RIB", name: "RIB" },
+]
 const AddFournisseurForm: React.FC<Props> = ({ onClose, fetchFournisseurs }) => {
-  const [name, setName] = useState("");
-  const [RC, setRc] = useState("");
-  const [NIF, setNif] = useState("");
-  const [AI, setAi] = useState("");
-  const [NIS, setNis] = useState("");
-  const [TEL, setTel] = useState("");
-  const [FAX, setFax] = useState("");
-  const [ADDRESS, setAddress] = useState("");
-  const [EMAIL, setEmail] = useState("");
-  const [RIB, setRib] = useState("");
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    name: "",
+    RC: "",
+    NIF: "",
+    AI: "",
+    NIS: "",
+    TEL: "",
+    FAX: "",
+    ADDRESS: "",
+    EMAIL: "",
+    RIB: "",
+  });
   const [error, setError] = useState<string | null>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleNext = () => {
+    if (!formData.name.trim()) {
+      setError("اسم المورد مطلوب.");
+      return;
+    }
+    setError(null);
+    setStep(2);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-
       const response = await fetch(`${Bk_End_SRVR}:5000/api/fournisseurs`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          name,
-          RC:RC||null ,
-          NIF: NIF || null,
-          AI: AI || null,
-          NIS: NIS || null,
-          TEL: TEL || null,
-          FAX: FAX || null,
-          ADDRESS: ADDRESS || null,
-          EMAIL: EMAIL || null,
-          RIB: RIB || null,
-        }),
+        body: JSON.stringify(
+          Object.fromEntries(
+            Object.entries(formData).map(([key, value]) => [key, value || null])
+          )
+        ),
       });
 
-      if (!response.ok) throw new Error("Failed to add fournisseur");
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || "فشل في إضافة المورد");
+      }
 
       fetchFournisseurs();
       onClose();
@@ -65,51 +89,68 @@ const AddFournisseurForm: React.FC<Props> = ({ onClose, fetchFournisseurs }) => 
           <div className="modal-body">
             {error && <p className="text-danger">{error}</p>}
             <form onSubmit={handleSubmit}>
-              {/* Required Fields */}
-              <div className="mb-3">
-                <label className="form-label">اسم المورد *</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="أدخل اسم المورد"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </div>
-
-             
-
-
-              {/* Optional Fields */}
-              {[
-                { label: "RC", state: RC, setState: setRc },
-                { label: "NIF", state: NIF, setState: setNif },
-                { label: "AI", state: AI, setState: setAi },
-                { label: "NIS", state: NIS, setState: setNis },
-                { label: "رقم الهاتف", state: TEL, setState: setTel },
-                { label: "الفاكس", state: FAX, setState: setFax },
-                { label: "العنوان", state: ADDRESS, setState: setAddress },
-                { label: "البريد الإلكتروني", state: EMAIL, setState: setEmail },
-                { label: "RIB", state: RIB, setState: setRib },
-              ].map(({ label, state, setState }, index) => (
-                <div className="mb-3" key={index}>
-                  <label className="form-label">{label}</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder={`أدخل ${label}`}
-                    value={state}
-                    onChange={(e) => setState(e.target.value)}
-                  />
-                </div>
-              ))}
-
-              {/* Buttons */}
-              <div className="modal-footer">
-                <button type="submit" className="btn btn-primary">إضافة</button>
-                <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
-              </div>
+              {step === 1 ? (
+                <>
+                  <div className="mb-3">
+                    <label className="form-label">اسم المورد *</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="name"
+                      placeholder="أدخل اسم المورد"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      autoFocus
+                    />
+                  </div>
+                  {stage1Colmuns.map(({ label, name }, index) => (
+                    <div className="mb-3" key={index}>
+                      <label className="form-label">{label}</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name={name}
+                        placeholder={`أدخل ${label}`}
+                        value={formData[name as keyof typeof formData]}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  ))}
+                  <div className="modal-footer">
+                    <button type="button" className="btn btn-primary" onClick={handleNext}>
+                      التالي
+                    </button>
+                    <button type="button" className="btn btn-secondary" onClick={onClose}>
+                      إلغاء
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {stage2Colmuns.map(({ label, name }, index) => (
+                    <div className="mb-3" key={index}>
+                      <label className="form-label">{label}</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name={name}
+                        placeholder={`أدخل ${label}`}
+                        value={formData[name as keyof typeof formData]}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  ))}
+                  <div className="modal-footer">
+                    <button type="button" className="btn btn-secondary" onClick={() => setStep(1)}>
+                      رجوع
+                    </button>
+                    <button type="submit" className="btn btn-primary">
+                      إضافة
+                    </button>
+                  </div>
+                </>
+              )}
             </form>
           </div>
         </div>

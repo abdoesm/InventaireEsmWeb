@@ -5,9 +5,9 @@ import { getAllEmployers, getEmployerById, createEmployer, updateEmployer, delet
 
 const router = express.Router();
 
-router.get("/api/employers", getAllEmployers);
-router.get("/api/employers/:id", getEmployerById);
-router.post("/api/employers", verifyToken, createEmployer);
-router.put("/api/employers/:id", verifyToken, updateEmployer);
-router.delete("/api/employers/:id", verifyToken, deleteEmployer);
+router.get("/", getAllEmployers);
+router.get("/:id", getEmployerById);
+router.post("/", verifyToken, createEmployer);
+router.put("/:id", verifyToken, updateEmployer);
+router.delete("/:id", verifyToken, deleteEmployer);
 export default router;

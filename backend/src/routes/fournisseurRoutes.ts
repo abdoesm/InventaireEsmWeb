@@ -12,11 +12,11 @@ import { verifyToken } from "../middleware/auth";
 const router = express.Router();
 
 // ✅ Fournisseur Routes
-router.get("/api/fournisseurs", getFournisseurs);
-router.get("/api/fournisseurs/:id", getFournisseurById);
-router.get("/api/fournisseurs/name/:name", getFournisseurIdByName);
-router.post("/api/fournisseurs", verifyToken, addFournisseur);
-router.put("/api/fournisseurs/:id", verifyToken, updateFournisseur);
-router.delete("/api/fournisseurs/:id", verifyToken, deleteFournisseur);
+router.get("/", getFournisseurs);
+router.get("/:id", getFournisseurById);
+router.get("/:name", getFournisseurIdByName);
+router.post("/", verifyToken, addFournisseur);
+router.put("/:id", verifyToken, updateFournisseur);
+router.delete("/:id", verifyToken, deleteFournisseur);
 
 export default router;

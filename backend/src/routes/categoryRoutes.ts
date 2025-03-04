@@ -6,10 +6,10 @@ import { addCategory, deleteCategory, getCategories, getCategoryById, updateCate
 const router = express.Router();
 
 // ✅ Fournisseur Routes
-router.get("/api/categories", getCategories);
-router.post("/api/categories", verifyToken, addCategory);
-router.put("/api/categories/:id", verifyToken, updateCategory);
-router.delete("/api/categories/:id", verifyToken, deleteCategory);
-router.get("/api/categories/:id", getCategoryById);
+router.get("/", getCategories);
+router.post("/", verifyToken, addCategory);
+router.put("/:id", verifyToken, updateCategory);
+router.delete("/:id", verifyToken, deleteCategory);
+router.get("/:id", getCategoryById);
 
 export default router;

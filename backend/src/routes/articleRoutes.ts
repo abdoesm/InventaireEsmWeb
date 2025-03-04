@@ -6,15 +6,15 @@ import { getAllArticlesNames, getArticles, getArticleById, addArticle, addArticl
 
 const router = express.Router(); 
 
-router.get("/api/articles/names", getAllArticlesNames);
-router.get("/api/articles", getArticles);
-router.get("/api/articles/:id", getArticleById);
-router.post("/api/articles", verifyToken, addArticle);
-router.post("/api/articles/bulk", verifyToken, addArticles);
-router.put("/api/articles/:id", verifyToken, updateArticle);
-router.delete("/api/articles/:id", verifyToken, deleteArticle);
-router.get("/api/articles/name/:name", getArticleIdByName);
-router.get("/api/articles/quantity/:id", getTotalQuantityByArticleId);
-router.get("/api/articles/quantities", getTotalQuantitiesByArticle);
+router.get("/names", getAllArticlesNames);
+router.get("/", getArticles);
+router.get("/:id", getArticleById);
+router.post("/", verifyToken, addArticle);
+router.post("/bulk", verifyToken, addArticles);
+router.put("/:id", verifyToken, updateArticle);
+router.delete("/:id", verifyToken, deleteArticle);
+router.get("/name/:name", getArticleIdByName);
+router.get("/quantity/:id", getTotalQuantityByArticleId);
+router.get("/quantities", getTotalQuantitiesByArticle);
 
 export default router;

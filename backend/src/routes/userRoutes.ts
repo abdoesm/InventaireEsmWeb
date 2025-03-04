@@ -11,9 +11,9 @@ router.post("/api/login", loginUser);
 router.get("/api/protected", verifyToken, (req, res) => {
   res.json({ success: true, message: "Access granted", user: req.user });
 });
-router.get("/api/users", getUsers);
-router.post("/api/users", verifyToken, addUser);
-router.put("/api/users/:id", verifyToken, updateUser);
-router.delete("/api/users/:id", verifyToken, deleteUser);
+router.get("/", getUsers);
+router.post("/", verifyToken, addUser);
+router.put("/:id", verifyToken, updateUser);
+router.delete("/:id", verifyToken, deleteUser);
 
 export default router;

@@ -23,11 +23,11 @@ app.use((req, res, next) => {
 });
 
 
-app.use(userRoutes);
-app.use(articleRoutes);
-app.use(categoryRoutes);
-app.use(emplyerRoutes);
-app.use(fournisseurRoutes);
+app.use('/api/users',userRoutes);
+app.use('/api/articles',articleRoutes);
+app.use('/api/categories',categoryRoutes);
+app.use('/api/employers',emplyerRoutes);
+app.use('/api/fournisseurs',fournisseurRoutes);
 app.use("/api/services", serviceRoutes);
 
 app.get("/api/backup", verifyToken, backupDatabase);
