@@ -8,12 +8,14 @@ import DeleteServiceForm from "./DeleteServiceForm";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import { Service } from "../../../models/serviceTypes";
+import { Employer } from "../../../models/employerType";
 
 
 
 const Services: React.FC = () => {
   const navigate = useNavigate();
   const [services, setServices] = useState<Service[]>([]);
+    const [employers, setEmployers] = useState<Employer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
@@ -44,14 +46,36 @@ const Services: React.FC = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchServices();
   }, []);
-
+  useEffect(() => {
+    const fetchEmployers = async () => {
+      try {
+        const response = await fetch(`${Bk_End_SRVR}:5000/api/employers`);
+        if (!response.ok) throw new Error("Failed to fetch employers");
+        const data = await response.json();
+        setEmployers(data);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEmployers();
+  }, []);
   const columns = [
     { name: "المعرف", selector: (row: Service) => row.id, sortable: true },
     { name: "الاسم", selector: (row: Service) => row.name, sortable: true },
+    {
+      name: "رئيس الخدمة", 
+      selector: (row: Service) => {
+        const chef = employers.find(emp => emp.id === row.chef_service_id); // Use employerId instead of service id
+        return chef ? chef.fname +" "+ chef.lname : "غير معروف"; 
+      }, 
+      sortable: true 
+    },
+    
     {
       name: "تعديل",
       cell: (row: Service) => (
@@ -83,6 +107,7 @@ const Services: React.FC = () => {
       ignoreRowClick: true,
     },
   ];
+  
 
   return (
     <div className="container mt-5">
