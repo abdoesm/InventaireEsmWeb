@@ -1,12 +1,10 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
+import { Employer } from "../../../models/employerType";
 
 // ✅ Define Props Interface
-interface Employer {
-  id: number;
-  name: string;
-}
+
 
 interface DeleteEmployerFormProps {
   onClose: () => void;
@@ -48,7 +46,7 @@ const DeleteEmployerForm: React.FC<DeleteEmployerFormProps> = ({ onClose, employ
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
           <div className="modal-body">
-            <p>هل أنت متأكد أنك تريد حذف المشغل <strong>{employer.name}</strong>؟</p>
+            <p>هل أنت متأكد أنك تريد حذف المشغل <strong>{employer.fname +" "+ employer.lname}</strong>؟</p>
           </div>
           <div className="modal-footer">
             <button className="btn btn-danger" onClick={handleDelete}>

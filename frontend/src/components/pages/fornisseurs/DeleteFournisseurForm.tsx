@@ -1,12 +1,10 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
+import { Fournisseur } from "../../../models/fournisseurTypes";
 
 // ✅ Define Props Interface
-interface Fournisseur {
-  id: number;
-  name: string;
-}
+
 
 interface DeleteFournisseurFormProps {
   onClose: () => void;

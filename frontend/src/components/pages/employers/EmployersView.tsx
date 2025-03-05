@@ -7,13 +7,8 @@ import UpdateEmployerForm from "./UpdateEmployerForm";
 import DeleteEmployerForm from "./DeleteEmployerForm";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
+import { Employer } from "../../../models/employerType";
 
-interface Employer {
-  id: number;
-  fname: string;
-  lname: string;
-  title: string;
-}
 
 const Employers: React.FC = () => {
   const navigate = useNavigate();
@@ -159,10 +154,14 @@ const Employers: React.FC = () => {
 {showDeleteEmployerForm && selectedEmployer && (
   <DeleteEmployerForm 
     onClose={() => setShowDeleteEmployerForm(false)} 
-    employer={{ 
-      id: selectedEmployer.id, 
-      name: selectedEmployer.fname + " "+selectedEmployer.lname || "", 
-    }} 
+       employer={
+        { 
+          id: selectedEmployer.id, 
+          fname: selectedEmployer.fname || "", 
+          lname: selectedEmployer.lname || "", 
+          title: selectedEmployer.title || "" 
+        }
+       }
        fetchEmployers={fetchEmployers} 
   />
 )}

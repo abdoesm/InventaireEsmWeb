@@ -7,12 +7,9 @@ import UpdateCategoryForm from "./UpdateCategoryForm";
 import DeleteCategoryForm from "./DeleteCategoryForm";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
+import { Category } from "../../../models/categoryTypes";
 
-interface Category {
-  id: number;
-  name_cat: string;
 
-}
 
 const Categories: React.FC = () => {
   const navigate = useNavigate();

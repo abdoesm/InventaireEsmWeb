@@ -9,8 +9,13 @@ interface AddEmployerFormProps {
 // Add Employer Form
 const AddEmployerForm: React.FC<AddEmployerFormProps> = ({ onClose, fetchEmployers }) => {
 
+  const [data,setData]= useState({
+    id:"",
+    fname:"",
+    lname:"",
+    title:""
+  })
 
-  const [data,setData]=useState({fname:"",lname:"",title:""});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setData({ ...data, [e.target.name]: e.target.value });

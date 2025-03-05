@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
-import { Service } from "../../../models/serviceTypes";
+import { Employer } from "../../../models/employerType";
 
-type Employer = {
-  id: number;
-  fname: string;
-  lname: string;
-  title: string;
-};
+
+
 
 type Props = {
   onClose: () => void;

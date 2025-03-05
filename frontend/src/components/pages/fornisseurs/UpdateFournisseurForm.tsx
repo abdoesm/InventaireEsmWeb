@@ -1,20 +1,9 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
+import { Fournisseur } from "../../../models/fournisseurTypes";
 
-interface Fournisseur {
-  id: number;
-  name: string;
-  RC: string;
-  NIF: string;
-  AI: string;
-  NIS: string;
-  TEL: string;
-  FAX: string;
-  ADDRESS: string;
-  EMAIL: string;
-  RIB: string;
-}
+
 
 interface UpdateFournisseurFormProps {
   onClose: () => void;

@@ -7,20 +7,9 @@ import UpdateFournisseurForm from "./UpdateFournisseurForm";
 import DeleteFournisseurForm from "./DeleteFournisseurForm";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
+import { Fournisseur } from "../../../models/fournisseurTypes";
 
-interface Fournisseur {
-  id: number;
-  name: string;
-  RC: string;
-  NIF: string;
-  AI: string;
-  NIS: string;
-  TEL: string;
-  FAX: string;
-  ADDRESS: string;
-  EMAIL: string;
-  RIB: string;
-}
+
 
 const FournisseurView: React.FC = () => {
   const navigate = useNavigate();
@@ -148,7 +137,8 @@ const FournisseurView: React.FC = () => {
         </button>
       </div>
 
-      {showAddForm && <AddFournisseurForm onClose={() => setShowAddForm(false)} fetchFournisseurs={fetchFournisseurs} />}
+      {showAddForm && selectedFournisseur && 
+      <AddFournisseurForm onClose={() => setShowAddForm(false)} fetchFournisseurs={fetchFournisseurs}  fournisseur={selectedFournisseur}/>}
       {showUpdateForm && selectedFournisseur && (
         <UpdateFournisseurForm 
           onClose={() => setShowUpdateForm(false)} 
@@ -159,7 +149,7 @@ const FournisseurView: React.FC = () => {
       {showDeleteForm && selectedFournisseur && (
         <DeleteFournisseurForm 
           onClose={() => setShowDeleteForm(false)} 
-          fournisseur={{ id: selectedFournisseur.id, name: selectedFournisseur.name }}
+          fournisseur={selectedFournisseur}
           fetchFournisseurs={fetchFournisseurs} 
         />
       )}
