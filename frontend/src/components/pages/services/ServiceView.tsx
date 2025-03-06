@@ -15,7 +15,7 @@ import { Employer } from "../../../models/employerType";
 const Services: React.FC = () => {
   const navigate = useNavigate();
   const [services, setServices] = useState<Service[]>([]);
-    const [employers, setEmployers] = useState<Employer[]>([]);
+  const [employers, setEmployers] = useState<Employer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState<boolean>(false);

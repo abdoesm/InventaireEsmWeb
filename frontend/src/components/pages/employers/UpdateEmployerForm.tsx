@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import { Employer } from "../../../models/employerType";
@@ -13,12 +13,11 @@ interface UpdateEmployerFormProps {
 }
 
 const UpdateEmployerForm: React.FC<UpdateEmployerFormProps> = ({ onClose, employer, fetchEmployers }) => {
-  const [data,setFormData]= useState({
-    id:"",
-    fname:"",
-    lname:"",
-    title:""
-  })
+  const [data, setFormData] = useState<Employer>(employer);
+  useEffect(() => {
+    setFormData(employer);
+  }, [employer]);
+  
   const handleChange = ( e :React.ChangeEvent<HTMLInputElement>) =>{
     setFormData({...data,[e.target.name]:e.target.value})
   };

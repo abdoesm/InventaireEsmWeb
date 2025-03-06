@@ -7,12 +7,9 @@ import UpdateUserForm from "./UpdateUserForm";
 import DeleteUserForm from "./DeleteUserForm";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
+import { User } from "../../../models/userType";
 
-interface User {
-  id: number;
-  username: string;
-  role: string;
-}
+
 
 const Users: React.FC = () => {
   const navigate = useNavigate();

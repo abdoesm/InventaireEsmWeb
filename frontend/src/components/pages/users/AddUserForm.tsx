@@ -8,13 +8,25 @@ interface AddUserFormProps {
 }
 
 const AddUserForm: React.FC<AddUserFormProps> = ({ onClose, fetchUsers }) => {
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [role, setRole] = useState<string>("User");
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+    role: "User",
+  });
 
-  // ✅ Correctly type the event parameter
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Handle input changes for all fields
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
+
     const token = localStorage.getItem("token");
 
     try {
@@ -24,15 +36,20 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onClose, fetchUsers }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ username, password, role }),
+        body: JSON.stringify(formData),
       });
 
-      if (!response.ok) throw new Error("Failed to add user");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to add user");
+      }
 
-      fetchUsers(); // Refresh user list
-      onClose(); // Close modal
-    } catch (error) {
-      console.error("Error adding user:", error);
+      fetchUsers();
+      onClose();
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,50 +59,61 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onClose, fetchUsers }) => {
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">إضافة مستخدم</h5>
-            <button type="button" className="btn-close" onClick={onClose}></button>
+            <button type="button" className="btn-close" aria-label="إغلاق" onClick={onClose}></button>
           </div>
           <div className="modal-body">
+            {error && <div className="alert alert-danger">{error}</div>}
             <form onSubmit={handleSubmit}>
-              {/* Username Input */}
               <div className="mb-3">
                 <label className="form-label">اسم المستخدم</label>
                 <input
                   type="text"
                   className="form-control"
+                  name="username"
                   placeholder="أدخل اسم المستخدم"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={formData.username}
+                  onChange={handleChange}
                   required
+                  disabled={loading}
                 />
               </div>
 
-              {/* Password Input */}
               <div className="mb-3">
                 <label className="form-label">كلمة المرور</label>
                 <input
                   type="password"
                   className="form-control"
+                  name="password"
                   placeholder="أدخل كلمة المرور"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formData.password}
+                  onChange={handleChange}
                   required
+                  disabled={loading}
                 />
               </div>
 
-              {/* Role Selection */}
               <div className="mb-3">
                 <label className="form-label">الدور</label>
-                <select className="form-select" value={role} onChange={(e) => setRole(e.target.value)}>
+                <select 
+                  className="form-select" 
+                  name="role"
+                  value={formData.role} 
+                  onChange={handleChange}
+                  disabled={loading}
+                >
                   <option value="User">User</option>
                   <option value="Admin">Admin</option>
                   <option value="Editor">Editor</option>
                 </select>
               </div>
 
-              {/* Buttons */}
               <div className="modal-footer">
-                <button type="submit" className="btn btn-primary">إضافة</button>
-                <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                  {loading ? "جارٍ الإضافة..." : "إضافة"}
+                </button>
+                <button type="button" className="btn btn-secondary" onClick={onClose} disabled={loading}>
+                  إلغاء
+                </button>
               </div>
             </form>
           </div>

@@ -10,7 +10,7 @@ import { backupDatabase } from "./controllers/backupController";
 import emplyerRoutes from "./routes/emplyerRoutes";
 import serviceRoutes from "./routes/serviceRoutes";
 import { loginUser } from "./controllers/userController";
-
+import localisationRoutes from "./routes/localisationRoutes";
 dotenv.config();
 
 const app = express();
@@ -36,6 +36,7 @@ app.use('/api/categories',categoryRoutes);
 app.use('/api/employers',emplyerRoutes);
 app.use('/api/fournisseurs',fournisseurRoutes);
 app.use("/api/services", serviceRoutes);
+app.use("/api/localisations", localisationRoutes);
 
 app.get("/api/backup", verifyToken, backupDatabase);
 
