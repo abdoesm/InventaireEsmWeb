@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { BonEntreeModel, Entree } from "../models/bonEntreeModel";
+import { BonEntreeModel, Entree } from "../models/BonEntreeModel";
 
 const bonEntreeModel = new BonEntreeModel();
 

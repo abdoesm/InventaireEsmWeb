@@ -19,7 +19,24 @@ export interface Entree {
 
 export class BonEntreeModel {
 
+     async createBonEntree(bon_entree :BonEntree){
+        try{
+            const query = "INSERT INTO bon_entree (id_fournisseur, date, TVA,document_num) VALUES (?, ?, ?,?)";
+            const [result] = await pool.query(query,[
+                bon_entree.idFournisseur,
+                bon_entree.date,
+                bon_entree.tva,
+                bon_entree.documentNum
+            ]);
+            return (result as ResultSetHeader).affectedRows > 0;
+        }
+      
+        catch (error) {
+            console.error("Error creating bon entree ", error);
+            return false;
+        }
 
+    }
 
     async getAllBonEntrees() {
         const query = "SELECT id, id_fournisseur, date, TVA, document_num FROM bon_entree ORDER BY last_edited DESC;";
