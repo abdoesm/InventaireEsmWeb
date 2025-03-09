@@ -61,7 +61,7 @@ const AddEmployerForm: React.FC<AddEmployerFormProps> = ({ onClose, fetchEmploye
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="لاسم الاخير  للموظف"
+                  placeholder="الاسم الاخير  للموظف"
                   value={lname}
                   onChange={(e) => setlName(e.target.value)}
                   required

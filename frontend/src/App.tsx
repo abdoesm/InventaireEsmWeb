@@ -5,7 +5,7 @@ import Login from "./components/login/Login";
 import Dashboard from "./components/pages/Dashboard";
 import Setting from "./components/pages/Setting";
 import Users from "./components/pages/users/UsersView";
-import Articles from "./components/pages/articles/ArticlesView";
+import Articles from "./components/pages/articles/articlesView";
 import Categories from "./components/pages/categories/CategoryView";
 import Employers from "./components/pages/employers/EmployersView";
 

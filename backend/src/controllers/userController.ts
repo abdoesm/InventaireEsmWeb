@@ -6,6 +6,7 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
   try {
     const users = await UserModel.getUsers(); // ✅ Corrected method name
     res.status(200).json(users);
+  
   } catch (error) {
     const err = error as Error;
     res.status(500).json({ message: "Error fetching users", error: err.message });
