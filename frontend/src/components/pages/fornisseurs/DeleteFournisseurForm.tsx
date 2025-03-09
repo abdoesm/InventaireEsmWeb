@@ -1,32 +1,32 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
-import { Employer } from "../../../models/employerType";
+import { Fournisseur } from "../../../models/fournisseurTypes";
 
 // ✅ Define Props Interface
 
 
-interface DeleteEmployerFormProps {
+interface DeleteFournisseurFormProps {
   onClose: () => void;
-  employer: Employer;
-  fetchEmployers: () => void;
+  fournisseur: Fournisseur;
+  fetchFournisseurs: () => void;
 }
 
-const DeleteEmployerForm: React.FC<DeleteEmployerFormProps> = ({ onClose, employer, fetchEmployers }) => {
+const DeleteFournisseurForm: React.FC<DeleteFournisseurFormProps> = ({ onClose, fournisseur, fetchFournisseurs }) => {
   const handleDelete = async () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(`${Bk_End_SRVR}:5000/api/employers/${employer.id}`, {
+      const response = await fetch(`${Bk_End_SRVR}:5000/api/fournisseurs/${fournisseur.id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!response.ok) throw new Error("Failed to delete employer");
+      if (!response.ok) throw new Error("Failed to delete fournisseur");
 
-      fetchEmployers();
+      fetchFournisseurs();
       onClose();
     } catch (error) {
       if (error instanceof Error) {
@@ -42,11 +42,11 @@ const DeleteEmployerForm: React.FC<DeleteEmployerFormProps> = ({ onClose, employ
       <div className="modal-dialog modal-dialog-centered" role="document">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title text-danger">حذف المشغل</h5>
+            <h5 className="modal-title text-danger">حذف المورد</h5>
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
           <div className="modal-body">
-            <p>هل أنت متأكد أنك تريد حذف المشغل <strong>{employer.fname +" "+ employer.lname}</strong>؟</p>
+            <p>هل أنت متأكد أنك تريد حذف المورد <strong>{fournisseur.name}</strong>؟</p>
           </div>
           <div className="modal-footer">
             <button className="btn btn-danger" onClick={handleDelete}>
@@ -62,4 +62,4 @@ const DeleteEmployerForm: React.FC<DeleteEmployerFormProps> = ({ onClose, employ
   );
 };
 
-export default DeleteEmployerForm;
+export default DeleteFournisseurForm;

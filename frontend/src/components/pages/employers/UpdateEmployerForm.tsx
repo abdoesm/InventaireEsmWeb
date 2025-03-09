@@ -1,14 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
+import { Employer } from "../../../models/employerType";
 
 // ✅ Define Props Interface
-interface Employer {
-  id: number;
-  fname: string;
-  lname: string;
-  title: string;
-}
+
 
 interface UpdateEmployerFormProps {
   onClose: () => void;
@@ -17,9 +13,15 @@ interface UpdateEmployerFormProps {
 }
 
 const UpdateEmployerForm: React.FC<UpdateEmployerFormProps> = ({ onClose, employer, fetchEmployers }) => {
-  const [fname, setfName] = useState<string>(employer.fname);
-  const [lname, setlName] = useState<string>(employer.lname);
-  const [title, setTitle] = useState<string>(employer.title);
+  const [data, setFormData] = useState<Employer>(employer);
+  useEffect(() => {
+    setFormData(employer);
+  }, [employer]);
+  
+  const handleChange = ( e :React.ChangeEvent<HTMLInputElement>) =>{
+    setFormData({...data,[e.target.name]:e.target.value})
+  };
+
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +39,7 @@ const UpdateEmployerForm: React.FC<UpdateEmployerFormProps> = ({ onClose, employ
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ fname,lname, title }),
+        body: JSON.stringify(data),
       });
 
       if (!response.ok) {
@@ -72,8 +74,9 @@ const UpdateEmployerForm: React.FC<UpdateEmployerFormProps> = ({ onClose, employ
                 <input
                   type="text"
                   className="form-control"
-                  value={fname}
-                  onChange={(e) => setfName(e.target.value)}
+                  value={data.fname}
+                  name="fname"
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -82,8 +85,9 @@ const UpdateEmployerForm: React.FC<UpdateEmployerFormProps> = ({ onClose, employ
                 <input
                   type="text"
                   className="form-control"
-                  value={lname}
-                  onChange={(e) => setlName(e.target.value)}
+                  value={data.lname}
+                   name="lname"
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -94,8 +98,9 @@ const UpdateEmployerForm: React.FC<UpdateEmployerFormProps> = ({ onClose, employ
                 <input
                   type="text"
                   className="form-control"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  value={data.title}
+                   name="title"
+                  onChange={handleChange}
                   required
                 />
               </div>

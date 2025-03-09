@@ -25,7 +25,7 @@ export class EmployerModel {
     }
 
      async getAllEmployers(): Promise<Employer[]> {
-        const query = "SELECT id, firstname AS fname, lastname AS lname, title FROM employeur";
+        const query = "SELECT id, firstname AS fname, lastname AS lname, title FROM employeur ORDER BY id DESC";
         try {
             const [rows] = await pool.execute(query);
             return rows as Employer[];

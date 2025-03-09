@@ -1,13 +1,9 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
+import { User } from "../../../models/userType";
 
 // ✅ Define Props Interface
-interface User {
-  id: number;
-  username: string;
-  role: string;
-}
 
 interface UpdateUserFormProps {
   onClose: () => void;

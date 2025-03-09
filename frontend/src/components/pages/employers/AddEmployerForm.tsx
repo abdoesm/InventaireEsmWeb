@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
 interface AddEmployerFormProps {
@@ -8,10 +8,18 @@ interface AddEmployerFormProps {
 
 // Add Employer Form
 const AddEmployerForm: React.FC<AddEmployerFormProps> = ({ onClose, fetchEmployers }) => {
-  const [fname, setfName] = useState("");
-  const [lname, setlName] = useState("");
-  const [title, setTitle] = useState("");
 
+  const [data,setData]= useState({
+    id:"",
+    fname:"",
+    lname:"",
+    title:""
+  })
+
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setData({ ...data, [e.target.name]: e.target.value });
+  };
   const handleSubmit = async (e: React.FormEvent)  => {
     e.preventDefault();
     const token = localStorage.getItem("token");
@@ -23,7 +31,7 @@ const AddEmployerForm: React.FC<AddEmployerFormProps> = ({ onClose, fetchEmploye
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ fname, lname,title }),
+        body: JSON.stringify(data),
       });
 
       if (!response.ok) throw new Error("Failed to add employer");
@@ -47,12 +55,13 @@ const AddEmployerForm: React.FC<AddEmployerFormProps> = ({ onClose, fetchEmploye
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
                 <label className="form-label">الاسم الاول للموظف</label>
-                <input
+                 <input
                   type="text"
                   className="form-control"
-                  placeholder=">الاسم الاول للموظف"
-                  value={fname}
-                  onChange={(e) => setfName(e.target.value)}
+                  placeholder="الاسم الاول للموظف"
+                  name="fname"
+                  value={data.fname}
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -61,7 +70,7 @@ const AddEmployerForm: React.FC<AddEmployerFormProps> = ({ onClose, fetchEmploye
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="الاسم الاخير  للموظف"
+                  placeholder="لاسم الاخير  للموظف"
                   value={lname}
                   onChange={(e) => setlName(e.target.value)}
                   required
@@ -73,9 +82,10 @@ const AddEmployerForm: React.FC<AddEmployerFormProps> = ({ onClose, fetchEmploye
                   type="text"
                   className="form-control"
                   placeholder="أدخل المنصب"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
+                  name="title"
+                  value={data.title}
+                  onChange={handleChange}
+              
                 />
               </div>
               <div className="modal-footer">
