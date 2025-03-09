@@ -10,3 +10,4 @@ yarn-error.log
 logs/
 *.log
 *.log.*
+frontend/src/configs/conf.ts
