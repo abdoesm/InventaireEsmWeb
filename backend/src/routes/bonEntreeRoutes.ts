@@ -7,10 +7,7 @@ import {
     addEntree,
     getEntreesByBonEntreeId
 } from "../controllers/bonEntreeController";
-<<<<<<< HEAD
-=======
 import { verifyToken } from "../middleware/auth";
->>>>>>> de1aa7ae52aa018aef01a62aa5b79ec115c8ff93
 
 const router = Router();
 
