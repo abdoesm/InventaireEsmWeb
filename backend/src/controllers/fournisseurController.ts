@@ -15,6 +15,7 @@ export const getAllFournisseursNames = async (_req: Request, res: Response) => {
 
 export const getFournisseurs = async (_req: Request, res: Response) => {
     try {
+        console.log("eh her")
         const fournisseurs = await fournisseurModel.getFournisseurs();
         res.json(fournisseurs);
     } catch (error) {
