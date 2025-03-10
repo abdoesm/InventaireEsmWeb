@@ -6,7 +6,7 @@ import {
     deleteBonEntree,
     addEntree,
     getEntreesByBonEntreeId
-} from "../controllers/BonEntreeController";
+} from "../controllers/bonEntreeController";
 
 const router = Router();
 
