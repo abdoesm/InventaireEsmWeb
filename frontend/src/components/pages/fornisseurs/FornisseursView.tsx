@@ -137,8 +137,8 @@ const FournisseurView: React.FC = () => {
         </button>
       </div>
 
-      {showAddForm && selectedFournisseur && 
-      <AddFournisseurForm onClose={() => setShowAddForm(false)} fetchFournisseurs={fetchFournisseurs}  fournisseur={selectedFournisseur}/>}
+      {showAddForm && 
+      <AddFournisseurForm onClose={() => setShowAddForm(false)} fetchFournisseurs={fetchFournisseurs} />}
       {showUpdateForm && selectedFournisseur && (
         <UpdateFournisseurForm 
           onClose={() => setShowUpdateForm(false)} 

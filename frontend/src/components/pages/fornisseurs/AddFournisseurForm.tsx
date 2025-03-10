@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
-import { Fournisseur } from "../../../models/fournisseurTypes";
 
 type Props = {
   onClose: () => void;
   fetchFournisseurs: () => void;
-  fournisseur:Fournisseur
 };
 
 const stage1Colmuns=[
