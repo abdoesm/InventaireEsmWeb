@@ -139,17 +139,17 @@ const Employers: React.FC = () => {
 
       {showAddEmployerForm && <AddEmployerForm onClose={() => setShowAddEmployerForm(false)} fetchEmployers={fetchEmployers} />}
       {showUpdateEmployerForm && selectedEmployer && (
-  <UpdateEmployerForm 
-    onClose={() => setShowUpdateEmployerForm(false)} 
-    employer={{ 
-      id: selectedEmployer.id, 
-      fname: selectedEmployer.fname || "", 
-      lname: selectedEmployer.lname || "", 
-      title: selectedEmployer.title || "" 
-    }} 
-    fetchEmployers={fetchEmployers} 
-  />
-)}
+        <UpdateEmployerForm
+          onClose={() => setShowUpdateEmployerForm(false)}
+          employer={{
+            id: selectedEmployer.id,
+            fname: selectedEmployer.fname || "",
+            lname: selectedEmployer.lname || "",
+            title: selectedEmployer.title || ""
+          }}
+          fetchEmployers={fetchEmployers}
+        />
+      )}
 
 {showDeleteEmployerForm && selectedEmployer && (
   <DeleteEmployerForm 

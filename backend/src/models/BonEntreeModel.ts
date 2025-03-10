@@ -2,13 +2,13 @@ import { ResultSetHeader } from "mysql2";
 import pool from "../config/db";
 
 export interface BonEntree {
-    id?: number;
-    idFournisseur: number;
-    date: Date;
-    tva: number;
-    documentNum: string;
-}
-
+    id: number;
+    id_fournisseur: number;
+    date: string;
+    TVA: number;
+    document_num: string;
+  }
+  
 export interface Entree {
     id?: number;
     idArticle: number;
@@ -19,23 +19,25 @@ export interface Entree {
 
 export class BonEntreeModel {
 
-     async createBonEntree(bon_entree :BonEntree){
-        try{
-            const query = "INSERT INTO bon_entree (id_fournisseur, date, TVA,document_num) VALUES (?, ?, ?,?)";
-            const [result] = await pool.query(query,[
-                bon_entree.idFournisseur,
+    async createBonEntree(bon_entree: BonEntree): Promise<{ id: number } | null> {
+        try {
+            const query = "INSERT INTO bon_entree (id_fournisseur, date, TVA, document_num) VALUES (?, ?, ?, ?)";
+            const [result] = await pool.query<ResultSetHeader>(query, [
+                bon_entree.id_fournisseur,
                 bon_entree.date,
-                bon_entree.tva,
-                bon_entree.documentNum
+                bon_entree.TVA,
+                bon_entree.document_num
             ]);
-            return (result as ResultSetHeader).affectedRows > 0;
+    
+            if (result.affectedRows > 0) {
+                return { id: result.insertId }; // ✅ Return the newly created ID
+            } else {
+                return null;
+            }
+        } catch (error) {
+            console.error("Error creating bon entree", error);
+            return null;
         }
-      
-        catch (error) {
-            console.error("Error creating bon entree ", error);
-            return false;
-        }
-
     }
 
     async getAllBonEntrees() {
@@ -62,6 +64,9 @@ export class BonEntreeModel {
 
     async addEntree(entree: Entree): Promise<boolean> {
         try {
+            console.log("Entree Data:", entree);
+console.log("Executing Query with:", entree.idArticle, entree.quantity, entree.unitPrice, entree.idBe);
+
             const query = "INSERT INTO entree (id_article, quantity, unit_price, id_be) VALUES (?, ?, ?, ?)";
             const [result] = await pool.execute(query, [
                 entree.idArticle,

@@ -5,13 +5,15 @@ const bonEntreeModel = new BonEntreeModel();
 
 export const createBonEntree = async (req: Request, res: Response) => {
     try {
-        const success = await bonEntreeModel.createBonEntree(req.body);
-        if (success) {
-            res.status(201).json({ message: "Bon d'entrée added successfully." });
+        const bonEntree = await bonEntreeModel.createBonEntree(req.body);
+
+        if (bonEntree) {
+            res.status(201).json({ id: bonEntree.id, message: "Bon d'entrée added successfully." });
         } else {
             res.status(400).json({ error: "Failed to add bon d'entrée." });
         }
     } catch (error) {
+        console.error("Error in createBonEntree:", error);
         res.status(500).json({ error: "Internal server error." });
     }
 };
@@ -43,13 +45,17 @@ export const getBonEntreeById = async (req: Request, res: Response) => {
 export const addEntree = async (req: Request, res: Response) => {
     try {
         const entree: Entree = req.body;
+        console.log("Received entree data:", entree); // Debugging
         const success = await bonEntreeModel.addEntree(entree);
+        
         if (success) {
             res.status(201).json({ message: "Entree added successfully." });
         } else {
+            console.error("Database insertion failed.");
             res.status(400).json({ error: "Failed to add entree." });
         }
     } catch (error) {
+        console.error("Error in addEntree:", error);
         res.status(500).json({ error: "Internal server error." });
     }
 };
