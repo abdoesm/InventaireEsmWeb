@@ -1,8 +1,10 @@
 import React, { ChangeEvent } from 'react';
 
 interface InputProps {
-  label: string;
+  label?: string;
   name: string;
+  className?:string;
+  placeholder?:string;
   type?: string;
   value: any;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;

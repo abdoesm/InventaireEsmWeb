@@ -35,6 +35,11 @@ export class ArticleModel {
     }
 
     async getArticleById(id: number): Promise<Article | null> {
+        if (!id || isNaN(id)) {
+            console.error("Invalid article ID received:", id);
+            return null;
+        }
+    
         try {
             const query = "SELECT * FROM article WHERE id = ?";
             const [rows] = await pool.query(query, [id]);
@@ -44,6 +49,7 @@ export class ArticleModel {
             return null;
         }
     }
+    
 
     async addArticle(article: Article): Promise<boolean> {
         try {
@@ -174,8 +180,10 @@ export class ArticleModel {
         }
     }
 
-    async getTotalQuantitiesByArticle(): Promise<{ [articleId: number]: number }> {
+    async getTotalQuantitiesByArticle(): Promise<{ idArticle: number; totalQuantity: number }[]> {
         try {
+            console.log("getTotalQuantitiesByArticle model"); // Removed articleId
+    
             const query = `
                 SELECT a.id AS article_id,
                        COALESCE(SUM(e.quantity), 0) AS total_entree,
@@ -185,22 +193,25 @@ export class ArticleModel {
                 LEFT JOIN entree e ON e.id_article = a.id
                 LEFT JOIN sortie s ON s.id_article = a.id
                 LEFT JOIN retour r ON r.id_article = a.id
+                WHERE a.id IS NOT NULL  -- Ensure valid IDs
                 GROUP BY a.id
                 ORDER BY (total_entree - total_sortie + total_retour) DESC, a.id ASC;
             `;
+    
             const [rows] = await pool.query(query);
             const results = rows as { article_id: number; total_entree: number; total_sortie: number; total_retour: number }[];
-            const totalQuantities: { [articleId: number]: number } = {};
-
-            results.forEach((row) => {
-                totalQuantities[row.article_id] = row.total_entree - row.total_sortie + row.total_retour;
-            });
-
-            return totalQuantities;
+    
+            // Convert to array format
+            return results.map(row => ({
+                idArticle: row.article_id,
+                totalQuantity: row.total_entree - row.total_sortie + row.total_retour,
+            }));
+    
         } catch (error) {
             console.error("Error fetching total quantities by article:", error);
-            return {};
+            return [];
         }
     }
+    
 }
 

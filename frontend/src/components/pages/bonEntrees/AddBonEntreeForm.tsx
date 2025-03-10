@@ -15,6 +15,7 @@ export interface Article {
     description: string;
     idCategory: number;
     minQuantity: number;
+    totalQuantity?: number;
 }
 
 export interface Entree {
@@ -48,31 +49,52 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
     const filteredArticles = articles.filter(article =>
         article.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
     useEffect(() => {
-        const fetchArticles = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                if (!token) {
-                    setError("No token found. Please log in.");
-                    return;
-                }
-
-                const response = await fetch(`${Bk_End_SRVR}:5000/api/articles`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-
-                if (!response.ok) throw new Error("Failed to fetch articles.");
-
-                const data: Article[] = await response.json();
-                setArticles(data);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : "An unknown error occurred.");
+        const fetchArticlesWithQuantities = async () => {
+          try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+              setError("No token found. Please log in.");
+              return;
             }
+    
+            const [articlesRes, quantitiesRes] = await Promise.all([
+              fetch(`${Bk_End_SRVR}:5000/api/articles`, {
+                headers: { Authorization: `Bearer ${token}` },
+              }),
+              fetch(`${Bk_End_SRVR}:5000/api/articles/quantities`, {
+                headers: { Authorization: `Bearer ${token}` },
+              }),
+            ]);
+    
+            if (!articlesRes.ok || !quantitiesRes.ok)
+              throw new Error("Failed to fetch data.");
+    
+            const articlesData: Article[] = await articlesRes.json();
+            const quantitiesData: { idArticle: number; totalQuantity: number }[] =
+              await quantitiesRes.json();
+    
+            // Merge quantities with articles
+            const updatedArticles = articlesData.map((article) => ({
+              ...article,
+              totalQuantity:
+                quantitiesData.find((q) => q.idArticle === article.id)?.totalQuantity || 0,
+            }));
+    
+            setArticles(updatedArticles);
+          } catch (err) {
+            if (err instanceof Error) {
+              setError(err.message);
+            } else {
+              setError("An unknown error occurred.");
+            }
+          }
         };
+    
+        fetchArticlesWithQuantities();
+      }, []);
 
-        fetchArticles();
-    }, []);
+
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>): void {
         setData({ ...data, [e.target.name]: e.target.value });
@@ -80,13 +102,16 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
 
     function handleArticleSelect(article: Article) {
         setSelectedEntrees((prevEntrees) => {
-            const exists = prevEntrees.some((entree) => entree.idArticle === article.id);
-            return exists
-                ? prevEntrees.filter((entree) => entree.idArticle !== article.id)
-                : [...prevEntrees, { idArticle: article.id!, quantity: 1, unitPrice: 0 }];
+            const newEntries = new Map(prevEntrees.map(e => [e.idArticle, e]));
+            if (newEntries.has(article.id!)) {
+                newEntries.delete(article.id!);
+            } else {
+                newEntries.set(article.id!, { idArticle: article.id!, quantity: 1, unitPrice: 0 });
+            }
+            return Array.from(newEntries.values());
         });
     }
-
+    
     function handleEntreeChange(index: number, field: keyof Entree, value: number) {
         setSelectedEntrees((prevEntrees) => {
             const updatedEntrees = [...prevEntrees];
@@ -157,6 +182,14 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
                             <Input label="التاريخ" type="date" name="date" value={data.date} onChange={handleChange} />
                             <Input label="رقم المورد" type="number" name="id_fournisseur" value={data.id_fournisseur} onChange={handleChange} />
                             <Input label="رقم الوثيقة" type="text" name="document_num" value={data.document_num} onChange={handleChange} />
+                            <label className="form-label">حدد المقالات لإضافتها</label>
+                            <input
+                                type="text"
+                                className="form-control mb-2"
+                                placeholder="ابحث عن المقال..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
                             <ArticleSelection articles={filteredArticles} selectedEntrees={selectedEntrees} onArticleSelect={handleArticleSelect} />
                             <SelectedArticlesTable selectedEntrees={selectedEntrees} articles={articles} onEntreeChange={handleEntreeChange} />
 
@@ -175,17 +208,29 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
 
 
 // Article Selection Component
-const ArticleSelection: React.FC<{ articles: Article[]; selectedEntrees: Entree[]; onArticleSelect: (article: Article) => void }> = ({ articles, selectedEntrees, onArticleSelect }) => (
-    <div className="mb-3">
-        <label className="form-label">حدد المقالات لإضافتها</label>
-        <ul className="list-group">
-            {articles.map(article => (
-                <li key={article.id} className="list-group-item">
-                    {article.name}
-                    <input type="checkbox" checked={selectedEntrees.some(e => e.idArticle === article.id)} onChange={() => onArticleSelect(article)} />
-                </li>
-            ))}
-        </ul>
+const ArticleSelection: React.FC<{ articles: Article[]; selectedEntrees: Entree[];
+     onArticleSelect: (article: Article) => void }> = ({ articles, selectedEntrees, onArticleSelect }) => (
+    <div className="mb-3" style={{ maxHeight: "250px", overflowY: "auto", border: "1px solid #ddd", borderRadius: "5px" }}>
+       
+       <ul className="list-group">
+                  {articles.map((article) => (
+                    <li
+                      key={article.id}
+                      className="list-group-item d-flex justify-content-between align-items-center"
+                    >
+                      <span>
+                        {article.name} | {article.unite} | الكمية:{" "}
+                        <strong>{article.totalQuantity}</strong> | الحد الأدنى:{" "}
+                        {article.minQuantity}
+                      </span>
+                      <input
+                        type="checkbox"
+                        checked={selectedEntrees.some((e) => e.idArticle === article.id)}
+                        onChange={() => onArticleSelect(article)}
+                      />
+                    </li>
+                  ))}
+                </ul>
     </div>
 );
 
@@ -201,7 +246,7 @@ const SelectedArticlesTable: React.FC<{
             {selectedEntrees.length === 0 ? (
                 <p className="text-muted">لم يتم تحديد أي مقالات.</p>
             ) : (
-                <div style={{ maxHeight: "250px", overflowY: "auto", border: "1px solid #ddd", borderRadius: "5px" }}>
+                <div >
                     <table className="table table-striped">
                         <thead className="table-light">
                             <tr>

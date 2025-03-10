@@ -24,17 +24,30 @@ export const getArticles = async (_req: Request, res: Response) => {
 
 export const getArticleById = async (req: Request, res: Response) => {
     try {
-        const id = parseInt(req.params.id);
-        const article = await articleModel.getArticleById(id);
-        if (article) {
-            res.json(article);
-        } else {
-            res.status(404).json({ error: "Article not found." });
+        const id = Number(req.params.id);
+        
+        if (isNaN(id)) {
+            console.warn(`Invalid article ID received: ${req.params.id}`);
+            
+            res.status(400).json({ error: "Invalid article ID" }); // ✅ Stops execution
         }
+
+        const article = await articleModel.getArticleById(id);
+
+        if (!article) {
+           res.status(404).json({ error: "Article not found" }); // ✅ Stops execution
+        }
+
+        res.json(article); // ✅ Only one response sent
     } catch (error) {
-        res.status(500).json({ error: "Failed to retrieve article." });
+        console.error(`Error fetching article with ID ${req.params.id}:`, error);
+        
+        if (!res.headersSent) {  // ✅ Prevents duplicate responses
+            res.status(500).json({ error: "Internal server error" });
+        }
     }
 };
+
 
 export const addArticle = async (req: Request, res: Response) => {
     try {
@@ -112,9 +125,11 @@ export const getTotalQuantityByArticleId = async (req: Request, res: Response) =
 
 export const getTotalQuantitiesByArticle = async (_req: Request, res: Response) => {
     try {
+        console.log("getTotalQuantitiesByArticle controller")
+        
         const quantities = await articleModel.getTotalQuantitiesByArticle();
         res.json(quantities);
     } catch (error) {
         res.status(500).json({ error: "Failed to retrieve total quantities." });
     }
-};
+}
