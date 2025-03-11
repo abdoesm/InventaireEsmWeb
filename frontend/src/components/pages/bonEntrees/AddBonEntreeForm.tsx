@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import Input from "../../common/Input";
+import FormGroup from "../../common/FormGroup";
+import SearchInput from "../../common/SearchInput";
 
 type Props = {
     onClose: () => void;
@@ -209,25 +211,37 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
             setError(err instanceof Error ? err.message : "An unknown error occurred.");
         }
     }
-
     return (
-        <div className="modal fade show d-block" tabIndex={-1} role="dialog">
+        <div className="modal fade show d-block" tabIndex={-1} role="dialog" aria-hidden="true">
             <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div className="modal-content">
+                    {/* Modal Header */}
                     <div className="modal-header">
-                        <h5 className="modal-title">إضافة بون دخول جديد</h5>
-                        <button type="button" className="btn-close" onClick={onClose}></button>
+                        <h5 className="modal-title">إضافة وصل استلام  جديد</h5>
+                        <button type="button" className="btn-close" aria-label="إغلاق" onClick={onClose}></button>
                     </div>
-
-                    <div className="modal-body">
+    
+                    {/* Scrollable Modal Body */}
+                    <div className="modal-body" style={{ maxHeight: "70vh", overflowY: "auto" }}>
                         {error && <p className="text-danger">{error}</p>}
-                        <form onSubmit={handleSubmit}>
-                            <Input label="التاريخ" type="date" name="date" value={data.date} onChange={handleChange} />
-                            <div className="form-group">
-                                <label className="form-label">المورد</label>
-                                <input
-                                    type="text"
-                                    className="form-control mb-2"
+    
+                        <form >
+                            {/* Two-column layout */}
+                            <div className="row">
+                                {/* Date Input */}
+                                <div className="col-md-6">
+                                    <Input label="التاريخ" type="date" name="date" value={data.date} onChange={handleChange} />
+                                </div>
+    
+                                {/* Document Number */}
+                                <div className="col-md-6">
+                                    <Input label="رقم الوثيقة" type="text" name="document_num" value={data.document_num} onChange={handleChange} />
+                                </div>
+                            </div>
+    
+                            {/* Supplier Selection */}
+                            <FormGroup label="المورد">
+                                <SearchInput
                                     placeholder="ابحث عن المورد..."
                                     value={fournisseurSearchTerm}
                                     onChange={(e) => setFournisseurSearchTerm(e.target.value)}
@@ -237,29 +251,43 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
                                     selectedFournisseur={selectedFournisseur}
                                     onFournisseurSelect={handleFournisseurSelect}
                                 />
-                            </div>
-                            <Input label="رقم الوثيقة" type="text" name="document_num" value={data.document_num} onChange={handleChange} />
-                            <label className="form-label">حدد المقالات لإضافتها</label>
-                            <input
-                                type="text"
-                                className="form-control mb-2"
-                                placeholder="ابحث عن المقال..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
+                            </FormGroup>
+    
+                            {/* Article Selection */}
+                            <FormGroup label="حدد المقالات لإضافتها">
+                                <SearchInput
+                                    placeholder="ابحث عن المقال..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                                <ArticleSelection
+                                    articles={filteredArticles}
+                                    selectedEntrees={selectedEntrees}
+                                    onArticleSelect={handleArticleSelect}
+                                />
+                            </FormGroup>
+    
+                            {/* Selected Articles Table */}
+                            <SelectedArticlesTable
+                                selectedEntrees={selectedEntrees}
+                                articles={articles}
+                                onEntreeChange={handleEntreeChange}
                             />
-                            <ArticleSelection articles={filteredArticles} selectedEntrees={selectedEntrees} onArticleSelect={handleArticleSelect} />
-                            <SelectedArticlesTable selectedEntrees={selectedEntrees} articles={articles} onEntreeChange={handleEntreeChange} />
-
-                            <div className="modal-footer">
-                                <button type="submit" className="btn btn-primary">إضافة</button>
-                                <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
-                            </div>
+                                {/* Fixed Modal Footer */}
+                    <div className="modal-footer">
+                        <button type="submit"  className="btn btn-primary">إضافة</button>
+                        <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
+                    </div>
                         </form>
                     </div>
+    
+                
                 </div>
             </div>
         </div>
     );
+    
+    
 };
 
 // Fournisseur Selection Component
@@ -286,83 +314,123 @@ const FournisseurSelection: React.FC<{
 );
 
 // Article Selection Component
-const ArticleSelection: React.FC<{ articles: Article[]; selectedEntrees: Entree[]; onArticleSelect: (article: Article) => void }> = ({ articles, selectedEntrees, onArticleSelect }) => (
+const ArticleSelection: React.FC<{ 
+    articles: Article[]; 
+    selectedEntrees: Entree[]; 
+    onArticleSelect: (article: Article) => void 
+}> = ({ articles, selectedEntrees, onArticleSelect }) => (
     <div className="mb-3" style={{ maxHeight: "250px", overflowY: "auto", border: "1px solid #ddd", borderRadius: "5px" }}>
         <ul className="list-group">
-            {articles.map((article) => (
-                <li
-                    key={article.id}
-                    className="list-group-item d-flex justify-content-between align-items-center"
-                >
-                    <span>
-                        {article.name} | {article.unite} | الكمية:{" "}
-                        <strong>{article.totalQuantity}</strong> | الحد الأدنى:{" "}
-                        {article.minQuantity}
-                    </span>
-                    <input
-                        type="checkbox"
-                        checked={selectedEntrees.some((e) => e.idArticle === article.id)}
-                        onChange={() => onArticleSelect(article)}
-                    />
-                </li>
-            ))}
+            {articles.map((article) => {
+                const isSelected = selectedEntrees.some((e) => e.idArticle === article.id);
+
+                return (
+                    <li
+                        key={article.id}
+                        className={`list-group-item d-flex justify-content-between align-items-center ${isSelected ? "bg-light" : ""}`}
+                        style={{ cursor: "pointer" }}
+                        onClick={() => onArticleSelect(article)} // Allow clicking anywhere
+                    >
+                        <span className="d-flex flex-wrap w-100 justify-content-between">
+                            <strong>{article.name}</strong>
+                            <small className="text-muted">{article.unite}</small>
+                            <span>الكمية: <strong>{article.totalQuantity}</strong></span>
+                        </span>
+
+                        <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => onArticleSelect(article)}
+                            onClick={(e) => e.stopPropagation()} // Prevent parent click
+                        />
+                    </li>
+                );
+            })}
         </ul>
     </div>
 );
+
 
 const SelectedArticlesTable: React.FC<{
     selectedEntrees: Entree[];
     articles: Article[];
     onEntreeChange: (index: number, field: keyof Entree, value: number) => void;
 }> = ({ selectedEntrees, articles, onEntreeChange }) => {
+    // 🔹 Optimize lookup performance using a Map
+    const articleMap = new Map(articles.map(article => [article.id, article]));
+
+    // 🔹 Calculate totals
+    const totalHT = selectedEntrees.reduce((sum, entree) => sum + entree.quantity * entree.unitPrice, 0);
+    const tvaAmount = totalHT * 0.19; // Assuming 19% VAT
+    const totalTTC = totalHT + tvaAmount;
+
     return (
         <div className="mb-3">
             <h5>المقالات المحددة</h5>
             {selectedEntrees.length === 0 ? (
                 <p className="text-muted">لم يتم تحديد أي مقالات.</p>
             ) : (
-                <div>
-                    <table className="table table-striped">
-                        <thead className="table-light">
-                            <tr>
-                                <th>المقال</th>
-                                <th>الكمية</th>
-                                <th>سعر الوحدة</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {selectedEntrees.map((entree, index) => {
-                                const article = articles.find(a => a.id === entree.idArticle);
-                                return (
-                                    <tr key={entree.idArticle}>
-                                        <td>{article?.name || "غير معروف"}</td>
-                                        <td>
-                                            <input
-                                                type="number"
-                                                className="form-control"
-                                                value={entree.quantity}
-                                                min="1"
-                                                onChange={(e) => onEntreeChange(index, "quantity", parseFloat(e.target.value) || 1)}
-                                            />
-                                        </td>
-                                        <td>
-                                            <input
-                                                type="number"
-                                                className="form-control"
-                                                value={entree.unitPrice}
-                                                min="0"
-                                                onChange={(e) => onEntreeChange(index, "unitPrice", parseFloat(e.target.value) || 0)}
-                                            />
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                <div style={{ overflowX: "auto" }}> {/* 🔹 Handle overflow */}
+                <table className="table table-striped text-center">
+    <thead className="table-light">
+        <tr>
+            <th style={{ width: "30%" }}>المقال</th>
+            <th style={{ width: "15%" }}>الكمية</th>
+            <th style={{ width: "15%" }}>سعر الوحدة</th>
+            <th style={{ width: "20%" }}>المبلغ HT</th>
+        </tr>
+    </thead>
+    <tbody>
+        {selectedEntrees.map((entree, index) => {
+            const article = articleMap.get(entree.idArticle);
+            const montantHT = entree.quantity * entree.unitPrice;
+
+            return (
+                <tr key={entree.idArticle}>
+                    <td>{article?.name || "غير معروف"}</td>
+                    <td>
+                        <input
+                            type="number"
+                            className="form-control text-center"
+                            value={entree.quantity}
+                            min="1"
+                            onChange={(e) =>
+                                onEntreeChange(index, "quantity", Math.max(1, parseFloat(e.target.value) || 1))
+                            }
+                        />
+                    </td>
+                    <td>
+                        <input
+                            type="number"
+                            className="form-control text-center"
+                            value={entree.unitPrice}
+                            min="0"
+                            step="any"
+                            onChange={(e) =>
+                                onEntreeChange(index, "unitPrice", Math.max(0, parseFloat(e.target.value) || 0))
+                            }
+                        />
+                    </td>
+                    <td>{montantHT.toFixed(2)} DA</td>
+                </tr>
+            );
+        })}
+    </tbody>
+</table>
+
+
+                    {/* 🔹 Totals Section */}
+                    <div className="text-end mt-3">
+                        <p><strong>المبلغ HT:</strong> {totalHT.toFixed(2)} DA</p>
+                        <p><strong>مبلغ TVA (19%):</strong> {tvaAmount.toFixed(2)} DA</p>
+                        <h5><strong>المجموع TTC:</strong> {totalTTC.toFixed(2)} DA</h5>
+                    </div>
                 </div>
             )}
         </div>
     );
 };
+
+
 
 export default AddBonEntreeForm;
