@@ -2,33 +2,24 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaBoxOpen, FaFileInvoice, FaClipboardList, FaMapMarkerAlt, FaUsers,
-  FaCog, FaSignOutAlt, FaWarehouse, FaTruck, FaBoxes, FaClipboardCheck, FaCubes
+  FaCog, FaWarehouse, FaTruck, FaBoxes, FaClipboardCheck, FaCubes
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../assets/css/Dashboard.css";
+
+import Navbar from "../Navbar";
+import SidebarMenu from "../SidebarMenu";
+import Footer from "../Footer";
 
 interface DashboardProps {
   logout: () => void;
   userRole: string;
 }
 
-interface MenuItem {
-  path: string;
-  label: string;
-  icon: React.ReactNode;
-  roles: string[];
-  className: string;
-}
-
 const Dashboard: React.FC<DashboardProps> = ({ logout, userRole }) => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
-
-  const menuItems: MenuItem[] = [
+  const menuItems = [
     { path: "/etat-stock", label: "حالة المخزون", icon: <FaBoxOpen />, roles: ["Admin", "User"], className: "etat-stock" },
     { path: "/bonentrees", label: "وصول الاستلام", icon: <FaFileInvoice />, roles: ["Admin", "User"], className: "bon-entrees" },
     { path: "/bon-sorties", label: "وصول الإخراج", icon: <FaClipboardList />, roles: ["Admin"], className: "bon-sorties" },
@@ -47,47 +38,14 @@ const Dashboard: React.FC<DashboardProps> = ({ logout, userRole }) => {
 
   return (
     <div className="dashboard-container">
-      {/* Navbar */}
-      <nav className="navbar navbar-dark bg-dark mb-3 px-3 d-flex justify-content-between">
-        <h2 className="navbar-brand text-white">مرحبا بك في لوحة التحكم</h2>
-        <span className="text-light">🛠️ دور المستخدم: {userRole}</span>
-      </nav>
-
+      <Navbar userRole={userRole} />
       <div className="dashboard-content">
-        {/* Sidebar */}
-        <aside className="sidebar">
-          <div className="menu-list">
-            {filteredMenu.map(({ path, className, label, icon }) => (
-              <button
-                key={path}
-                onClick={() => navigate(path)}
-                className={`menu-item ${className}`}
-              >
-                {icon} <span className="menu-text">{label}</span>
-              </button>
-            ))}
-          </div>
-        </aside>
-
-        {/* Main Content */}
+        <SidebarMenu menuItems={filteredMenu} />
         <main className="main-content">
-          {/* Your dashboard main content here */}
+          {/* Dashboard Content */}
         </main>
       </div>
-
-      {/* Footer */}
-    {/* Footer */}
-<footer>
-  <div className="footer-buttons">
-    <button onClick={handleLogout} className="btn btn-danger btn-sm">
-      <FaSignOutAlt className="me-1" /> تسجيل الخروج
-    </button>
-    <button onClick={() => navigate("/settings")} className="btn btn-secondary btn-sm">
-      <FaCog className="me-1" /> الإعدادات
-    </button>
-  </div>
-</footer>
-
+      <Footer logout={() => { logout(); navigate("/"); }} />
     </div>
   );
 };
