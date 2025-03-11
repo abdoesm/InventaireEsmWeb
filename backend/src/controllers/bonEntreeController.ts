@@ -5,6 +5,7 @@ const bonEntreeModel = new BonEntreeModel();
 
 export const createBonEntree = async (req: Request, res: Response) => {
     try {
+        console.log("createBonEntree from controler"+req.body)
         const bonEntree = await bonEntreeModel.createBonEntree(req.body);
 
         if (bonEntree) {

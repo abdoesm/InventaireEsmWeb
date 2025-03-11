@@ -30,7 +30,7 @@ const Dashboard: React.FC<DashboardProps> = ({ logout, userRole }) => {
 
   const menuItems: MenuItem[] = [
     { path: "/etat-stock", label: "حالة المخزون", icon: <FaBoxOpen />, roles: ["Admin", "User"], className: "etat-stock" },
-    { path: "/bon-entrees", label: "وصول الاستلام", icon: <FaFileInvoice />, roles: ["Admin", "User"], className: "bon-entrees" },
+    { path: "/bonentrees", label: "وصول الاستلام", icon: <FaFileInvoice />, roles: ["Admin", "User"], className: "bon-entrees" },
     { path: "/bon-sorties", label: "وصول الإخراج", icon: <FaClipboardList />, roles: ["Admin"], className: "bon-sorties" },
     { path: "/localisations", label: "الاماكن", icon: <FaMapMarkerAlt />, roles: ["Admin", "User"], className: "location" },
     { path: "/adjustment", label: "تعديل المخزون", icon: <FaClipboardCheck />, roles: ["Admin"], className: "adjustment" },

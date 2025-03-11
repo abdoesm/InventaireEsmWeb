@@ -21,6 +21,7 @@ export class BonEntreeModel {
 
     async createBonEntree(bon_entree: BonEntree): Promise<{ id: number } | null> {
         try {
+            console.log("createBonEntree from model"+bon_entree)
             const query = "INSERT INTO bon_entree (id_fournisseur, date, TVA, document_num) VALUES (?, ?, ?, ?)";
             const [result] = await pool.query<ResultSetHeader>(query, [
                 bon_entree.id_fournisseur,
