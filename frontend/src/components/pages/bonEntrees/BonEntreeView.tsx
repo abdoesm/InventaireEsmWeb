@@ -5,6 +5,7 @@ import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import AddBonEntreeForm from "./AddBonEntreeForm";
+import UpdateBonEntreeForm from "./UpdateBonEntreeForm";
 
 interface BonEntree {
   id: number;
@@ -17,7 +18,9 @@ interface BonEntree {
 const BonEntreeView: React.FC = () => {
   const navigate = useNavigate();
   const [bonEntrees, setBonEntrees] = useState<BonEntree[]>([]);
-    const [showAddBonEntreeForm, setShowAddBonEntreeForm] = useState<boolean>(false);
+  const [showAddBonEntreeForm, setShowAddBonEntreeForm] = useState<boolean>(false);
+  const [showUpdateBonEntreeForm, setShowUpdateBonEntreeForm] = useState<boolean>(false);
+  const [selectedBonEntree, setSelectedBonEntree] = useState<BonEntree | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,14 +40,9 @@ const BonEntreeView: React.FC = () => {
       if (!response.ok) throw new Error("Failed to fetch bon d'entrée.");
 
       const data: BonEntree[] = await response.json();
-      console.log(data)
       setBonEntrees(data);
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("An unknown error occurred.");
-      }
+      setError(err instanceof Error ? err.message : "An unknown error occurred.");
     } finally {
       setLoading(false);
     }
@@ -53,6 +51,11 @@ const BonEntreeView: React.FC = () => {
   useEffect(() => {
     fetchBonEntrees();
   }, []);
+
+  const handleEdit = (bonEntree: BonEntree) => {
+    setSelectedBonEntree(bonEntree);
+    setShowUpdateBonEntreeForm(true);
+  };
 
   const columns = [
     { name: "المعرف", selector: (row: BonEntree) => row.id, sortable: true },
@@ -63,7 +66,7 @@ const BonEntreeView: React.FC = () => {
     {
       name: "تعديل",
       cell: (row: BonEntree) => (
-        <button className="btn btn-warning btn-sm">
+        <button className="btn btn-warning btn-sm" onClick={() => handleEdit(row)}>
           <FaEdit />
         </button>
       ),
@@ -106,11 +109,22 @@ const BonEntreeView: React.FC = () => {
       )}
 
       <div className="d-flex justify-content-center mt-3">
-        <button className="btn btn-success"  onClick={() => setShowAddBonEntreeForm(true)}>
+        <button className="btn btn-success" onClick={() => setShowAddBonEntreeForm(true)}>
           <FaPlus className="me-2" /> إضافة بون دخول
         </button>
       </div>
-      {showAddBonEntreeForm && <AddBonEntreeForm onClose={() => setShowAddBonEntreeForm(false)} fetchBonEntrees={fetchBonEntrees} />}
+
+      {showAddBonEntreeForm && (
+        <AddBonEntreeForm onClose={() => setShowAddBonEntreeForm(false)} fetchBonEntrees={fetchBonEntrees} />
+      )}
+
+      {showUpdateBonEntreeForm && selectedBonEntree && (
+        <UpdateBonEntreeForm
+          onClose={() => setShowUpdateBonEntreeForm(false)}
+          fetchBonEntrees={fetchBonEntrees}
+          bonEntreeId={selectedBonEntree.id}
+        />
+      )}
     </div>
   );
 };
