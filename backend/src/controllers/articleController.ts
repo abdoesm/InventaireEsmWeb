@@ -25,28 +25,30 @@ export const getArticles = async (_req: Request, res: Response) => {
 export const getArticleById = async (req: Request, res: Response) => {
     try {
         const id = Number(req.params.id);
-        
+        console.log("here getArticleById from controller with id ", id);
+
         if (isNaN(id)) {
             console.warn(`Invalid article ID received: ${req.params.id}`);
-            
-            res.status(400).json({ error: "Invalid article ID" }); // ✅ Stops execution
+             res.status(400).json({ error: "Invalid article ID" }); // ✅ Return immediately
         }
 
         const article = await articleModel.getArticleById(id);
+        console.log("Fetched article:", article); // ✅ Add this log
 
         if (!article) {
-           res.status(404).json({ error: "Article not found" }); // ✅ Stops execution
+            res.status(404).json({ error: "Article not found" }); // ✅ Return immediately
         }
 
-        res.json(article); // ✅ Only one response sent
+         res.json(article); // ✅ Explicit return
     } catch (error) {
         console.error(`Error fetching article with ID ${req.params.id}:`, error);
-        
+
         if (!res.headersSent) {  // ✅ Prevents duplicate responses
             res.status(500).json({ error: "Internal server error" });
         }
     }
 };
+
 
 
 export const addArticle = async (req: Request, res: Response) => {
