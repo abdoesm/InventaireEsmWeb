@@ -8,6 +8,7 @@ import DeleteUserForm from "./DeleteUserForm";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import { User } from "../../../models/userType";
+import ActionButtons from "../../common/ActionButtons";
 
 
 
@@ -70,36 +71,22 @@ const Users: React.FC = () => {
       sortable: true,
     },
     {
-      name: "تعديل",
+      name: "الإجراءات",
       cell: (row: User) => (
-        <button
-          onClick={() => {
-            setSelectedUser(row);
+        <ActionButtons
+          item={row}
+          onEdit={(item) => {
+            setSelectedUser(item);
             setShowUpdateUserForm(true);
           }}
-          className="btn btn-warning btn-sm"
-        >
-          <FaEdit />
-        </button>
-      ),
-      ignoreRowClick: true,
-    
-    },
-    {
-      name: "حذف",
-      cell: (row: User) => (
-        <button
-          onClick={() => {
-            setSelectedUser(row);
+          onDelete={(item) => {
+            setSelectedUser(item);
             setShowDeleteUserForm(true);
           }}
-          className="btn btn-danger btn-sm"
-        >
-          <FaTrash />
-        </button>
+          onAddition={() => setShowAddUserForm(true)}
+        />
       ),
       ignoreRowClick: true,
-      
     },
   ];
 

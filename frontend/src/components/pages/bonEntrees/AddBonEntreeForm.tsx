@@ -31,13 +31,7 @@ export interface Entree {
     unitPrice: number;
 }
 
-interface BonEntree {
-    id: number;
-    id_fournisseur: number;
-    date: string;
-    TVA: number;
-    document_num: string;
-}
+
 
 const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
     const [data, setData] = useState({
@@ -165,52 +159,6 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
         });
     }
 
-    async function handleSubmit(e: React.FormEvent) {
-        e.preventDefault();
-
-        if (!data.date || !data.id_fournisseur) {
-            setError("جميع الحقول مطلوبة.");
-            return;
-        }
-
-        if (selectedEntrees.length === 0) {
-            setError("يجب تحديد عنصر واحد على الأقل.");
-            return;
-        }
-
-        try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                setError("No token found. Please log in.");
-                return;
-            }
-
-            const bonEntreeResponse = await fetch(`${Bk_End_SRVR}:5000/api/bonentrees`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                body: JSON.stringify(data),
-            });
-
-            if (!bonEntreeResponse.ok) throw new Error("Failed to create Bon Entree.");
-
-            const bonEntree: BonEntree = await bonEntreeResponse.json();
-
-            for (const entree of selectedEntrees) {
-                const response = await fetch(`${Bk_End_SRVR}:5000/api/bonentrees/entree`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                    body: JSON.stringify({ ...entree, idBe: bonEntree.id }),
-                });
-
-                if (!response.ok) console.error("Failed to create Entree:", await response.text());
-            }
-
-            fetchBonEntrees();
-            onClose();
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "An unknown error occurred.");
-        }
-    }
     return (
         <div className="modal fade show d-block" tabIndex={-1} role="dialog" aria-hidden="true">
             <div className="modal-dialog modal-dialog-centered modal-lg" role="document">

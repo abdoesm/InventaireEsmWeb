@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaHome, FaUserPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { FaHome, FaUserPlus } from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import AddEmployerForm from "./AddEmployerForm";
 import UpdateEmployerForm from "./UpdateEmployerForm";
@@ -8,6 +8,7 @@ import DeleteEmployerForm from "./DeleteEmployerForm";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import { Employer } from "../../../models/employerType";
+import ActionButtons from "../../common/ActionButtons";
 
 
 const Employers: React.FC = () => {
@@ -75,32 +76,23 @@ const Employers: React.FC = () => {
       sortable: true,
     },
     {
-      name: "تعديل",
+      name: "الإجراءات",
       cell: (row: Employer) => (
-        <button
-          onClick={() => {
-            setSelectedEmployer(row);
+        <ActionButtons 
+          item={row} 
+          onEdit={(employer) => {
+            setSelectedEmployer(employer);
             setShowUpdateEmployerForm(true);
-          }}
-          className="btn btn-warning btn-sm"
-        >
-          <FaEdit />
-        </button>
-      ),
-      ignoreRowClick: true,
-    },
-    {
-      name: "حذف",
-      cell: (row: Employer) => (
-        <button
-          onClick={() => {
-            setSelectedEmployer(row);
+          }} 
+          onDelete={(employer) => {
+            setSelectedEmployer(employer);
             setShowDeleteEmployerForm(true);
-          }}
-          className="btn btn-danger btn-sm"
-        >
-          <FaTrash />
-        </button>
+          }} 
+          onAddition={(employer) => {
+            setSelectedEmployer(employer);
+            setShowAddEmployerForm(true);
+          }} 
+        />
       ),
       ignoreRowClick: true,
     },
@@ -131,11 +123,8 @@ const Employers: React.FC = () => {
         />
       )}
 
-      <div className="d-flex justify-content-center mt-3">
-        <button className="btn btn-success" onClick={() => setShowAddEmployerForm(true)}>
-          <FaUserPlus className="me-2" /> إضافة موظف
-        </button>
-      </div>
+  
+
 
       {showAddEmployerForm && <AddEmployerForm onClose={() => setShowAddEmployerForm(false)} fetchEmployers={fetchEmployers} />}
       {showUpdateEmployerForm && selectedEmployer && (

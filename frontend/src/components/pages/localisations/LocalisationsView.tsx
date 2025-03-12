@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaHome, FaMapMarkerAlt, FaEdit, FaTrash } from "react-icons/fa";
+import { FaHome, FaMapMarkerAlt } from "react-icons/fa";
 import DataTable, { TableColumn } from "react-data-table-component";
 import AddLocalisationForm from "./AddLocalisationForm";
 import UpdateLocalisationForm from "./UpdateLocalisationForm";
 import DeleteLocalisationForm from "./DeleteLocalisationForm";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import { Localisation } from "../../../models/localisationType";
 import { Service } from "../../../models/serviceTypes";
+import ActionButtons from "../../common/ActionButtons";
 
 const LocalisationsView: React.FC = () => {
   const navigate = useNavigate();
@@ -38,7 +40,6 @@ const LocalisationsView: React.FC = () => {
       setLoading(false);
     }
   };
- 
 
   const fetchServices = async () => {
     try {
@@ -52,7 +53,7 @@ const LocalisationsView: React.FC = () => {
       setServicesLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchLocalisations();
     fetchServices();
@@ -61,61 +62,49 @@ const LocalisationsView: React.FC = () => {
   const columns: TableColumn<Localisation>[] = [
     {
       name: "المعرف",
-      selector: (row: Localisation) => row.id ?? 0, // Default to 0 if undefined
+      selector: (row: Localisation) => row.id ?? 0,
       sortable: true,
     },
     {
       name: "اسم الموقع",
-      selector: (row: Localisation) => row.loc_name ?? "غير متوفر", // Default to "غير متوفر" if undefined
+      selector: (row: Localisation) => row.loc_name ?? "غير متوفر",
       sortable: true,
     },
     {
       name: "رقم الطابق",
-      selector: (row: Localisation) => row.floor ?? 0, // Default to 0 if undefined
+      selector: (row: Localisation) => row.floor ?? 0,
       sortable: true,
     },
     {
       name: "المصلحة",
       selector: (row: Localisation) => {
-      
         const service = services.find((s) => s.id === row.id_service);
-        return service ? service.name: "غير متوفر";
+        return service ? service.name : "غير متوفر";
       },
       sortable: true,
     },
-    
     {
-      name: "تعديل",
+      name: "الإجراءات",
       cell: (row: Localisation) => (
-        <button
-          onClick={() => {
-            setSelectedLocalisation(row);
+        <ActionButtons
+          item={row}
+          onEdit={(item) => {
+            setSelectedLocalisation(item);
             setShowUpdateForm(true);
           }}
-          className="btn btn-warning btn-sm"
-        >
-          <FaEdit />
-        </button>
-      ),
-      ignoreRowClick: true,
-    },
-    {
-      name: "حذف",
-      cell: (row: Localisation) => (
-        <button
-          onClick={() => {
-            setSelectedLocalisation(row);
+          onDelete={(item) => {
+            setSelectedLocalisation(item);
             setShowDeleteForm(true);
           }}
-          className="btn btn-danger btn-sm"
-        >
-          <FaTrash />
-        </button>
+          onAddition={(employer) => {
+            setSelectedLocalisation(employer);
+            setShowAddForm(true);
+          }} 
+        />
       ),
       ignoreRowClick: true,
     },
   ];
-  
 
   return (
     <div className="container mt-5">
@@ -142,34 +131,19 @@ const LocalisationsView: React.FC = () => {
         />
       )}
 
-      <div className="d-flex justify-content-center mt-3">
-        <button className="btn btn-success" onClick={() => setShowAddForm(true)}>
-          <FaMapMarkerAlt className="me-2" /> إضافة موقع جديد
-        </button>
-      </div>
-
+  
       {showAddForm && <AddLocalisationForm onClose={() => setShowAddForm(false)} fetchLocalisations={fetchLocalisations} />}
       {showUpdateForm && selectedLocalisation && (
         <UpdateLocalisationForm
           onClose={() => setShowUpdateForm(false)}
-          localisation={{
-            id: selectedLocalisation.id,
-            loc_name: selectedLocalisation.loc_name || "",
-            floor: selectedLocalisation.floor || 0,
-            id_service: selectedLocalisation.id_service || 0,
-          }}
+          localisation={selectedLocalisation}
           fetchLocalisations={fetchLocalisations}
         />
       )}
       {showDeleteForm && selectedLocalisation && (
         <DeleteLocalisationForm
           onClose={() => setShowDeleteForm(false)}
-          localisation={{
-            id: selectedLocalisation.id,
-            loc_name: selectedLocalisation.loc_name || "",
-            floor: selectedLocalisation.floor || 0,
-            id_service: selectedLocalisation.id_service || 0,
-          }}
+          localisation={selectedLocalisation}
           fetchLocalisations={fetchLocalisations}
         />
       )}

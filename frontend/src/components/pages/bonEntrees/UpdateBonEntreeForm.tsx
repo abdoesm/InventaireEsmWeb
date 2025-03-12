@@ -184,7 +184,7 @@ const UpdateBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees, bonEnt
         };
 
         fetchBonEntreeData();
-    }, [bonEntreeId]);
+    }, [bonEntreeId, data.id_fournisseur]);
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>): void {
         setData({ ...data, [e.target.name]: e.target.value });

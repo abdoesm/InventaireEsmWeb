@@ -8,8 +8,7 @@ import DeleteCategoryForm from "./DeleteCategoryForm";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import { Category } from "../../../models/categoryTypes";
-
-
+import ActionButtons from "../../common/ActionButtons";
 
 const Categories: React.FC = () => {
   const navigate = useNavigate();
@@ -37,7 +36,7 @@ const Categories: React.FC = () => {
       if (!response.ok) throw new Error("Failed to fetch categories.");
 
       const data: Category[] = await response.json();
-      console.log(data)
+      console.log(data);
       setCategories(data);
     } catch (err) {
       if (err instanceof Error) {
@@ -58,32 +57,20 @@ const Categories: React.FC = () => {
     { name: "المعرف", selector: (row: Category) => row.id, sortable: true },
     { name: "الاسم", selector: (row: Category) => row.name_cat, sortable: true },
     {
-      name: "تعديل",
+      name: "الإجراءات",
       cell: (row: Category) => (
-        <button
-          onClick={() => {
-            setSelectedCategory(row);
+        <ActionButtons
+          item={row}
+          onEdit={(item) => {
+            setSelectedCategory(item);
             setShowUpdateForm(true);
           }}
-          className="btn btn-warning btn-sm"
-        >
-          <FaEdit />
-        </button>
-      ),
-      ignoreRowClick: true,
-    },
-    {
-      name: "حذف",
-      cell: (row: Category) => (
-        <button
-          onClick={() => {
-            setSelectedCategory(row);
+          onDelete={(item) => {
+            setSelectedCategory(item);
             setShowDeleteForm(true);
           }}
-          className="btn btn-danger btn-sm"
-        >
-          <FaTrash />
-        </button>
+          onAddition={() => setShowAddForm(true)}
+        />
       ),
       ignoreRowClick: true,
     },
@@ -114,19 +101,22 @@ const Categories: React.FC = () => {
         />
       )}
 
-      <div className="d-flex justify-content-center mt-3">
-        <button className="btn btn-success" onClick={() => setShowAddForm(true)}>
-          <FaPlus className="me-2" /> إضافة فئة
-        </button>
-      </div>
 
       {showAddForm && <AddCategoryForm onClose={() => setShowAddForm(false)} fetchCategories={fetchCategories} />}
-      {showUpdateForm && selectedCategory && <UpdateCategoryForm onClose={() => setShowUpdateForm(false)}
-  category={{ ...selectedCategory, id: selectedCategory.id.toString() }} 
-  fetchCategories={fetchCategories} />}
-      {showDeleteForm && selectedCategory && <DeleteCategoryForm onClose={() => setShowDeleteForm(false)}
-  category={{ ...selectedCategory, id: selectedCategory.id.toString() }} 
-  fetchCategories={fetchCategories}/>}
+      {showUpdateForm && selectedCategory && (
+        <UpdateCategoryForm
+          onClose={() => setShowUpdateForm(false)}
+          category={{ ...selectedCategory, id: selectedCategory.id.toString() }}
+          fetchCategories={fetchCategories}
+        />
+      )}
+      {showDeleteForm && selectedCategory && (
+        <DeleteCategoryForm
+          onClose={() => setShowDeleteForm(false)}
+          category={{ ...selectedCategory, id: selectedCategory.id.toString() }}
+          fetchCategories={fetchCategories}
+        />
+      )}
     </div>
   );
 };

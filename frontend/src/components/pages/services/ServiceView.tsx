@@ -9,6 +9,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import { Service } from "../../../models/serviceTypes";
 import { Employer } from "../../../models/employerType";
+import ActionButtons from "../../common/ActionButtons";
 
 
 
@@ -77,32 +78,20 @@ const Services: React.FC = () => {
     },
     
     {
-      name: "تعديل",
+      name: "الإجراءات",
       cell: (row: Service) => (
-        <button
-          onClick={() => {
-            setSelectedService(row);
+        <ActionButtons
+          item={row}
+          onEdit={(item) => {
+            setSelectedService(item);
             setShowUpdateForm(true);
           }}
-          className="btn btn-warning btn-sm"
-        >
-          <FaEdit />
-        </button>
-      ),
-      ignoreRowClick: true,
-    },
-    {
-      name: "حذف",
-      cell: (row: Service) => (
-        <button
-          onClick={() => {
-            setSelectedService(row);
+          onDelete={(item) => {
+            setSelectedService(item);
             setShowDeleteForm(true);
           }}
-          className="btn btn-danger btn-sm"
-        >
-          <FaTrash />
-        </button>
+          onAddition={() => setShowAddForm(true)}
+        />
       ),
       ignoreRowClick: true,
     },
@@ -134,11 +123,7 @@ const Services: React.FC = () => {
         />
       )}
 
-      <div className="d-flex justify-content-center mt-3">
-        <button className="btn btn-success" onClick={() => setShowAddForm(true)}>
-          <FaPlus className="me-2" /> إضافة خدمة
-        </button>
-      </div>
+  
 
       {showAddForm && <AddServiceForm onClose={() => setShowAddForm(false)} fetchServices={fetchServices} />}
       {showUpdateForm && selectedService && (

@@ -6,9 +6,10 @@ interface Props {
   fournisseurs: Fournisseur[];
   onEdit: (fournisseur: Fournisseur) => void;
   onDelete: (fournisseur: Fournisseur) => void;
+  onAddition:(fournisseur: Fournisseur)=> void; // Fixed: No need for an argument
 }
 
-const FournisseurTable: React.FC<Props> = ({ fournisseurs, onEdit, onDelete }) => {
+const FournisseurTable: React.FC<Props> = ({ fournisseurs, onEdit, onDelete, onAddition }) => {
   const columns = [
     { name: "المعرف", selector: (row: Fournisseur) => row.id, sortable: true },
     { name: "الاسم", selector: (row: Fournisseur) => row.name, sortable: true },
@@ -23,7 +24,14 @@ const FournisseurTable: React.FC<Props> = ({ fournisseurs, onEdit, onDelete }) =
     { name: "RIB", selector: (row: Fournisseur) => row.RIB, sortable: true },
     {
       name: "الإجراءات",
-      cell: (row: Fournisseur) => <ActionButtons fournisseur={row} onEdit={onEdit} onDelete={onDelete} />,
+      cell: (row: Fournisseur) => (
+        <ActionButtons
+          item={row} // Fixed: Pass only the current row
+          onEdit={onEdit} // Fixed: Use onEdit from props
+          onDelete={onDelete} // Fixed: Use onDelete from props
+          onAddition={onAddition} // Fixed: No argument needed
+        />
+      ),
       ignoreRowClick: true,
       fixed: "right",
     },

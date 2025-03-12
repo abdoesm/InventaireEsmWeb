@@ -6,6 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import AddBonEntreeForm from "./AddBonEntreeForm";
 import UpdateBonEntreeForm from "./UpdateBonEntreeForm";
+import ActionButtons from "../../common/ActionButtons";
 
 interface BonEntree {
   id: number;
@@ -18,6 +19,7 @@ interface BonEntree {
 const BonEntreeView: React.FC = () => {
   const navigate = useNavigate();
   const [bonEntrees, setBonEntrees] = useState<BonEntree[]>([]);
+    const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
   const [showAddBonEntreeForm, setShowAddBonEntreeForm] = useState<boolean>(false);
   const [showUpdateBonEntreeForm, setShowUpdateBonEntreeForm] = useState<boolean>(false);
   const [selectedBonEntree, setSelectedBonEntree] = useState<BonEntree | null>(null);
@@ -64,23 +66,25 @@ const BonEntreeView: React.FC = () => {
     { name: "ضريبة القيمة المضافة", selector: (row: BonEntree) => row.TVA, sortable: true },
     { name: "رقم الوثيقة", selector: (row: BonEntree) => row.document_num },
     {
-      name: "تعديل",
-      cell: (row: BonEntree) => (
-        <button className="btn btn-warning btn-sm" onClick={() => handleEdit(row)}>
-          <FaEdit />
-        </button>
-      ),
-      ignoreRowClick: true,
-    },
-    {
-      name: "حذف",
-      cell: (row: BonEntree) => (
-        <button className="btn btn-danger btn-sm">
-          <FaTrash />
-        </button>
-      ),
-      ignoreRowClick: true,
-    },
+  
+
+    name: "الإجراءات",
+    cell: (row: BonEntree) => (
+      <ActionButtons
+        item={row}
+        onEdit={(item) => {
+          setSelectedBonEntree(item);
+          setShowUpdateBonEntreeForm(true);
+        }}
+        onDelete={(item) => {
+          setSelectedBonEntree(item);
+          setShowDeleteForm(true);
+        }}
+        onAddition={() => setShowAddBonEntreeForm(true)}
+      />
+    ),
+    ignoreRowClick: true,
+  },
   ];
 
   return (
@@ -108,12 +112,7 @@ const BonEntreeView: React.FC = () => {
         />
       )}
 
-      <div className="d-flex justify-content-center mt-3">
-        <button className="btn btn-success" onClick={() => setShowAddBonEntreeForm(true)}>
-          <FaPlus className="me-2" /> إضافة بون دخول
-        </button>
-      </div>
-
+   
       {showAddBonEntreeForm && (
         <AddBonEntreeForm onClose={() => setShowAddBonEntreeForm(false)} fetchBonEntrees={fetchBonEntrees} />
       )}
