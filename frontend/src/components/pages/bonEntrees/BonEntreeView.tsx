@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaHome, FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { FaHome, FaPlus} from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import AddBonEntreeForm from "./AddBonEntreeForm";
 import UpdateBonEntreeForm from "./UpdateBonEntreeForm";
 import ActionButtons from "../../common/ActionButtons";
+import DeleteBonEntreeForm from "./DeleteBonEntreeForm";
 
 interface BonEntree {
   id: number;
@@ -54,10 +55,7 @@ const BonEntreeView: React.FC = () => {
     fetchBonEntrees();
   }, []);
 
-  const handleEdit = (bonEntree: BonEntree) => {
-    setSelectedBonEntree(bonEntree);
-    setShowUpdateBonEntreeForm(true);
-  };
+
 
   const columns = [
     { name: "المعرف", selector: (row: BonEntree) => row.id, sortable: true },
@@ -102,7 +100,7 @@ const BonEntreeView: React.FC = () => {
         <p className="text-danger">{error}</p>
       ) : (
         <DataTable
-          title="قائمة بونات الدخول"
+          title="قائمة وصول الاستلام"
           columns={columns}
           data={bonEntrees}
           pagination
@@ -112,7 +110,8 @@ const BonEntreeView: React.FC = () => {
         />
       )}
 
-   
+    
+
       {showAddBonEntreeForm && (
         <AddBonEntreeForm onClose={() => setShowAddBonEntreeForm(false)} fetchBonEntrees={fetchBonEntrees} />
       )}
@@ -124,6 +123,13 @@ const BonEntreeView: React.FC = () => {
           bonEntreeId={selectedBonEntree.id}
         />
       )}
+      {
+        showDeleteForm && selectedBonEntree && (<DeleteBonEntreeForm 
+          onClose={() => setShowDeleteForm(false)} 
+          bonEntreeid={selectedBonEntree.id}
+          fetchBonEntree={fetchBonEntrees}
+        />)
+      }
     </div>
   );
 };
