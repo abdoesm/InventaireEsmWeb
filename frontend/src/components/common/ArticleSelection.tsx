@@ -1,27 +1,19 @@
 import React from "react";
+import { Article } from "../../models/articleTypes";
 
-export interface Article {
-    id?: number;
-    name: string;
-    unite: string;
-    remarque: string;
-    description: string;
-    idCategory: number;
-    minQuantity: number;
-    totalQuantity?: number;
-}
 
-interface ArticleSelectionProps {
+
+interface ArticleSelectionProps<T extends { idArticle: number; quantity: number }> {
     articles: Article[];
-    selectedEntrees: { idArticle: number; quantity: number; unitPrice: number }[];
+    selectedEntrees: T[];
     onArticleSelect: (article: Article) => void;
 }
 
-const ArticleSelection: React.FC<ArticleSelectionProps> = ({
+const ArticleSelection = <T extends { idArticle: number; quantity: number }>({
     articles,
     selectedEntrees,
     onArticleSelect,
-}) => {
+}: ArticleSelectionProps<T>) => {
     return (
         <div className="mb-3" style={{ maxHeight: "250px", overflowY: "auto", border: "1px solid #ddd", borderRadius: "5px" }}>
             <ul className="list-group">
