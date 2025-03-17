@@ -71,13 +71,15 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
         setData({ ...data, id_fournisseur: fournisseur.id });
     };
 
-    const handleEntreeChange = (index: number, field: keyof Entree, value: number) => {
+    const handleEntreeChange = <K extends keyof Entree>(index: number, field: K, value: Entree[K]) => {
+        if (value === undefined) return; // Avoid assigning undefined values
         setSelectedEntrees((prevEntrees) => {
             const updatedEntrees = [...prevEntrees];
             updatedEntrees[index] = { ...updatedEntrees[index], [field]: value };
             return updatedEntrees;
         });
     };
+    
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
