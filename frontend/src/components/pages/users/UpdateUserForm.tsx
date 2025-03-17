@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import useUpdateUser from "../../../hooks/user/useUpdateUser";
+import useUpdateUser from "../../../services/user/useUpdateUser";
 import { User } from "../../../models/userType";
 
 

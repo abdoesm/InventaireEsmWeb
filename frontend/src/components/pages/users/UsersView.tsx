@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaHome, FaUserPlus } from "react-icons/fa";
+import { FaHome } from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import AddUserForm from "./AddUserForm";
 import UpdateUserForm from "./UpdateUserForm";
@@ -8,7 +8,7 @@ import DeleteUserForm from "./DeleteUserForm";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { User } from "../../../models/userType";
 import ActionButtons from "../../common/ActionButtons";
-import useFetchUsers from "../../../hooks/user/useFetchUsers";
+import useFetchUsers from "../../../services/user/useFetchUsers";
 
 
 const Users: React.FC = () => {

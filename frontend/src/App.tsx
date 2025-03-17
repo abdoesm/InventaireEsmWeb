@@ -9,7 +9,7 @@ import Articles from "./components/pages/articles/articlesView";
 import Categories from "./components/pages/categories/CategoryView";
 import Employers from "./components/pages/employers/EmployersView";
 import FournisseurView from "./components/pages/fornisseurs/FornisseursView";
-import Services from "./components/pages/services/ServiceView";
+import Services from "./components/pages/a_services/ServiceView";
 import LocalisationsView from "./components/pages/localisations/LocalisationsView";
 import BonEntreeView from "./components/pages/bonEntrees/BonEntreeView"
  

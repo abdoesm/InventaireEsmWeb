@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import useAddUser from "../../../hooks/user/useAddUser";
+import useAddUser from "../../../services/user/useAddUser";
 
 
 interface AddUserFormProps {

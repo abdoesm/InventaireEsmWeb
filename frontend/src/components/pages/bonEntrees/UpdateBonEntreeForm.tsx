@@ -6,7 +6,7 @@ import SearchInput from "../../common/SearchInput";
 import FournisseurSelection from "../../common/FournisseurSelection";
 import ArticleSelection from "../../common/ArticleSelection";
 import SelectedArticlesTable from "../../common/SelectedArticlesTable";
-import useArticlesAndFournisseurs from "../../../hooks/useArticlesAndFournisseurs";
+import useArticlesAndFournisseurs from "../../../services/useArticlesAndFournisseurs";
 import { Fournisseur } from "../../../models/fournisseurTypes";
 import { Entree } from "../../../models/entreeTypes";
 import { Article } from "../../../models/articleTypes";

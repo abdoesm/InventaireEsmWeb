@@ -2,7 +2,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import { User } from "../../../models/userType";
-import useDeleteUser from "../../../hooks/user/useDeleteUser";
+import useDeleteUser from "../../../services/user/useDeleteUser";
 
 interface DeleteUserFormProps {
   onClose: () => void;
