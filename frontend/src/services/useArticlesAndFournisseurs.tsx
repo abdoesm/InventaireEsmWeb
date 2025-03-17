@@ -19,15 +19,28 @@ const useArticlesAndFournisseurs = () => {
                     return;
                 }
 
-                const [articlesRes, fournisseursRes] = await Promise.all([
+                const [articlesRes,  quantitiesRes,fournisseursRes] = await Promise.all([
                     fetch(`${Bk_End_SRVR}:5000/api/articles`, { headers: { Authorization: `Bearer ${token}` } }),
+                    fetch(`${Bk_End_SRVR}:5000/api/articles/quantities`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }),
                     fetch(`${Bk_End_SRVR}:5000/api/fournisseurs`, { headers: { Authorization: `Bearer ${token}` } }),
                 ]);
 
-                if (!articlesRes.ok || !fournisseursRes.ok) throw new Error("Failed to fetch data.");
+                if (!articlesRes.ok || !fournisseursRes.ok||!quantitiesRes.ok) throw new Error("Failed to fetch data.");
 
                 const articlesData = await articlesRes.json();
                 const fournisseursData = await fournisseursRes.json();
+                const quantitiesData: { idArticle: number; totalQuantity: number }[] =
+                await quantitiesRes.json();
+
+                articlesData.forEach((article: Article) => {
+                    const quantityInfo = quantitiesData.find((q) => q.idArticle === article.id);
+                    article.totalQuantity = quantityInfo ? quantityInfo.totalQuantity : 0;
+                });
+                setArticles(articlesData);
+                
+            
 
                 setArticles(articlesData);
                 setFournisseurs(fournisseursData);

@@ -126,6 +126,7 @@ const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) 
 
           const handleArticleSelect = (article: Article) => {
                 setSelectedEntrees((prevEntrees) => {
+                    console.log("prevEntrees",prevEntrees)
                     const newEntries = new Map(prevEntrees.map((e) => [e.idArticle, e]));
                     if (newEntries.has(article.id!)) {
                         newEntries.delete(article.id!);
@@ -141,13 +142,19 @@ const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) 
                 setData({ ...data, id_fournisseur: fournisseur.id });
             };
         
-            const handleEntreeChange = (index: number, field: keyof Entree, value: number) => {
-                setSelectedEntrees((prevEntrees) => {
-                    const updatedEntrees = [...prevEntrees];
-                    updatedEntrees[index] = { ...updatedEntrees[index], [field]: value };
-                    return updatedEntrees;
-                });
+          const handleEntreeChange = <K extends keyof Entree>(
+                index: number,
+                field: K,
+                value: Entree[K]
+            ) => {
+                if (value === undefined) return; // Prevent assignment of `undefined`
+                setSelectedEntrees((prev) =>
+                    prev.map((entree, i) =>
+                        i === index ? { ...entree, [field]: value } : entree
+                    )
+                );
             };
+       
     
 
     return (
@@ -194,6 +201,7 @@ const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) 
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
+                            
                                 <ArticleSelection
                                     articles={filteredArticles}
                                     selectedEntrees={selectedEntrees}

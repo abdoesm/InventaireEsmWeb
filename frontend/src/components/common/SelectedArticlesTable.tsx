@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Article } from "../../models/articleTypes";
 import { Entree } from "../../models/entreeTypes";
 import { Sortie } from "../../models/sortieType";
@@ -9,27 +9,31 @@ interface SelectedArticlesTableProps<T extends Entree | Sortie> {
     onEntreeChange: <K extends keyof T>(index: number, field: K, value: T[K]) => void;
 }
 
-// Type guard function to distinguish between Entree and Sortie
-const isEntree = (entry: Entree | Sortie): entry is Entree => {
-    return (entry as Entree).unitPrice !== undefined;
-};
+// Type guard to check if an entry is an Entree
+const isEntree = (entry: Entree | Sortie): entry is Entree => "unitPrice" in entry;
 
 const SelectedArticlesTable = <T extends Entree | Sortie>({
     selectedEntrees,
     articles,
     onEntreeChange,
 }: SelectedArticlesTableProps<T>) => {
-    const articleMap = new Map(articles.map((article) => [Number(article.id), article]));
+    const articleMap = useMemo(
+        () => new Map(articles.map((article) => [Number(article.id), article])),
+        [articles]
+    );
 
     const hasEntriesWithUnitPrice = selectedEntrees.some(isEntree);
 
-    const totalHT = selectedEntrees
-    .filter(isEntree) // Filters only Entree objects
-    .reduce((sum, entree) => sum + entree.quantity * (entree as Entree).unitPrice, 0);
+    const totalHT = useMemo(
+        () =>
+            selectedEntrees
+                .filter(isEntree)
+                .reduce((sum, entree) => sum + entree.quantity * (entree as Entree).unitPrice, 0),
+        [selectedEntrees]
+    );
 
-
-    const tvaAmount = totalHT * 0.19;
-    const totalTTC = totalHT + tvaAmount;
+    const tvaAmount = useMemo(() => totalHT * 0.19, [totalHT]);
+    const totalTTC = useMemo(() => totalHT + tvaAmount, [totalHT, tvaAmount]);
 
     if (articles.length === 0) {
         return <p>جاري تحميل المقالات...</p>;
@@ -37,7 +41,7 @@ const SelectedArticlesTable = <T extends Entree | Sortie>({
 
     return (
         <div className="mb-3">
-            <h5>المقالات المحددة</h5>
+            <h5>📌 المقالات المحددة</h5>
             {selectedEntrees.length === 0 ? (
                 <p className="text-muted">لم يتم تحديد أي مقالات.</p>
             ) : (
@@ -56,7 +60,7 @@ const SelectedArticlesTable = <T extends Entree | Sortie>({
                                 const article = articleMap.get(entry.idArticle);
                                 return (
                                     <tr key={entry.idArticle}>
-                                        <td>{article?.name || "غير معروف"}</td>
+                                        <td>{article?.name || "❌ غير معروف"}</td>
                                         <td>
                                             <input
                                                 type="number"
@@ -64,7 +68,7 @@ const SelectedArticlesTable = <T extends Entree | Sortie>({
                                                 value={entry.quantity}
                                                 min="1"
                                                 onChange={(e) =>
-                                                    onEntreeChange(index, "quantity" as keyof T, Math.max(1, parseFloat(e.target.value) || 1) as T[keyof T])
+                                                    onEntreeChange(index, "quantity" as keyof T, Math.max(1, Number(e.target.value) || 1) as T[keyof T])
                                                 }
                                             />
                                         </td>
@@ -78,7 +82,7 @@ const SelectedArticlesTable = <T extends Entree | Sortie>({
                                                         min="0"
                                                         step="any"
                                                         onChange={(e) =>
-                                                            onEntreeChange(index, "unitPrice" as keyof T, Math.max(0, parseFloat(e.target.value) || 0) as T[keyof T])
+                                                            onEntreeChange(index, "unitPrice" as keyof T, Math.max(0, Number(e.target.value) || 0) as T[keyof T])
                                                         }
                                                     />
                                                 </td>
@@ -93,9 +97,15 @@ const SelectedArticlesTable = <T extends Entree | Sortie>({
 
                     {hasEntriesWithUnitPrice && (
                         <div className="text-end mt-3">
-                            <p><strong>المبلغ HT:</strong> {totalHT.toFixed(2)} DA</p>
-                            <p><strong>مبلغ TVA (19%):</strong> {tvaAmount.toFixed(2)} DA</p>
-                            <h5><strong>المجموع TTC:</strong> {totalTTC.toFixed(2)} DA</h5>
+                            <p>
+                                <strong>💰 المبلغ HT:</strong> {totalHT.toFixed(2)} DA
+                            </p>
+                            <p>
+                                <strong>📊 مبلغ TVA (19%):</strong> {tvaAmount.toFixed(2)} DA
+                            </p>
+                            <h5 className="text-success">
+                                <strong>🛒 المجموع TTC:</strong> {totalTTC.toFixed(2)} DA
+                            </h5>
                         </div>
                     )}
                 </div>

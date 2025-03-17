@@ -1,7 +1,6 @@
 import React from "react";
+import DataTable, { TableColumn } from "react-data-table-component";
 import { Article } from "../../models/articleTypes";
-
-
 
 interface ArticleSelectionProps<T extends { idArticle: number; quantity: number }> {
     articles: Article[];
@@ -14,36 +13,62 @@ const ArticleSelection = <T extends { idArticle: number; quantity: number }>({
     selectedEntrees,
     onArticleSelect,
 }: ArticleSelectionProps<T>) => {
+    const columns: TableColumn<Article>[] = [
+        {
+            name: "اسم المقال",
+            selector: (row) => row.name,
+            sortable: true,
+        },
+        {
+            name: "الوحدة",
+            selector: (row) => row.unite,
+            sortable: true,
+            width: "120px",
+        },
+        {
+            name: "الكمية",
+            selector: (row) => row.totalQuantity ?? 0, // ✅ Ensure number type
+            sortable: true,
+            center: true,
+            width: "120px",
+        },
+        {
+            name: "اختيار",
+            cell: (row) => {
+                const isSelected = selectedEntrees.some((e) => e.idArticle === row.id);
+                return (
+                    <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => onArticleSelect(row)}
+                        style={{ cursor: "pointer", width: "18px", height: "18px" }}
+                    />
+                );
+            },
+            width: "100px",
+            center: true,
+        },
+    ];
+
     return (
-        <div className="mb-3" style={{ maxHeight: "250px", overflowY: "auto", border: "1px solid #ddd", borderRadius: "5px" }}>
-            <ul className="list-group">
-                {articles.map((article) => {
-                    const isSelected = selectedEntrees.some((e) => e.idArticle === article.id);
-
-                    return (
-                        <li
-                            key={article.id}
-                            className={`list-group-item d-flex justify-content-between align-items-center ${isSelected ? "bg-light" : ""}`}
-                            style={{ cursor: "pointer" }}
-                            onClick={() => onArticleSelect(article)}
-                        >
-                            <span className="d-flex flex-wrap w-100 justify-content-between">
-                                <strong>{article.name}</strong>
-                                <small className="text-muted">{article.unite}</small>
-                                <span>الكمية: <strong>{article.totalQuantity}</strong></span>
-                            </span>
-
-                            <input
-                                type="checkbox"
-                                checked={isSelected}
-                                onChange={() => onArticleSelect(article)}
-                                onClick={(e) => e.stopPropagation()} // Prevent parent click
-                            />
-                        </li>
-                    );
-                })}
-            </ul>
-        </div>
+        <DataTable
+            title="اختيار المقالات"
+            columns={columns}
+            data={articles}
+            selectableRowsHighlight
+            highlightOnHover
+            pagination
+            responsive
+            customStyles={{
+                headCells: {
+                    style: {
+                        fontSize: "14px",
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f9fa",
+                    },
+                },
+            }}
+        />
     );
 };
 

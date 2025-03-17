@@ -1,22 +1,23 @@
 import React, { useCallback } from "react";
 import { Fournisseur } from "../../models/fournisseurTypes";
+import { Employer } from "../../models/employerType";
 
-interface FournisseurSelectionProps {
-    fournisseurs: Fournisseur[];
-    selectedFournisseur: Fournisseur | null;
-    onFournisseurSelect: (fournisseur: Fournisseur) => void;
+interface EmployerSelectionProps {
+    employers: Employer[];
+    selectedEmployer: Employer | null;
+    onEmployerSelect: (employer: Employer) => void;
 }
 
-const FournisseurSelection: React.FC<FournisseurSelectionProps> = ({
-    fournisseurs,
-    selectedFournisseur,
-    onFournisseurSelect,
+const EmployerSelection: React.FC<EmployerSelectionProps> = ({
+    employers,
+    selectedEmployer,
+    onEmployerSelect,
 }) => {
     const handleSelect = useCallback(
-        (fournisseur: Fournisseur) => {
-            onFournisseurSelect(fournisseur);
+        (employer: Employer) => {
+            onEmployerSelect(employer);
         },
-        [onFournisseurSelect]
+        [onEmployerSelect]
     );
 
     return (
@@ -25,31 +26,31 @@ const FournisseurSelection: React.FC<FournisseurSelectionProps> = ({
             style={{ maxHeight: "250px", overflowY: "auto" }}
         >
             <ul className="list-group">
-                {fournisseurs.length === 0 ? (
+                {employers.length === 0 ? (
                     <li className="list-group-item text-muted text-center">
-                        لا يوجد موردون متاحون
+                        لا يوجد موظفون متاحون
                     </li>
                 ) : (
-                    fournisseurs.map((fournisseur) => (
+                    employers.map((employer) => (
                         <li
-                            key={fournisseur.id}
+                            key={employer.id}
                             className={`list-group-item d-flex justify-content-between align-items-center ${
-                                selectedFournisseur?.id === fournisseur.id
+                                selectedEmployer?.id === employer.id
                                     ? "bg-primary text-white"
                                     : "bg-light"
                             }`}
-                            onClick={() => handleSelect(fournisseur)}
+                            onClick={() => handleSelect(employer)}
                             tabIndex={0}
                             onKeyPress={(e) =>
-                                e.key === "Enter" && handleSelect(fournisseur)
+                                e.key === "Enter" && handleSelect(employer)
                             }
                             style={{
                                 cursor: "pointer",
                                 transition: "background 0.3s",
                             }}
                         >
-                            <span>{fournisseur.name}</span>
-                            {selectedFournisseur?.id === fournisseur.id && (
+                            <span>{employer.fname +" " +employer.lname}</span>
+                            {selectedEmployer?.id === employer.id && (
                                 <span>✔️</span>
                             )}
                         </li>
@@ -60,4 +61,4 @@ const FournisseurSelection: React.FC<FournisseurSelectionProps> = ({
     );
 };
 
-export default FournisseurSelection;
+export default EmployerSelection;

@@ -9,6 +9,7 @@ import SelectedArticlesTable from "../../common/SelectedArticlesTable";
 import useArticlesAndFournisseurs from "../../../services/useArticlesAndFournisseurs";
 import { Fournisseur } from "../../../models/fournisseurTypes";
 import { Article } from "../../../models/articleTypes";
+import { Entree } from "../../../models/entreeTypes";
 
 
 type Props = {
@@ -16,11 +17,7 @@ type Props = {
     fetchBonEntrees: () => void;
 };
 
-export interface Entree {
-    idArticle: number;
-    quantity: number;
-    unitPrice: number;
-}
+
 
 const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
     const [data, setData] = useState({
@@ -79,7 +76,7 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
             return updatedEntrees;
         });
     };
-    
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -137,59 +134,59 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
                         ) : (
                             <form onSubmit={handleSubmit}>
 
-                            {/* Two-column layout */}
-                            <div className="row">
-                                {/* Date Input */}
-                                <div className="col-md-6">
-                                    <Input label="التاريخ" type="date" name="date" value={data.date} onChange={handleChange} />
+                                {/* Two-column layout */}
+                                <div className="row">
+                                    {/* Date Input */}
+                                    <div className="col-md-6">
+                                        <Input label="التاريخ" type="date" name="date" value={data.date} onChange={handleChange} />
+                                    </div>
+
+                                    {/* Document Number */}
+                                    <div className="col-md-6">
+                                        <Input label="رقم الوثيقة" type="text" name="document_num" value={data.document_num} onChange={handleChange} />
+                                    </div>
                                 </div>
-    
-                                {/* Document Number */}
-                                <div className="col-md-6">
-                                    <Input label="رقم الوثيقة" type="text" name="document_num" value={data.document_num} onChange={handleChange} />
-                                </div>
-                            </div>
-    
-                            {/* Supplier Selection */}
-                            <FormGroup label="المورد">
-                                <SearchInput
-                                    placeholder="ابحث عن المورد..."
-                                    value={fournisseurSearchTerm}
-                                    onChange={(e) => setFournisseurSearchTerm(e.target.value)}
-                                />
-                                <FournisseurSelection
-                                    fournisseurs={filteredFournisseurs}
-                                    selectedFournisseur={selectedFournisseur}
-                                    onFournisseurSelect={handleFournisseurSelect}
-                                />
-                            </FormGroup>
-    
-                            {/* Article Selection */}
-                            <FormGroup label="حدد المقالات لإضافتها">
-                                <SearchInput
-                                    placeholder="ابحث عن المقال..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                />
-                                <ArticleSelection
-                                    articles={filteredArticles}
+
+                                {/* Supplier Selection */}
+                                <FormGroup label="المورد">
+                                    <SearchInput
+                                        placeholder="ابحث عن المورد..."
+                                        value={fournisseurSearchTerm}
+                                        onChange={(e) => setFournisseurSearchTerm(e.target.value)}
+                                    />
+                                    <FournisseurSelection
+                                        fournisseurs={filteredFournisseurs}
+                                        selectedFournisseur={selectedFournisseur}
+                                        onFournisseurSelect={handleFournisseurSelect}
+                                    />
+                                </FormGroup>
+
+                                {/* Article Selection */}
+                                <FormGroup label="حدد المقالات لإضافتها">
+                                    <SearchInput
+                                        placeholder="ابحث عن المقال..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                    />
+                                    <ArticleSelection<Entree>
+                                        articles={filteredArticles}
+                                        selectedEntrees={selectedEntrees}
+                                        onArticleSelect={handleArticleSelect}
+                                    />
+                                </FormGroup>
+
+                                {/* Selected Articles Table */}
+                                <SelectedArticlesTable<Entree>
                                     selectedEntrees={selectedEntrees}
-                                    onArticleSelect={handleArticleSelect}
+                                    articles={articles}
+                                    onEntreeChange={handleEntreeChange}
                                 />
-                            </FormGroup>
-    
-                            {/* Selected Articles Table */}
-                            <SelectedArticlesTable
-                                selectedEntrees={selectedEntrees}
-                                articles={articles}
-                                onEntreeChange={handleEntreeChange}
-                            />
                                 {/* Fixed Modal Footer */}
-                    <div className="modal-footer">
-                        <button type="submit"  className="btn btn-primary">إضافة</button>
-                        <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
-                    </div>
-                        </form>
+                                <div className="modal-footer">
+                                    <button type="submit" className="btn btn-primary">إضافة</button>
+                                    <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
+                                </div>
+                            </form>
                         )}
                     </div>
                 </div>

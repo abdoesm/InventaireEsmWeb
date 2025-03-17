@@ -5,9 +5,11 @@ import FormGroup from "../../common/FormGroup";
 import SearchInput from "../../common/SearchInput";
 import ArticleSelection from "../../common/ArticleSelection";
 import SelectedArticlesTable from "../../common/SelectedArticlesTable";
-import useArticles from "../../../services/article/useArticles";
+import useArticlesAndEmployers from "../../../services/useArticlesAndEmployers";
 import { Article } from "../../../models/articleTypes";
 import { Sortie } from "../../../models/sortieType";
+import { Employer } from "../../../models/employerType";
+import EmployerSelection from "../../common/EmployerSelection";
 
 
 type Props = {
@@ -26,11 +28,17 @@ const AddBonSortieForm: React.FC<Props> = ({ onClose, fetchBonSorties }) => {
     const [error, setError] = useState<string | null>(null);
     const [selectedSorties, setSelectedSorties] = useState<Sortie[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const [employerSearchTerm, setEmployerSearchTerm] = useState("");
+    const [selectedEmployer, setSelectedEmployer] = useState<Employer | null>(null);
 
-    const { articles, error: fetchError, loading } = useArticles();
+    const { articles, error: fetchError, loading,employers } = useArticlesAndEmployers();
 
     const filteredArticles = articles.filter(article =>
         article.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    const filteredEmployer = employers.filter(employer =>
+        employer.fname.toLowerCase().includes(employerSearchTerm.toLowerCase())
+        || employer.lname.toLowerCase().includes(employerSearchTerm.toLowerCase())
     );
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,6 +64,10 @@ const AddBonSortieForm: React.FC<Props> = ({ onClose, fetchBonSorties }) => {
         });
     };
     
+       const handleEmployerSelect = (employer: Employer) => {
+            setSelectedEmployer(employer);
+            setData({ ...data });
+        };
 
     const handleSortieChange = <K extends keyof Sortie>(index: number, field: K, value: Sortie[K]) => {
         setSelectedSorties((prevSorties) => {
@@ -71,7 +83,11 @@ const AddBonSortieForm: React.FC<Props> = ({ onClose, fetchBonSorties }) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+        if (!selectedEmployer) {
+            setError("الرجاء اختيار موظف.");
+            return;
+        }
+
         if (selectedSorties.length === 0) {
             setError("الرجاء إضافة مقالات.");
             return;
@@ -128,6 +144,19 @@ const AddBonSortieForm: React.FC<Props> = ({ onClose, fetchBonSorties }) => {
                                         <Input label="رقم الوثيقة" type="text" name="document_num" value={data.document_num} onChange={handleChange} />
                                     </div>
                                 </div>
+                                  {/* Supplier Selection */}
+                                  <FormGroup label="المورد">
+                                    <SearchInput
+                                        placeholder="ابحث عن المورد..."
+                                        value={employerSearchTerm}
+                                        onChange={(e) => setEmployerSearchTerm(e.target.value)}
+                                    />
+                                    <EmployerSelection
+                                        employers={filteredEmployer}
+                                        selectedEmployer={selectedEmployer}
+                                        onEmployerSelect={handleEmployerSelect}
+                                    />
+                                </FormGroup>
                                 <FormGroup label="حدد المقالات للخروج">
                                     <SearchInput
                                         placeholder="ابحث عن المقال..."
