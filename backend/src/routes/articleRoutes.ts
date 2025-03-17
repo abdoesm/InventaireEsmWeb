@@ -15,5 +15,5 @@ router.delete("/:id", verifyToken, deleteArticle);
 router.get("/name/:name", getArticleIdByName);
 router.get("/quantity/:id", getTotalQuantityByArticleId);
 router.get("/quantities", getTotalQuantitiesByArticle);
-//router.get("/:id", getArticleById);
+router.get("/:id", getArticleById);
 export default router;

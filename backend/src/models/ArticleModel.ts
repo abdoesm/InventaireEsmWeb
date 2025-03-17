@@ -41,14 +41,19 @@ export class ArticleModel {
         }
     
         try {
+            console.log("Fetching article with id:", id);
             const query = "SELECT * FROM article WHERE id = ?";
             const [rows] = await pool.query(query, [id]);
+    
+            console.log("Query Result:", rows); // 🔍 Add this debug log
+    
             return (rows as Article[]).length ? (rows as Article[])[0] : null;
         } catch (error) {
             console.error(`Error fetching article with ID ${id}:`, error);
             return null;
         }
     }
+    
     
 
     async addArticle(article: Article): Promise<boolean> {
@@ -185,17 +190,19 @@ export class ArticleModel {
             console.log("getTotalQuantitiesByArticle model"); // Removed articleId
     
             const query = `
-                SELECT a.id AS article_id,
-                       COALESCE(SUM(e.quantity), 0) AS total_entree,
-                       COALESCE(SUM(s.quantity), 0) AS total_sortie,
-                       COALESCE(SUM(r.quantity), 0) AS total_retour
-                FROM article a
-                LEFT JOIN entree e ON e.id_article = a.id
-                LEFT JOIN sortie s ON s.id_article = a.id
-                LEFT JOIN retour r ON r.id_article = a.id
-                WHERE a.id IS NOT NULL  -- Ensure valid IDs
-                GROUP BY a.id
-                ORDER BY (total_entree - total_sortie + total_retour) DESC, a.id ASC;
+               SELECT 
+    a.id AS article_id,
+    COALESCE(SUM(e.quantity), 0) AS total_entree,
+    COALESCE(SUM(s.quantity), 0) AS total_sortie,
+    COALESCE(SUM(r.quantity), 0) AS total_retour
+FROM article a
+LEFT JOIN entree e ON e.id_article = a.id
+LEFT JOIN sortie s ON s.id_article = a.id
+LEFT JOIN retour r ON r.id_article = a.id
+WHERE a.id IS NOT NULL  -- Ensure valid IDs
+GROUP BY a.id
+ORDER BY (COALESCE(SUM(e.quantity), 0) - COALESCE(SUM(s.quantity), 0) + COALESCE(SUM(r.quantity), 0)) DESC, a.id ASC;
+
             `;
     
             const [rows] = await pool.query(query);
