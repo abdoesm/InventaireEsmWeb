@@ -4,6 +4,7 @@ import {
     getBonEntreeById,
     createBonEntree,
     deleteBonEntree,
+    updateBonEntree,
     addEntree,
     getEntreesByBonEntreeId
 } from "../controllers/bonEntreeController";
@@ -15,6 +16,8 @@ router.get("/", getAllBonEntrees);
 router.get("/:id", getBonEntreeById);
 router.post("/", verifyToken,createBonEntree);
 router.delete("/:id", verifyToken,deleteBonEntree);
+router.put("/:id", verifyToken, updateBonEntree);
+
 
 // New routes for Entree management
 router.post("/entree", verifyToken, addEntree);

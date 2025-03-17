@@ -158,7 +158,57 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
             return updatedEntrees;
         });
     }
-
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault(); // Prevent page reload
+    
+        if (!selectedFournisseur) {
+            setError("الرجاء اختيار مورد.");
+            return;
+        }
+    
+        if (selectedEntrees.length === 0) {
+            setError("الرجاء إضافة مقالات.");
+            return;
+        }
+    
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                setError("No token found. Please log in.");
+                return;
+            }
+    
+            const response = await fetch(`${Bk_End_SRVR}:5000/api/bonentrees`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    id_fournisseur: data.id_fournisseur,
+                    date: data.date,
+                    TVA: data.TVA,
+                    document_num: data.document_num,
+                    entrees: selectedEntrees, // Send selected articles
+                }),
+            });
+    
+            if (!response.ok) {
+                throw new Error("فشل في إضافة وصل الاستلام.");
+            }
+    
+            // Success: Close modal & refresh list
+            fetchBonEntrees();
+            onClose();
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("حدث خطأ غير متوقع.");
+            }
+        }
+    }
+    
     return (
         <div className="modal fade show d-block" tabIndex={-1} role="dialog" aria-hidden="true">
             <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -173,7 +223,8 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
                     <div className="modal-body" style={{ maxHeight: "70vh", overflowY: "auto" }}>
                         {error && <p className="text-danger">{error}</p>}
     
-                        <form >
+                        <form onSubmit={handleSubmit}>
+
                             {/* Two-column layout */}
                             <div className="row">
                                 {/* Date Input */}

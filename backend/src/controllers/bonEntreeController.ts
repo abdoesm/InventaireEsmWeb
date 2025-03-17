@@ -41,6 +41,24 @@ export const getBonEntreeById = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Failed to retrieve bon d'entrée." });
     }
 };
+export const updateBonEntree = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const bonEntreeData = req.body;
+        const entrees = bonEntreeData.entrees || []; // Extract `entrees` array
+        bonEntreeData.id = Number(id); // Ensure ID is assigned correctly
+
+        const updatedBonEntree = await bonEntreeModel.updateBonEntree(bonEntreeData, entrees);
+
+        if (updatedBonEntree) {
+            res.status(200).json({ message: "Bon Entree updated successfully", id: updatedBonEntree.id });
+        } else {
+            res.status(404).json({ message: "Bon Entree not found or not updated" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Error updating Bon Entree", error });
+    }
+};
 
 
 export const addEntree = async (req: Request, res: Response) => {

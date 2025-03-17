@@ -120,7 +120,7 @@ const BonEntreeView: React.FC = () => {
         <UpdateBonEntreeForm
           onClose={() => setShowUpdateBonEntreeForm(false)}
           fetchBonEntrees={fetchBonEntrees}
-          bonEntreeId={selectedBonEntree.id}
+          id={selectedBonEntree.id}
         />
       )}
       {
