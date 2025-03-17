@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Bk_End_SRVR } from "../../../configs/conf";
+import useUpdateUser from "../../../hooks/user/useUpdateUser";
 import { User } from "../../../models/userType";
 
-// ✅ Define Props Interface
 
 interface UpdateUserFormProps {
   onClose: () => void;
@@ -15,40 +14,12 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({ onClose, user, fetchUse
   const [username, setUsername] = useState<string>(user.username);
   const [role, setRole] = useState<string>(user.role);
 
+  const { updateUser, loading, error } = useUpdateUser(fetchUsers);
+
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Unauthorized: No token found.");
-      return;
-    }
-
-    try {
-      const response = await fetch(`${Bk_End_SRVR}:5000/api/users/${user.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ username, role }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to update user");
-      }
-
-      fetchUsers();
-      onClose();
-    } catch (error) {
-      // ✅ Handle unknown error type properly
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert("An unknown error occurred.");
-      }
-    }
+    await updateUser(user.id, { username, role });
+    onClose();
   };
 
   return (
@@ -60,8 +31,8 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({ onClose, user, fetchUse
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
           <div className="modal-body">
+            {error && <div className="alert alert-danger">{error}</div>}
             <form onSubmit={handleUpdate}>
-              {/* Username Input */}
               <div className="mb-3">
                 <label className="form-label">اسم المستخدم</label>
                 <input
@@ -73,7 +44,6 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({ onClose, user, fetchUse
                 />
               </div>
 
-              {/* Role Selection */}
               <div className="mb-3">
                 <label className="form-label">الدور</label>
                 <select className="form-select" value={role} onChange={(e) => setRole(e.target.value)} required>
@@ -83,10 +53,13 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({ onClose, user, fetchUse
                 </select>
               </div>
 
-              {/* Buttons */}
               <div className="modal-footer">
-                <button type="submit" className="btn btn-primary">تحديث</button>
-                <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                  {loading ? "جارٍ التحديث..." : "تحديث"}
+                </button>
+                <button type="button" className="btn btn-secondary" onClick={onClose} disabled={loading}>
+                  إلغاء
+                </button>
               </div>
             </form>
           </div>

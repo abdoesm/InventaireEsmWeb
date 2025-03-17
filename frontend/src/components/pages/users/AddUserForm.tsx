@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Bk_End_SRVR } from "../../../configs/conf";
+import useAddUser from "../../../hooks/user/useAddUser";
+
 
 interface AddUserFormProps {
   onClose: () => void;
@@ -14,43 +15,16 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onClose, fetchUsers }) => {
     role: "User",
   });
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const { addUser, loading, error } = useAddUser(fetchUsers);
 
-  // Handle input changes for all fields
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    const token = localStorage.getItem("token");
-
-    try {
-      const response = await fetch(`${Bk_End_SRVR}:5000/api/users`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to add user");
-      }
-
-      fetchUsers();
-      onClose();
-    } catch (error: any) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
+    await addUser(formData);
+    onClose();
   };
 
   return (
@@ -94,10 +68,10 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onClose, fetchUsers }) => {
 
               <div className="mb-3">
                 <label className="form-label">الدور</label>
-                <select 
-                  className="form-select" 
+                <select
+                  className="form-select"
                   name="role"
-                  value={formData.role} 
+                  value={formData.role}
                   onChange={handleChange}
                   disabled={loading}
                 >
