@@ -7,16 +7,7 @@ import UpdateArticleForm from "./UpdateArticleForm";
 import DeleteArticleForm from "./DeleteArticleForm";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
-
-interface Article {
-  id: number;
-  name: string;
-  unite: string;
-  description: string;
-  remarque: string;
-  id_category: number;
-  last_edited: string;
-}
+import { Article } from "../../../models/articleTypes";
 
 const Articles: React.FC = () => {
   const navigate = useNavigate();
@@ -61,13 +52,13 @@ const Articles: React.FC = () => {
   }, []);
 
   const columns = [
-    { name: "المعرف", selector: (row: Article) => row.id, sortable: true },
-    { name: "الاسم", selector: (row: Article) => row.name, sortable: true },
-    { name: "الوحدة", selector: (row: Article) => row.unite, sortable: true },
-    { name: "الوصف", selector: (row: Article) => row.description },
-    { name: "ملاحظات", selector: (row: Article) => row.remarque },
-    { name: "الفئة", selector: (row: Article) => row.id_category, sortable: true },
-    { name: "آخر تعديل", selector: (row: Article) => row.last_edited, sortable: true },
+    { name: "المعرف", selector: (row: Article) => row.id ?? 0, sortable: true },
+    { name: "الاسم", selector: (row: Article) => row.name ?? "", sortable: true },
+    { name: "الوحدة", selector: (row: Article) => row.unite ?? "", sortable: true },
+    { name: "الوصف", selector: (row: Article) => row.description ?? "لا يوجد" },
+    { name: "ملاحظات", selector: (row: Article) => row.remarque ?? "لا يوجد" },
+    { name: "الفئة", selector: (row: Article) => row.idCategory ?? 0, sortable: true },
+  
     {
       name: "تعديل",
       cell: (row: Article) => (
@@ -82,7 +73,6 @@ const Articles: React.FC = () => {
         </button>
       ),
       ignoreRowClick: true, 
-    
     },
     {
       name: "حذف",
@@ -98,7 +88,6 @@ const Articles: React.FC = () => {
         </button>
       ),
       ignoreRowClick: true, 
-    
     },
   ];
   

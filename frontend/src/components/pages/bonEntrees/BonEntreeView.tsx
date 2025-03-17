@@ -64,7 +64,6 @@ const BonEntreeView: React.FC = () => {
     { name: "ضريبة القيمة المضافة", selector: (row: BonEntree) => row.TVA, sortable: true },
     { name: "رقم الوثيقة", selector: (row: BonEntree) => row.document_num },
     {
-  
 
     name: "الإجراءات",
     cell: (row: BonEntree) => (

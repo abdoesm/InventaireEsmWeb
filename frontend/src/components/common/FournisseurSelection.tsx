@@ -1,9 +1,7 @@
 import React from "react";
+import { Fournisseur } from "../../models/fournisseurTypes";
 
-export interface Fournisseur {
-    id: number;
-    name: string;
-}
+
 
 interface FournisseurSelectionProps {
     fournisseurs: Fournisseur[];

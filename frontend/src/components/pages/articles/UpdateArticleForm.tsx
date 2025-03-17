@@ -13,7 +13,7 @@ const UpdateArticleForm: React.FC<Props> = ({ onClose, fetchArticles, article })
   const [unite, setUnite] = useState(article.unite);
   const [description, setDescription] = useState(article.description);
   const [remarque, setRemarque] = useState(article.remarque);
-  const [categoryId, setCategoryId] = useState<number>(article.id_category);
+  const [categoryId, setCategoryId] = useState<number>(article.idCategory);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
