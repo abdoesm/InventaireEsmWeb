@@ -10,18 +10,14 @@ import { Sortie } from "../../../models/sortieType";
 import { Employer } from "../../../models/employerType";
 import { Service } from "../../../models/serviceTypes";
 import SelectionList from "../../common/SelectionList";
+import { BonSortie } from "../../../models/bonSortieType";
 
 type Props = {
     id: number;
     onClose: () => void;
     fetchBonSorties: () => void;
 };
-export interface BonSortie {
-    id: number;
-    id_employeur: number;
-    id_service: number;
-    date: string;
-}
+
 const UpdateBonSortieForm: React.FC<Props> = ({ id, onClose, fetchBonSorties }) => {
     const [data, setData] = useState<BonSortie>({ id: 0, id_employeur: 0, id_service: 0, date: "" });
 
