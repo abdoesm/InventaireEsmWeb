@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Bk_End_SRVR } from "../../../configs/conf";
-import Input from "../../common/Input";
 import FormGroup from "../../common/FormGroup";
 import SearchInput from "../../common/SearchInput";
 import ArticleSelection from "../../common/ArticleSelection";
@@ -9,7 +8,9 @@ import useArticlesAndEmployers from "../../../services/useArticlesAndEmployers";
 import { Article } from "../../../models/articleTypes";
 import { Sortie } from "../../../models/sortieType";
 import { Employer } from "../../../models/employerType";
-import EmployerSelection from "../../common/EmployerSelection";
+import { Service } from "../../../models/serviceTypes";
+import SelectionList from "../../common/SelectionList";
+
 
 
 type Props = {
@@ -22,16 +23,20 @@ type Props = {
 const AddBonSortieForm: React.FC<Props> = ({ onClose, fetchBonSorties }) => {
     const [data, setData] = useState({
         date: "",
-        document_num: "",
+        id_employeur: 1,
+        id_service: 0,
     });
 
     const [error, setError] = useState<string | null>(null);
     const [selectedSorties, setSelectedSorties] = useState<Sortie[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [employerSearchTerm, setEmployerSearchTerm] = useState("");
+    const [serviceSearchTerm, setServiceSearchTerm] = useState("");
     const [selectedEmployer, setSelectedEmployer] = useState<Employer | null>(null);
+    const [selectedService, setSelectedService] = useState<Service | null>(null);
 
-    const { articles, error: fetchError, loading,employers } = useArticlesAndEmployers();
+
+    const { articles, error: fetchError, loading, employers, services } = useArticlesAndEmployers();
 
     const filteredArticles = articles.filter(article =>
         article.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -41,6 +46,9 @@ const AddBonSortieForm: React.FC<Props> = ({ onClose, fetchBonSorties }) => {
         || employer.lname.toLowerCase().includes(employerSearchTerm.toLowerCase())
     );
 
+    const filteredService = services.filter(
+        s => s.name.toLowerCase().includes(serviceSearchTerm.toLowerCase())
+    )
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setData((prevData) => ({
@@ -54,20 +62,25 @@ const AddBonSortieForm: React.FC<Props> = ({ onClose, fetchBonSorties }) => {
             if (newEntries.has(article.id!)) {
                 newEntries.delete(article.id!);
             } else {
-                newEntries.set(article.id!, { 
-                    idArticle: article.id!, 
-                    quantity: 1, 
+                newEntries.set(article.id!, {
+                    idArticle: article.id!,
+                    quantity: 1,
                     idBs: 0  // Ensure idBs is included
                 });
             }
             return Array.from(newEntries.values());
         });
     };
-    
-       const handleEmployerSelect = (employer: Employer) => {
-            setSelectedEmployer(employer);
-            setData({ ...data });
-        };
+
+    const handleEmployerSelect = (employer: Employer) => {
+        setSelectedEmployer(employer);
+        setData({ ...data, id_employeur: employer.id });
+    };
+
+    const handleServiceSelect = (service: Service) => {
+        setSelectedService(service);
+        setData({ ...data, id_service: service.id });
+    };
 
     const handleSortieChange = <K extends keyof Sortie>(index: number, field: K, value: Sortie[K]) => {
         setSelectedSorties((prevSorties) => {
@@ -79,10 +92,15 @@ const AddBonSortieForm: React.FC<Props> = ({ onClose, fetchBonSorties }) => {
             return updatedSorties;
         });
     };
-    
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!selectedService) {
+            setError("الرجاء اختيار مصلحة.");
+            return;
+        }
+
         if (!selectedEmployer) {
             setError("الرجاء اختيار موظف.");
             return;
@@ -122,62 +140,127 @@ const AddBonSortieForm: React.FC<Props> = ({ onClose, fetchBonSorties }) => {
     };
 
     return (
-        <div className="modal fade show d-block" tabIndex={-1} role="dialog" aria-hidden="true">
+        <div
+            className="modal fade show d-block"
+            tabIndex={-1}
+            role="dialog"
+            aria-labelledby="addBonSortieModalLabel"
+            aria-hidden="true"
+        >
             <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div className="modal-content">
+                    {/* Modal Header */}
                     <div className="modal-header">
-                        <h5 className="modal-title">إضافة وصل خروج جديد</h5>
-                        <button type="button" className="btn-close" aria-label="إغلاق" onClick={onClose}></button>
+                        <h5 className="modal-title" id="addBonSortieModalLabel">
+                            إضافة وصل خروج جديد
+                        </h5>
+                        <button
+                            type="button"
+                            className="btn-close"
+                            aria-label="إغلاق"
+                            onClick={onClose}
+                        ></button>
                     </div>
+
+                    {/* Modal Body */}
                     <div className="modal-body" style={{ maxHeight: "70vh", overflowY: "auto" }}>
+                        {/* Error Messages */}
                         {error && <p className="text-danger">{error}</p>}
                         {fetchError && <p className="text-danger">{fetchError}</p>}
+
+                        {/* Loading State */}
                         {loading ? (
-                            <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>
+                            <div className="text-center">
+                                <div className="spinner-border text-secondary" role="status">
+                                    <span className="visually-hidden">جارٍ تحميل البيانات...</span>
+                                </div>
+                            </div>
                         ) : (
                             <form onSubmit={handleSubmit}>
-                                <div className="row">
+                                {/* Date Input */}
+                                <div className="row mb-3">
                                     <div className="col-md-6">
-                                        <Input label="التاريخ" type="date" name="date" value={data.date} onChange={handleChange} />
-                                    </div>
-                                    <div className="col-md-6">
-                                        <Input label="رقم الوثيقة" type="text" name="document_num" value={data.document_num} onChange={handleChange} />
+                                        <input
+                                            type="date"
+                                            name="date"
+                                            value={data.date}
+                                            onChange={handleChange}
+                                            required
+                                        />
                                     </div>
                                 </div>
-                                  {/* Supplier Selection */}
-                                  <FormGroup label="المورد">
-                                    <SearchInput
-                                        placeholder="ابحث عن المورد..."
-                                        value={employerSearchTerm}
-                                        onChange={(e) => setEmployerSearchTerm(e.target.value)}
-                                    />
-                                    <EmployerSelection
-                                        employers={filteredEmployer}
-                                        selectedEmployer={selectedEmployer}
-                                        onEmployerSelect={handleEmployerSelect}
-                                    />
-                                </FormGroup>
+
+                                {/* Employer and Service Selection Side by Side */}
+                                <div className="row mb-3">
+                                    <div className="col-md-6">
+                                        <FormGroup label="الموظف">
+                                            <SearchInput
+                                                placeholder="ابحث عن الموظف..."
+                                                value={employerSearchTerm}
+                                                onChange={(e) => setEmployerSearchTerm(e.target.value)}
+                                            />
+                                            <SelectionList
+                                                items={filteredEmployer}
+                                                selectedItem={selectedEmployer}
+                                                onSelect={handleEmployerSelect}
+                                                getItemLabel={(employer) => `${employer.fname} ${employer.lname}`}
+                                                emptyMessage="لا يوجد موظفون متاحون"
+                                            />
+                                        </FormGroup>
+                                    </div>
+
+                                    <div className="col-md-6">
+                                        <FormGroup label="المصلحة">
+                                            <SearchInput
+                                                placeholder="ابحث عن المصلحة..."
+                                                value={serviceSearchTerm}
+                                                onChange={(e) => setServiceSearchTerm(e.target.value)}
+                                            />
+                                            <SelectionList
+                                                items={filteredService}
+                                                selectedItem={selectedService}
+                                                onSelect={handleServiceSelect}
+                                                getItemLabel={(service) => service.name}
+                                                emptyMessage="لا يوجد مصالح متاحون"
+                                            />
+
+                                        </FormGroup>
+                                    </div>
+                                </div>
+
+                                {/* Article Selection */}
                                 <FormGroup label="حدد المقالات للخروج">
                                     <SearchInput
                                         placeholder="ابحث عن المقال..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                     />
-                                    
                                     <ArticleSelection<Sortie>
                                         articles={filteredArticles}
                                         selectedEntrees={selectedSorties}
                                         onArticleSelect={handleArticleSelect}
                                     />
                                 </FormGroup>
+
+                                {/* Selected Articles Table */}
                                 <SelectedArticlesTable<Sortie>
                                     selectedEntrees={selectedSorties}
                                     articles={articles}
                                     onEntreeChange={handleSortieChange}
                                 />
+
+                                {/* Modal Footer */}
                                 <div className="modal-footer">
-                                    <button type="submit" className="btn btn-primary">إضافة</button>
-                                    <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
+                                    <button type="submit" className="btn btn-primary">
+                                        إضافة
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-secondary"
+                                        onClick={onClose}
+                                    >
+                                        إلغاء
+                                    </button>
                                 </div>
                             </form>
                         )}
@@ -186,6 +269,7 @@ const AddBonSortieForm: React.FC<Props> = ({ onClose, fetchBonSorties }) => {
             </div>
         </div>
     );
+
 };
 
 export default AddBonSortieForm;

@@ -109,16 +109,20 @@ const BonSortieView: React.FC = () => {
 )}
 
 
-      {showUpdateBonSortieForm && selectedBonSortie && (
-        <UpdateBonSortieForm
-        
-        />
-      )}
+{showUpdateBonSortieForm && selectedBonSortie && (
+  <UpdateBonSortieForm
+    onClose={() => setShowUpdateBonSortieForm(false)}
+    fetchBonSorties={fetchBonSorties}
+    id={selectedBonSortie.id}
+  />
+)}
+
 
       {showDeleteForm && selectedBonSortie && (
         <DeleteBonSortieForm
-        
-        
+        onClose={()=> setShowDeleteForm(false)}
+        bonSortieId={selectedBonSortie.id}
+        fetchBonSortie={fetchBonSorties}
         />
       )}
     </div>

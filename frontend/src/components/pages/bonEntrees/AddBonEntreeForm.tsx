@@ -3,13 +3,13 @@ import { Bk_End_SRVR } from "../../../configs/conf";
 import Input from "../../common/Input";
 import FormGroup from "../../common/FormGroup";
 import SearchInput from "../../common/SearchInput";
-import FournisseurSelection from "../../common/FournisseurSelection";
 import ArticleSelection from "../../common/ArticleSelection";
 import SelectedArticlesTable from "../../common/SelectedArticlesTable";
 import useArticlesAndFournisseurs from "../../../services/useArticlesAndFournisseurs";
 import { Fournisseur } from "../../../models/fournisseurTypes";
 import { Article } from "../../../models/articleTypes";
 import { Entree } from "../../../models/entreeTypes";
+import SelectionList from "../../common/SelectionList";
 
 
 type Props = {
@@ -154,11 +154,14 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
                                         value={fournisseurSearchTerm}
                                         onChange={(e) => setFournisseurSearchTerm(e.target.value)}
                                     />
-                                    <FournisseurSelection
-                                        fournisseurs={filteredFournisseurs}
-                                        selectedFournisseur={selectedFournisseur}
-                                        onFournisseurSelect={handleFournisseurSelect}
-                                    />
+                                 <SelectionList
+    items={fournisseurs}
+    selectedItem={selectedFournisseur}
+    onSelect={handleFournisseurSelect}
+    getItemLabel={(fournisseur) => fournisseur.name}
+    emptyMessage="لا يوجد موردون متاحون"
+/>
+
                                 </FormGroup>
 
                                 {/* Article Selection */}

@@ -45,7 +45,7 @@ const SelectedArticlesTable = <T extends Entree | Sortie>({
             {selectedEntrees.length === 0 ? (
                 <p className="text-muted">لم يتم تحديد أي مقالات.</p>
             ) : (
-                <div style={{ overflowX: "auto" }}>
+                <div style={{ maxHeight: "150px",  overflowX: "auto" }}>
                     <table className="table table-striped text-center">
                         <thead className="table-light">
                             <tr>

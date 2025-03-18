@@ -2,10 +2,17 @@ import { useState, useEffect } from "react";
 import { Bk_End_SRVR } from "../configs/conf";
 import { Article } from "../models/articleTypes";
 import { Employer } from "../models/employerType";
+import { Service } from "../models/serviceTypes";
+
+interface QuantityInfo {
+  idArticle: number;
+  totalQuantity: number;
+}
 
 const useArticlesAndEmployers = () => {
   const [articles, setArticles] = useState<Article[]>([]);
-   const [employers, setEmployers] = useState<Employer[]>([]);
+  const [employers, setEmployers] = useState<Employer[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,34 +25,39 @@ const useArticlesAndEmployers = () => {
         return;
       }
 
-      const [articlesRes, quantitiesRes, employerRes] = await Promise.all([
-
+      const [articlesRes, quantitiesRes, employerRes, servicesRes] = await Promise.all([
         fetch(`${Bk_End_SRVR}:5000/api/articles`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-
-
         fetch(`${Bk_End_SRVR}:5000/api/articles/quantities`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-
         fetch(`${Bk_End_SRVR}:5000/api/employers`, {
-                headers: { Authorization: `Bearer ${token}` },
-              })
-      ])
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`${Bk_End_SRVR}:5000/api/services`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
 
-      if (!articlesRes.ok|| !quantitiesRes.ok || !employerRes.ok) throw new Error("Failed to fetch articles.");
+      if (!articlesRes.ok || !quantitiesRes.ok || !employerRes.ok || !servicesRes.ok) {
+        throw new Error("Failed to fetch data.");
+      }
 
-      const articlesData = await articlesRes.json();
-      const quantitiesData: { idArticle: number; totalQuantity: number }[] =
-      await quantitiesRes.json();
-      articlesData.forEach((article: Article) => {
+      const articlesData: Article[] = await articlesRes.json();
+      const quantitiesData: QuantityInfo[] = await quantitiesRes.json();
+      const employerData: Employer[] = await employerRes.json();
+      const servicesData: Service[] = await servicesRes.json();
+
+      // Combine articles with their quantities
+      articlesData.forEach((article) => {
         const quantityInfo = quantitiesData.find((q) => q.idArticle === article.id);
         article.totalQuantity = quantityInfo ? quantityInfo.totalQuantity : 0;
-    });
-    const employerData = await employerRes.json();
-    setArticles(articlesData);
-     setEmployers(employerData)
+      });
+
+      setArticles(articlesData);
+      setEmployers(employerData);
+      setServices(servicesData);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unknown error occurred.");
@@ -58,7 +70,7 @@ const useArticlesAndEmployers = () => {
     fetchArticles();
   }, []);
 
-  return { articles, loading, error, fetchArticles,employers };
+  return { articles, employers, services, loading, error, fetchArticles };
 };
 
 export default useArticlesAndEmployers;
