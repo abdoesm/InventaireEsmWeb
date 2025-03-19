@@ -22,16 +22,20 @@ const SelectedArticlesTable = <T extends Entree | Sortie | Retour>({
         () => new Map(articles.map((article) => [Number(article.id), article])),
         [articles]
     );
-    const hasEntriesWithUnitPrice = selectedItems.some(isEntree);
+    console.log("Selected Items Passed:", selectedItems);
+    const hasEntriesWithUnitPrice = Array.isArray(selectedItems ?? []) && (selectedItems ?? []).some(isEntree);
+
+
+
 
     const totalHT = useMemo(
         () =>
-            selectedItems
+            (selectedItems ?? [])
                 .filter(isEntree)
                 .reduce((sum, entree) => sum + entree.quantity * (entree as Entree).unitPrice, 0),
         [selectedItems]
     );
-
+    
     const tvaAmount = useMemo(() => totalHT * 0.19, [totalHT]);
     const totalTTC = useMemo(() => totalHT + tvaAmount, [totalHT, tvaAmount]);
 
