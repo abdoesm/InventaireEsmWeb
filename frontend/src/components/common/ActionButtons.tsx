@@ -20,12 +20,15 @@ const ActionButtons = <T,>({ item, onEdit, onDelete, onAddition }: Props<T>) => 
           <FaTrash />
         </button>
       )}
-      <button 
-        className="btn btn-success btn-sm" 
-        onClick={() => onAddition?.(item)} // Calls onAddition if provided
-      >
-        <FaPlus />
-      </button>
+   {onAddition && (
+  <button 
+    className="btn btn-success btn-sm" 
+    onClick={() => onAddition(item)}
+  >
+    <FaPlus />
+  </button>
+)}
+
     </div>
   );
 };

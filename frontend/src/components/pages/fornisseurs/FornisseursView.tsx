@@ -8,6 +8,7 @@ import FournisseurTable from "./FournisseurTable";
 import AddFournisseurForm from "./AddFournisseurForm";
 import UpdateFournisseurForm from "./UpdateFournisseurForm";
 import DeleteFournisseurForm from "./DeleteFournisseurForm";
+import HomeBtn from "../../common/HomeBtn";
 
 const FournisseurView: React.FC = () => {
   const navigate = useNavigate();
@@ -50,9 +51,7 @@ const FournisseurView: React.FC = () => {
   return (
     <div className="container mt-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <button onClick={() => navigate("/dashboard")} className="btn btn-outline-primary">
-          <FaHome className="me-2" /> الصفحة الرئيسية
-        </button>
+      <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة الموردين</h2>
       </div>
 

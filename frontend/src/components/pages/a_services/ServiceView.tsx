@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaHome} from "react-icons/fa";
+import { FaHome, FaPlus} from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import AddServiceForm from "./AddServiceForm";
 import UpdateServiceForm from "./UpdateServiceForm";
@@ -10,6 +10,7 @@ import { Bk_End_SRVR } from "../../../configs/conf";
 import { Service } from "../../../models/serviceTypes";
 import { Employer } from "../../../models/employerType";
 import ActionButtons from "../../common/ActionButtons";
+import HomeBtn from "../../common/HomeBtn";
 
 
 
@@ -90,7 +91,7 @@ const Services: React.FC = () => {
             setSelectedService(item);
             setShowDeleteForm(true);
           }}
-          onAddition={() => setShowAddForm(true)}
+
         />
       ),
       ignoreRowClick: true,
@@ -100,47 +101,58 @@ const Services: React.FC = () => {
 
   return (
     <div className="container mt-5">
+      {/* Header Section */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <button onClick={() => navigate("/dashboard")} className="btn btn-outline-primary">
-          <FaHome className="me-2" /> الصفحة الرئيسية
+        {/* Home Button */}
+      <HomeBtn/>
+        
+        {/* Title */}
+        <h2 className="fw-bold text-center flex-grow-1 text-primary">إدارة الخدمات</h2>
+        
+        {/* Add Service Button */}
+        <button className="btn btn-success px-4 py-2" onClick={() => setShowAddForm(true)}>
+          <FaPlus className="me-2" /> إضافة مصلحة
         </button>
-        <h2 className="fw-bold text-center">إدارة الخدمات</h2>
       </div>
-
+  
+      {/* Display Data Table */}
       {loading ? (
         <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>
       ) : error ? (
         <p className="text-danger">{error}</p>
       ) : (
-        <DataTable
-          title="قائمة الخدمات"
-          columns={columns}
-          data={services}
-          pagination
-          highlightOnHover
-          responsive
-          striped
-        />
+        <div className="card shadow-sm p-3">
+          <DataTable
+            title="قائمة الخدمات"
+            columns={columns}
+            data={services}
+            pagination
+            highlightOnHover
+            responsive
+            striped
+          />
+        </div>
       )}
-
   
-
+      {/* Modals for Forms */}
       {showAddForm && <AddServiceForm onClose={() => setShowAddForm(false)} fetchServices={fetchServices} />}
       {showUpdateForm && selectedService && (
-        <UpdateServiceForm onClose={() => setShowUpdateForm(false)}
+        <UpdateServiceForm 
+          onClose={() => setShowUpdateForm(false)}
           service={{ ...selectedService }}
-          fetchServices={fetchServices} />
+          fetchServices={fetchServices} 
+        />
       )}
       {showDeleteForm && selectedService && (
-  <DeleteServiceForm 
-  onClose={() => setShowDeleteForm(false)} 
-  service={selectedService} 
-  fetchServices={fetchServices} 
-/>
-
+        <DeleteServiceForm 
+          onClose={() => setShowDeleteForm(false)} 
+          service={selectedService} 
+          fetchServices={fetchServices} 
+        />
       )}
     </div>
   );
+  
 };
 
 export default Services;

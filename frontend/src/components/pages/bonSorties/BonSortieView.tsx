@@ -10,6 +10,7 @@ import ActionButtons from "../../common/ActionButtons";
 import AddBonSortieForm from "./AddBonSortieForm";
 import { Employer } from "../../../models/employerType";
 import { Service } from "../../../models/serviceTypes";
+import HomeBtn from "../../common/HomeBtn";
 
 interface BonSortie {
   id: number;
@@ -132,9 +133,7 @@ const BonSortieView: React.FC = () => {
   return (
     <div className="container mt-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <button onClick={() => navigate("/dashboard")} className="btn btn-outline-primary">
-          <FaHome className="me-2" /> الصفحة الرئيسية
-        </button>
+      <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة وصول الخروج</h2>
       </div>
 
