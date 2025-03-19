@@ -8,6 +8,7 @@ import AddBonEntreeForm from "./AddBonEntreeForm";
 import UpdateBonEntreeForm from "./UpdateBonEntreeForm";
 import ActionButtons from "../../common/ActionButtons";
 import DeleteBonEntreeForm from "./DeleteBonEntreeForm";
+import { Fournisseur } from "../../../models/fournisseurTypes";
 
 interface BonEntree {
   id: number;
@@ -20,7 +21,8 @@ interface BonEntree {
 const BonEntreeView: React.FC = () => {
   const navigate = useNavigate();
   const [bonEntrees, setBonEntrees] = useState<BonEntree[]>([]);
-    const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
+  const [fournisseurs, setFournisseurs] = useState<Fournisseur[]>([]);
+  const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
   const [showAddBonEntreeForm, setShowAddBonEntreeForm] = useState<boolean>(false);
   const [showUpdateBonEntreeForm, setShowUpdateBonEntreeForm] = useState<boolean>(false);
   const [selectedBonEntree, setSelectedBonEntree] = useState<BonEntree | null>(null);
@@ -55,13 +57,41 @@ const BonEntreeView: React.FC = () => {
     fetchBonEntrees();
   }, []);
 
+  const fetchFournisseurs = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("No token found. Please log in.");
+        setLoading(false);
+        return;
+      }
 
+      const response = await fetch(`${Bk_End_SRVR}:5000/api/fournisseurs`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch fournisseurs.");
+
+      const data: Fournisseur[] = await response.json();
+      setFournisseurs(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An unknown error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFournisseurs();
+  }, []);
 
   const columns = [
     { name: "المعرف", selector: (row: BonEntree) => row.id, sortable: true },
-    { name: "رقم المورد", selector: (row: BonEntree) => row.id_fournisseur, sortable: true },
+    { name: "رقم المورد", selector: (row: BonEntree) =>  {
+      const fournisseur = fournisseurs.find(frn=>frn.id ===row.id_fournisseur);
+      return fournisseur ? fournisseur.name : " غير معروف"
+    }, sortable: true },
     { name: "التاريخ", selector: (row: BonEntree) => row.date, sortable: true },
-    { name: "ضريبة القيمة المضافة", selector: (row: BonEntree) => row.TVA, sortable: true },
     { name: "رقم الوثيقة", selector: (row: BonEntree) => row.document_num },
     {
 

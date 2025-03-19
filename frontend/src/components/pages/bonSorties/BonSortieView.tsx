@@ -8,6 +8,8 @@ import UpdateBonSortieForm from "./UpdateBonSortieForm";
 import DeleteBonSortieForm from "./DeleteBonSortieForm";
 import ActionButtons from "../../common/ActionButtons";
 import AddBonSortieForm from "./AddBonSortieForm";
+import { Employer } from "../../../models/employerType";
+import { Service } from "../../../models/serviceTypes";
 
 interface BonSortie {
   id: number;
@@ -19,6 +21,8 @@ interface BonSortie {
 const BonSortieView: React.FC = () => {
   const navigate = useNavigate();
   const [bonSorties, setBonSorties] = useState<BonSortie[]>([]);
+    const [employers, setEmployers] = useState<Employer[]>([]);
+     const [services, setServices] = useState<Service[]>([]);
   const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
   const [showAddBonSortieForm, setShowAddBonSortieForm] = useState<boolean>(false);
   const [showUpdateBonSortieForm, setShowUpdateBonSortieForm] = useState<boolean>(false);
@@ -53,11 +57,57 @@ const BonSortieView: React.FC = () => {
   useEffect(() => {
     fetchBonSorties();
   }, []);
-
+  useEffect(() => {
+    const fetchEmployers = async () => {
+      try {
+        const response = await fetch(`${Bk_End_SRVR}:5000/api/employers`);
+        if (!response.ok) throw new Error("Failed to fetch employers");
+        const data = await response.json();
+        setEmployers(data);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEmployers();
+  }, []);
+    const fetchServices = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setError("No token found. Please log in.");
+          setLoading(false);
+          return;
+        }
+  
+        const response = await fetch(`${Bk_End_SRVR}:5000/api/services`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
+        if (!response.ok) throw new Error("Failed to fetch services.");
+  
+        const data: Service[] = await response.json();
+        setServices(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An unknown error occurred.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    useEffect(() => {
+      fetchServices();
+    }, []);
   const columns = [
     { name: "المعرف", selector: (row: BonSortie) => row.id, sortable: true },
-    { name: "رقم المستخدم", selector: (row: BonSortie) => row.id_employeur, sortable: true },
-    { name: "رقم الخدمة", selector: (row: BonSortie) => row.id_service, sortable: true },
+    { name: " الموظف", selector: (row: BonSortie) =>{
+      const emplyer = employers.find(emp => emp.id===row.id_employeur);
+      return emplyer ? emplyer.fname+" "+emplyer.lname : "غير معروف"
+    }, sortable: true },
+    { name: "المصلحة", selector: (row: BonSortie) => {
+      const service = services.find( srv => srv.id===row.id_service);
+      return service ? service.name : "غير معروفة"
+    }, sortable: true },
     { name: "التاريخ", selector: (row: BonSortie) => row.date, sortable: true },
     {
       name: "الإجراءات",
