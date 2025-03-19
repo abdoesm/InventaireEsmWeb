@@ -108,7 +108,6 @@ const BonEntreeView: React.FC = () => {
           setSelectedBonEntree(item);
           setShowDeleteForm(true);
         }}
-        onAddition={() => setShowAddBonEntreeForm(true)}
       />
     ),
     ignoreRowClick: true,
@@ -120,6 +119,8 @@ const BonEntreeView: React.FC = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
       <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة وصول الاستلام </h2>
+        <button className="btn btn-success px-4 py-2" onClick={() => setShowAddBonEntreeForm(true)}>
+            <FaPlus className="me-2" /> إضافة وصل استلام         </button>
       </div>
 
       {loading ? (

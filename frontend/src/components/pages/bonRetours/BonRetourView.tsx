@@ -120,7 +120,7 @@ const BonRetourView: React.FC = () => {
               setSelectedBonRetour(item);
               setShowDeleteForm(true);
             }}
-            onAddition={() => setShowAddBonRetourForm(true)}
+    
           />
         ),
         ignoreRowClick: true,
@@ -132,6 +132,8 @@ const BonRetourView: React.FC = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
       <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة وصول الإرجاع </h2>
+         <button className="btn btn-success px-4 py-2" onClick={() => setShowAddBonRetourForm(true)}>
+                    <FaPlus className="me-2" /> إضافة وصل          </button>
       </div>
 
       {loading ? (

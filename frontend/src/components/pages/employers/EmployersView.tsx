@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaHome, FaUserPlus } from "react-icons/fa";
+import { FaHome, FaPlus, FaUserPlus } from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import AddEmployerForm from "./AddEmployerForm";
 import UpdateEmployerForm from "./UpdateEmployerForm";
@@ -89,10 +89,7 @@ const Employers: React.FC = () => {
             setSelectedEmployer(employer);
             setShowDeleteEmployerForm(true);
           }} 
-          onAddition={(employer) => {
-            setSelectedEmployer(employer);
-            setShowAddEmployerForm(true);
-          }} 
+  
         />
       ),
       ignoreRowClick: true,
@@ -104,6 +101,8 @@ const Employers: React.FC = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
       <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة الموظفين</h2>
+         <button className="btn btn-success px-4 py-2" onClick={() => setShowAddEmployerForm(true)}>
+                    <FaPlus className="me-2" /> إضافة موظف         </button>
       </div>
 
       {loading ? (

@@ -53,6 +53,8 @@ const FournisseurView: React.FC = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
       <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة الموردين</h2>
+          <button className="btn btn-success px-4 py-2" onClick={() => setShowAddForm(true)}>
+                            <FaPlus className="me-2" /> إضافة مورد         </button>
       </div>
 
       {loading ? (

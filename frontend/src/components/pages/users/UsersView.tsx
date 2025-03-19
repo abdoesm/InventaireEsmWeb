@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaHome } from "react-icons/fa";
+import { FaHome, FaPlus } from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import AddUserForm from "./AddUserForm";
 import UpdateUserForm from "./UpdateUserForm";
@@ -37,7 +37,6 @@ const Users: React.FC = () => {
             setSelectedUser(item);
             setShowDeleteUserForm(true);
           }}
-          onAddition={() => setShowAddUserForm(true)}
         />
       ),
       ignoreRowClick: true,
@@ -49,6 +48,8 @@ const Users: React.FC = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
       <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة المستخدمين</h2>
+          <button className="btn btn-success px-4 py-2" onClick={() => setShowAddUserForm(true)}>
+                            <FaPlus className="me-2" /> إضافة مستخدم         </button>
       </div>
 
       {loading ? (

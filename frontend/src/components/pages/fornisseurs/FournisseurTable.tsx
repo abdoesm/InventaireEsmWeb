@@ -29,7 +29,7 @@ const FournisseurTable: React.FC<Props> = ({ fournisseurs, onEdit, onDelete, onA
           item={row} // Fixed: Pass only the current row
           onEdit={onEdit} // Fixed: Use onEdit from props
           onDelete={onDelete} // Fixed: Use onDelete from props
-          onAddition={onAddition} // Fixed: No argument needed
+  
         />
       ),
       ignoreRowClick: true,

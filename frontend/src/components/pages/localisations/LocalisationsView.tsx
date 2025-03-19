@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaHome, FaMapMarkerAlt } from "react-icons/fa";
+import { FaHome, FaMapMarkerAlt, FaPlus } from "react-icons/fa";
 import DataTable, { TableColumn } from "react-data-table-component";
 import AddLocalisationForm from "./AddLocalisationForm";
 import UpdateLocalisationForm from "./UpdateLocalisationForm";
@@ -97,10 +97,7 @@ const LocalisationsView: React.FC = () => {
             setSelectedLocalisation(item);
             setShowDeleteForm(true);
           }}
-          onAddition={(employer) => {
-            setSelectedLocalisation(employer);
-            setShowAddForm(true);
-          }} 
+       
         />
       ),
       ignoreRowClick: true,
@@ -112,6 +109,8 @@ const LocalisationsView: React.FC = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
       <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة المواقع</h2>
+          <button className="btn btn-success px-4 py-2" onClick={() => setShowAddForm(true)}>
+                            <FaPlus className="me-2" /> إضافة موقع         </button>
       </div>
 
       {loading ? (

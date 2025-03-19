@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaHome } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
@@ -123,7 +123,7 @@ const BonSortieView: React.FC = () => {
             setSelectedBonSortie(item);
             setShowDeleteForm(true);
           }}
-          onAddition={() => setShowAddBonSortieForm(true)}
+    
         />
       ),
       ignoreRowClick: true,
@@ -135,6 +135,8 @@ const BonSortieView: React.FC = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
       <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة وصول الخروج</h2>
+         <button className="btn btn-success px-4 py-2" onClick={() => setShowAddBonSortieForm(true)}>
+                    <FaPlus className="me-2" /> إضافة وصل          </button>
       </div>
 
       {loading ? (
