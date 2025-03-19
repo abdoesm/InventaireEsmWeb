@@ -244,9 +244,9 @@ const AddBonSortieForm: React.FC<Props> = ({ onClose, fetchBonSorties }) => {
 
                                 {/* Selected Articles Table */}
                                 <SelectedArticlesTable<Sortie>
-                                    selectedEntrees={selectedSorties}
+                                    selectedItems={selectedSorties}
                                     articles={articles}
-                                    onEntreeChange={handleSortieChange}
+                                    onItemChange={handleSortieChange}
                                 />
 
                                 {/* Modal Footer */}

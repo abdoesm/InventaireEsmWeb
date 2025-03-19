@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaHome, FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { FaHome} from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import AddServiceForm from "./AddServiceForm";
 import UpdateServiceForm from "./UpdateServiceForm";

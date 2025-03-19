@@ -213,9 +213,9 @@ const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) 
                             </FormGroup>
 
                             <SelectedArticlesTable
-                                selectedEntrees={selectedEntrees}
+                                selectedItems={selectedEntrees}
                                 articles={articles}
-                                onEntreeChange={handleEntreeChange}
+                                onItemChange={handleEntreeChange}
                             />
 
                             <div className="modal-footer">

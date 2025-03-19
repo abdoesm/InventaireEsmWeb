@@ -13,6 +13,7 @@ import Services from "./components/pages/a_services/ServiceView";
 import LocalisationsView from "./components/pages/localisations/LocalisationsView";
 import BonEntreeView from "./components/pages/bonEntrees/BonEntreeView"
 import BonSortieView from "./components/pages/bonSorties/BonSortieView";
+import BonRetourView from "./components/pages/bonRetours/BonRetourView";
  
 
 interface JwtPayload {
@@ -86,6 +87,7 @@ const App = () => {
           <Route path="/localisations" element={user ? <LocalisationsView /> : <Navigate to="/login" replace />} />
           <Route path="/bonentrees" element={user ? <BonEntreeView /> : <Navigate to="/login" replace />} />
           <Route path="/bonsorties" element={user ? <BonSortieView /> : <Navigate to="/login" replace />} />
+          <Route path="/bonretours" element={user ? <BonRetourView /> : <Navigate to="/login" replace />} />
         </Route>
 
         <Route path="*" element={<div>404 - Page Not Found</div>} />

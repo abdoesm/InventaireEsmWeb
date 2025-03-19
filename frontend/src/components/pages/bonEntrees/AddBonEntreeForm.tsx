@@ -180,9 +180,9 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
 
                                 {/* Selected Articles Table */}
                                 <SelectedArticlesTable<Entree>
-                                    selectedEntrees={selectedEntrees}
+                                  selectedItems  ={selectedEntrees}
                                     articles={articles}
-                                    onEntreeChange={handleEntreeChange}
+                                    onItemChange={handleEntreeChange}
                                 />
                                 {/* Fixed Modal Footer */}
                                 <div className="modal-footer">

@@ -2,34 +2,34 @@ import React, { useMemo } from "react";
 import { Article } from "../../models/articleTypes";
 import { Entree } from "../../models/entreeTypes";
 import { Sortie } from "../../models/sortieType";
-
-interface SelectedArticlesTableProps<T extends Entree | Sortie> {
-    selectedEntrees: T[];
+import { Retour } from "../../models/retourType";
+interface SelectedArticlesTableProps<T extends Entree | Sortie | Retour> {
+    selectedItems: T[];  // More generic than selectedEntrees
     articles: Article[];
-    onEntreeChange: <K extends keyof T>(index: number, field: K, value: T[K]) => void;
+    onItemChange: <K extends keyof T>(index: number, field: K, value: T[K]) => void;
 }
 
 // Type guard to check if an entry is an Entree
-const isEntree = (entry: Entree | Sortie): entry is Entree => "unitPrice" in entry;
+const isEntree = (entry: Entree | Sortie | Retour): entry is Entree => "unitPrice" in entry;
 
-const SelectedArticlesTable = <T extends Entree | Sortie>({
-    selectedEntrees,
+
+const SelectedArticlesTable = <T extends Entree | Sortie | Retour>({
+    selectedItems,
     articles,
-    onEntreeChange,
+    onItemChange,
 }: SelectedArticlesTableProps<T>) => {
     const articleMap = useMemo(
         () => new Map(articles.map((article) => [Number(article.id), article])),
         [articles]
     );
-
-    const hasEntriesWithUnitPrice = selectedEntrees.some(isEntree);
+    const hasEntriesWithUnitPrice = selectedItems.some(isEntree);
 
     const totalHT = useMemo(
         () =>
-            selectedEntrees
+            selectedItems
                 .filter(isEntree)
                 .reduce((sum, entree) => sum + entree.quantity * (entree as Entree).unitPrice, 0),
-        [selectedEntrees]
+        [selectedItems]
     );
 
     const tvaAmount = useMemo(() => totalHT * 0.19, [totalHT]);
@@ -42,7 +42,7 @@ const SelectedArticlesTable = <T extends Entree | Sortie>({
     return (
         <div className="mb-3">
             <h5>📌 المقالات المحددة</h5>
-            {selectedEntrees.length === 0 ? (
+            {selectedItems.length === 0 ? (
                 <p className="text-muted">لم يتم تحديد أي مقالات.</p>
             ) : (
                 <div style={{ maxHeight: "150px",  overflowX: "auto" }}>
@@ -56,7 +56,7 @@ const SelectedArticlesTable = <T extends Entree | Sortie>({
                             </tr>
                         </thead>
                         <tbody>
-                            {selectedEntrees.map((entry, index) => {
+                            {selectedItems.map((entry, index) => {
                                 const article = articleMap.get(entry.idArticle);
                                 return (
                                     <tr key={entry.idArticle}>
@@ -68,7 +68,7 @@ const SelectedArticlesTable = <T extends Entree | Sortie>({
                                                 value={entry.quantity}
                                                 min="1"
                                                 onChange={(e) =>
-                                                    onEntreeChange(index, "quantity" as keyof T, Math.max(1, Number(e.target.value) || 1) as T[keyof T])
+                                                    onItemChange(index, "quantity" as keyof T, Math.max(1, Number(e.target.value) || 1) as T[keyof T])
                                                 }
                                             />
                                         </td>
@@ -82,7 +82,7 @@ const SelectedArticlesTable = <T extends Entree | Sortie>({
                                                         min="0"
                                                         step="any"
                                                         onChange={(e) =>
-                                                            onEntreeChange(index, "unitPrice" as keyof T, Math.max(0, Number(e.target.value) || 0) as T[keyof T])
+                                                            onItemChange(index, "unitPrice" as keyof T, Math.max(0, Number(e.target.value) || 0) as T[keyof T])
                                                         }
                                                     />
                                                 </td>

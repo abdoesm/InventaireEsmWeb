@@ -241,9 +241,9 @@ const UpdateBonSortieForm: React.FC<Props> = ({ id, onClose, fetchBonSorties }) 
                                 </FormGroup>
 
                                 <SelectedArticlesTable<Sortie>
-                                    selectedEntrees={selectedSorties}
+                                    selectedItems={selectedSorties}
                                     articles={articles}
-                                    onEntreeChange={handleSortieChange}
+                                    onItemChange={handleSortieChange}
                                 />
 
                                 <div className="modal-footer">

@@ -31,7 +31,7 @@ const Dashboard: React.FC<DashboardProps> = ({ logout, userRole }) => {
     { path: "/employers", label: "العمال", icon: <FaUsers />, roles: ["Admin"], className: "employers" },
     { path: "/articles", label: "المواد", icon: <FaBoxes />, roles: ["Admin", "User"], className: "articles" },
     { path: "/categories", label: "الفئات", icon: <FaCubes />, roles: ["Admin"], className: "categories" },
-    { path: "/bon-retour", label: "وصول الارجاع", icon: <FaWarehouse />, roles: ["Admin"], className: "bon-retour" },
+    { path: "/bonretours", label: "وصول الارجاع", icon: <FaWarehouse />, roles: ["Admin"], className: "bon-retour" },
   ];
 
   const filteredMenu = menuItems.filter(item => item.roles.includes(userRole));
