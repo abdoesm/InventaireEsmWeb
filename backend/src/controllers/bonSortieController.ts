@@ -6,10 +6,12 @@ const bonSortieModel = new BonSortieModel();
 export const createBonSortie = async (req: Request, res: Response) => {
     try {
         console.log("createBonSortie from controller", req.body);
-        const bonSortie = await bonSortieModel.createBonSortie(req.body);
+
+        const { sorties, ...bonSortieData } = req.body; // Extract sorties from request body
+        const bonSortie = await bonSortieModel.createBonSortie(bonSortieData, sorties);
 
         if (bonSortie) {
-            res.status(201).json({ id: bonSortie.id, message: "Bon de sortie added successfully." });
+            res.status(201).json({ id: bonSortie.id, message: "Bon de sortie and sorties added successfully." });
         } else {
             res.status(400).json({ error: "Failed to add bon de sortie." });
         }
@@ -18,6 +20,7 @@ export const createBonSortie = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Internal server error." });
     }
 };
+
 
 export const getAllBonSorties = async (_req: Request, res: Response) => {
     try {

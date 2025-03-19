@@ -3,21 +3,30 @@ import { BonEntreeModel, Entree } from "../models/BonEntreeModel";
 
 const bonEntreeModel = new BonEntreeModel();
 
-export const createBonEntree = async (req: Request, res: Response) => {
+export const createBonEntree = async (req: Request, res: Response): Promise<void> => {
     try {
-        console.log("createBonEntree from controler"+req.body)
-        const bonEntree = await bonEntreeModel.createBonEntree(req.body);
+        console.log("createBonEntree from controller", req.body);
+        
+        // Extract `entrees` separately
+        const { entrees, ...bonEntreeData } = req.body;
 
-        if (bonEntree) {
-            res.status(201).json({ id: bonEntree.id, message: "Bon d'entrée added successfully." });
-        } else {
+        // Create BonEntree first
+        const bonEntree = await bonEntreeModel.createBonEntree(bonEntreeData, entrees);
+
+        // Ensure `bonEntree` is not null before proceeding
+        if (!bonEntree) {
             res.status(400).json({ error: "Failed to add bon d'entrée." });
+            return;  // ✅ Ensure function does not continue execution
         }
+
+        res.status(201).json({ id: bonEntree.id, message: "Bon d'entrée and associated entrees added successfully." });
+
     } catch (error) {
         console.error("Error in createBonEntree:", error);
         res.status(500).json({ error: "Internal server error." });
     }
 };
+
 
 export const getAllBonEntrees = async (_req: Request, res: Response) => {
     try {

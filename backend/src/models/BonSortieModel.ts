@@ -51,31 +51,37 @@ export class BonSortieModel {
         }
     }
     
-    async createBonSortie(bon_sortie: BonSortie): Promise<{ id: number } | null> {
+    async createBonSortie(bonSortieData: BonSortie, sorties: Sortie[]): Promise<{ id: number } | null> {
         try {
-            console.log("createBonSortie from model", bon_sortie);
-
-            const formattedDate = bon_sortie.date
-                ? format(new Date(bon_sortie.date), 'yyyy-MM-dd HH:mm:ss')
+            const formattedDate = bonSortieData.date
+                ? format(new Date(bonSortieData.date), 'yyyy-MM-dd HH:mm:ss')
                 : null;
 
             const query = "INSERT INTO bon_sortie (id_employeur, id_service, date) VALUES (?, ?, ?)";
             const [result] = await pool.query<ResultSetHeader>(query, [
-                bon_sortie.id_employeur,
-                bon_sortie.id_service,
+                bonSortieData.id_employeur,
+                bonSortieData.id_service,
                 formattedDate
             ]);
 
             if (result.affectedRows > 0) {
-                return { id: result.insertId };
-            } else {
-                return null;
+                const idBs = result.insertId;
+                for (const sortie of sorties) {
+                    await pool.query(
+                        "INSERT INTO sortie (id_bs, id_article, quantity) VALUES (?, ?, ?)",
+                        [idBs, sortie.idArticle, sortie.quantity]
+                    );
+                }
+                return { id: idBs };
             }
+            return null;
         } catch (error) {
             console.error("Error creating bon sortie", error);
             return null;
         }
     }
+
+
 
     async addSortie(sortie: Sortie): Promise<boolean> {
         try {

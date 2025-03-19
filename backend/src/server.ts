@@ -13,6 +13,7 @@ import { loginUser } from "./controllers/userController";
 import localisationRoutes from "./routes/localisationRoutes";
 import bonEntreeRoutes from "./routes/bonEntreeRoutes";
 import bonSortieRoutes from "./routes/bonSortieRoutes";
+import bonRetourRoutes from "./routes/bonRetourRoutes";
 dotenv.config();
 
 const app = express();
@@ -41,6 +42,7 @@ app.use("/api/services", serviceRoutes);
 app.use("/api/localisations", localisationRoutes);
 app.use("/api/bonentrees",bonEntreeRoutes);
 app.use("/api/bonsorties",bonSortieRoutes);
+app.use("/api/bonretours",bonRetourRoutes);
 app.get("/api/backup", verifyToken, backupDatabase);
 
 

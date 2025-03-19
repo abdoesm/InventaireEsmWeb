@@ -21,25 +21,38 @@ export class BonEntreeModel {
 
 
 
-    async createBonEntree(bon_entree: BonEntree): Promise<{ id: number } | null> {
+    async createBonEntree(bonEntree: BonEntree, entrees: Entree[] = []): Promise<{ id: number } | null> {
         try {
-            console.log("createBonEntree from model", bon_entree);
-
+            console.log("createBonEntree from model", bonEntree);
+    
             // Ensure the date is in the correct format
-            const formattedDate = bon_entree.date
-                ? format(new Date(bon_entree.date), 'yyyy-MM-dd HH:mm:ss')
+            const formattedDate = bonEntree.date
+                ? format(new Date(bonEntree.date), 'yyyy-MM-dd HH:mm:ss')
                 : null;
-
+    
             const query = "INSERT INTO bon_entree (id_fournisseur, date, TVA, document_num) VALUES (?, ?, ?, ?)";
             const [result] = await pool.query<ResultSetHeader>(query, [
-                bon_entree.id_fournisseur,
+                bonEntree.id_fournisseur,
                 formattedDate,  // ✅ Correctly formatted datetime
-                bon_entree.TVA,
-                bon_entree.document_num
+                bonEntree.TVA,
+                bonEntree.document_num
             ]);
-
+    
             if (result.affectedRows > 0) {
-                return { id: result.insertId }; // ✅ Return the newly created ID
+                const bonEntreeId = result.insertId; // ✅ Get the newly created ID
+    
+                // Insert associated `Entrees`
+                if (entrees.length > 0) {
+                    for (const entree of entrees) {
+                        entree.idBe = bonEntreeId;
+                        const success = await this.addEntree(entree);
+                        if (!success) {
+                            console.error("Failed to insert entree:", entree);
+                        }
+                    }
+                }
+    
+                return { id: bonEntreeId };
             } else {
                 return null;
             }
