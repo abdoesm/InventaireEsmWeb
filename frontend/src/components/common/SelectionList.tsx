@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 
 interface SelectionListProps<T> {
     items: T[];
@@ -15,12 +15,24 @@ const SelectionList = <T extends { id: number }>({
     getItemLabel,
     emptyMessage,
 }: SelectionListProps<T>) => {
+    const selectedRef = useRef<HTMLLIElement | null>(null);
+
     const handleSelect = useCallback(
         (item: T) => {
             onSelect(item);
         },
         [onSelect]
     );
+
+    // Scroll to selected item when component mounts or selectedItem changes
+    useEffect(() => {
+        if (selectedRef.current) {
+            selectedRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+            });
+        }
+    }, [selectedItem]);
 
     return (
         <div
@@ -36,6 +48,7 @@ const SelectionList = <T extends { id: number }>({
                     items.map((item) => (
                         <li
                             key={item.id}
+                            ref={selectedItem?.id === item.id ? selectedRef : null}
                             className={`list-group-item d-flex justify-content-between align-items-center ${
                                 selectedItem?.id === item.id
                                     ? "bg-primary text-white"
@@ -43,7 +56,8 @@ const SelectionList = <T extends { id: number }>({
                             }`}
                             onClick={() => handleSelect(item)}
                             tabIndex={0}
-                            onKeyPress={(e) =>
+                            role="button"
+                            onKeyDown={(e) =>
                                 e.key === "Enter" && handleSelect(item)
                             }
                             style={{
