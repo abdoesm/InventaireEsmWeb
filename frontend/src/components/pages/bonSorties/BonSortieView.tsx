@@ -11,19 +11,14 @@ import AddBonSortieForm from "./AddBonSortieForm";
 import { Employer } from "../../../models/employerType";
 import { Service } from "../../../models/serviceTypes";
 import HomeBtn from "../../common/HomeBtn";
+import { BonSortie } from "../../../models/bonSortieType";
 
-interface BonSortie {
-  id: number;
-  id_employeur: number;
-  id_service: number;
-  date: string;
-}
 
 const BonSortieView: React.FC = () => {
   const navigate = useNavigate();
   const [bonSorties, setBonSorties] = useState<BonSortie[]>([]);
-    const [employers, setEmployers] = useState<Employer[]>([]);
-     const [services, setServices] = useState<Service[]>([]);
+  const [employers, setEmployers] = useState<Employer[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
   const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
   const [showAddBonSortieForm, setShowAddBonSortieForm] = useState<boolean>(false);
   const [showUpdateBonSortieForm, setShowUpdateBonSortieForm] = useState<boolean>(false);

@@ -14,6 +14,7 @@ import localisationRoutes from "./routes/localisationRoutes";
 import bonEntreeRoutes from "./routes/bonEntreeRoutes";
 import bonSortieRoutes from "./routes/bonSortieRoutes";
 import bonRetourRoutes from "./routes/bonRetourRoutes";
+import InventaireItemRoutes from "./routes/InventaireItemRoutes";
 dotenv.config();
 
 const app = express();
@@ -43,6 +44,7 @@ app.use("/api/localisations", localisationRoutes);
 app.use("/api/bonentrees",bonEntreeRoutes);
 app.use("/api/bonsorties",bonSortieRoutes);
 app.use("/api/bonretours",bonRetourRoutes);
+app.use("/api/inventaire",InventaireItemRoutes);
 app.get("/api/backup", verifyToken, backupDatabase);
 
 
