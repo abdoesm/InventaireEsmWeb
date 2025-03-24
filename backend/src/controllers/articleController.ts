@@ -79,9 +79,11 @@ export const addArticles = async (req: Request, res: Response) => {
 
 export const updateArticle = async (req: Request, res: Response) => {
     try {
+        console.log("updateArticle from the controller",req.body)
         const success = await articleModel.updateArticle(req.body);
         if (success) {
             res.json({ message: "Article updated successfully." });
+            return;
         } else {
             res.status(400).json({ error: "Failed to update article." });
         }
