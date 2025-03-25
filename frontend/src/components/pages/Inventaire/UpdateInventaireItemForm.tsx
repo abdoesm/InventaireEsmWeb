@@ -92,13 +92,14 @@ const UpdateInventaireItemForm: React.FC<UpdateInventaireItemFormProps> = ({ onC
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
+                    id: selectedItem.id,
                     idArticle: selectedArticle.id,
                     idUser: 1,
                     idLocalisation: selectedLocation.id,
                     idEmployer: selectedEmployer.id,
-                    numInventaire,
-                    dateInventaire,
-                    status,
+                    numInventaire: numInventaire,
+                    dateInventaire: dateInventaire,
+                    status: status,
                 }),
             });
 

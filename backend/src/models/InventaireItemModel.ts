@@ -65,22 +65,39 @@ export class InventaireItemModel {
 
     async updateInventaireItem(item: InventaireItem): Promise<boolean> {
         try {
-            const query = `UPDATE inventaire_item SET id_article = ?, user_id = ?, id_localisation = ?, id_employer = ?, num_inventaire = ?, time = ? WHERE id = ?`;
-            const [result] = await pool.execute(query, [
-                item.idArticle,
-                item.idUser,
-                item.idLocalisation,
-                item.idEmployer,
-                item.numInventaire,
-                item.dateInventaire,
-                item.id
-            ]);
+            console.log("to update with Item Data:", item);
+            const formattedDate = item.dateInventaire
+                ? format(new Date(item.dateInventaire), 'yyyy-MM-dd HH:mm:ss')
+                : null;
+    
+            // Fixed SQL Query
+            const query = `UPDATE inventaire_item 
+                           SET id_article = ?, user_id = ?, id_localisation = ?, id_employer = ?, 
+                               num_inventaire = ?, time = ?, status = ? 
+                           WHERE id = ?`;
+    
+
+                     
+         
+         const [result] = await pool.execute(query, [
+             item.idArticle ?? null,
+             item.idUser ?? null,
+             item.idLocalisation ?? null,
+             item.idEmployer ?? null,
+             item.numInventaire ?? null,
+             formattedDate ?? null,
+             item.status ?? null,
+             item.id ?? null
+         ]);
+         
+    
             return (result as ResultSetHeader).affectedRows > 0;
         } catch (error) {
             console.error("Error updating inventaire item:", error);
             return false;
         }
     }
+    
 
     async deleteInventaireItem(id: number): Promise<boolean> {
         try {

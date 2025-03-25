@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Bk_End_SRVR } from '../../../configs/conf';
 
 interface DeleteInventaireItemProps {
     onClose: () => void;
@@ -11,25 +12,46 @@ const DeleteInventaireItem: React.FC<DeleteInventaireItemProps> = ({
     InventaireItemId,
     fetchInventaireItems,
 }) => {
+       const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const handleDelete = async () => {
         try {
-            // Replace with your API call to delete the item
-            await fetch(`/api/inventaire/${InventaireItemId}`, {
-                method: 'DELETE',
+            const token = localStorage.getItem("token");
+            const response = await fetch(`${Bk_End_SRVR}:5000/api/inventaire/${InventaireItemId}`, {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${token}` },
             });
-            fetchInventaireItems(); // Refresh the list after deletion
-            onClose(); // Close the delete form
-        } catch (error) {
-            console.error('Failed to delete the item:', error);
+
+            const data = await response.json();
+            if (!response.ok) {
+                setErrorMessage("فشل في حذف الجرد."
+                );
+                return;
+            }
+
+            fetchInventaireItems();
+            onClose();
+        } catch (err) {
+            setErrorMessage("حدث خطأ في الشبكة. يرجى المحاولة مرة أخرى.");
+            console.error((err as Error).message);
         }
     };
-
     return (
-        <div className="delete-inventaire-item">
-            <p>Are you sure you want to delete this item?</p>
-            <div>
-                <button onClick={handleDelete}>Yes, Delete</button>
-                <button onClick={onClose}>Cancel</button>
+        <div className="modal fade show d-block" tabIndex={-1} role="dialog">
+            <div className="modal-dialog modal-dialog-centered" role="document">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <h5 className="modal-title text-danger">حذف الجرد</h5>
+                        <button type="button" className="btn-close" onClick={onClose}></button>
+                    </div>
+                    <div className="modal-body">
+                        {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+                        <p>هل أنت متأكد أنك تريد حذف  الجرد <strong>{InventaireItemId}</strong>؟</p>
+                    </div>
+                    <div className="modal-footer">
+                        <button className="btn btn-danger" onClick={handleDelete}>نعم، حذف</button>
+                        <button className="btn btn-secondary" onClick={onClose}>إلغاء</button>
+                    </div>
+                </div>
             </div>
         </div>
     );
