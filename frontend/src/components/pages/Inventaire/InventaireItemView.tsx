@@ -8,8 +8,9 @@ import ActionButtons from "../../common/ActionButtons";
 import AddInventaireItemForm from "./AddInventaireItemForm";
 import UpdateInventaireItemForm from "./UpdateInventaireItemForm";
 import DeleteInventaireItem from "./DeleteInventaireItem";
-import UpdateBonEntreeForm from "./UpdateInventaireItemForm";
 import { InventaireItem } from "../../../models/inventaireItemType";
+import useArticlesAndEmployers from "../../../services/useArticlesAndEmployers";
+import useLocation from "../../../services/useLocation";
 
 
 const InventaireItemView: React.FC = () => {
@@ -57,18 +58,30 @@ const InventaireItemView: React.FC = () => {
       setLoading(false);
     }
   };
-
+  const { employers,articles} = useArticlesAndEmployers();
+  const { localisations} = useLocation();
 
   useEffect(() => {
     fetchInventaireItems();
   }, []);
  
 const columns = [ 
-  { name: "رقم المعرف", selector: (row: InventaireItem) => row.id ?? 0, sortable: true },
-  { name: "معرف المادة", selector: (row: InventaireItem) => row.idArticle ?? 0, sortable: true },
+  { name: " المعرف", selector: (row: InventaireItem) => row.id ?? 0, sortable: true },
+ 
+  { name: " العنصر", selector: (row: InventaireItem) => {
+    const article = articles.find(art => art.id===row.idArticle);
+    return article ? article.name : "غير معروف"
+  }, sortable: true },
+
   { name: "معرف المستخدم", selector: (row: InventaireItem) => row.idUser ?? 0, sortable: true },
-  { name: "معرف الموقع", selector: (row: InventaireItem) => row.idLocalisation ?? 0, sortable: true },
-  { name: "معرف الموظف", selector: (row: InventaireItem) => row.idEmployer ?? 0, sortable: true },
+  { name: "معرف الموقع", selector: (row: InventaireItem) => {
+    const local = localisations.find(loc => loc.id===row.idLocalisation);
+    return local ? local.loc_name  + " الطابق " + local.floor: "غير معروف"
+  }, sortable: true },
+   { name: " الموظف", selector: (row: InventaireItem) =>{
+        const emplyer = employers.find(emp => emp.id===row.idEmployer);
+        return emplyer ? emplyer.fname+" "+emplyer.lname : "غير معروف"
+      }, sortable: true },
   { name: "رقم الجرد", selector: (row: InventaireItem) => row.numInventaire ?? "", sortable: true },
   { name: "تاريخ الجرد", selector: (row: InventaireItem) => row.dateInventaire ?? "", sortable: true },
   
