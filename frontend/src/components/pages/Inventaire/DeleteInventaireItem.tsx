@@ -21,7 +21,6 @@ const DeleteInventaireItem: React.FC<DeleteInventaireItemProps> = ({
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            const data = await response.json();
             if (!response.ok) {
                 setErrorMessage("فشل في حذف الجرد."
                 );

@@ -8,6 +8,7 @@ import { Localisation } from "../../../models/localisationType";
 import useArticlesAndEmployers from "../../../services/useArticlesAndEmployers";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import Input from "../../common/Input";
+import { checkAuth, UserType } from "../../../App";
 
 interface AddInventaireItemFormProps {
     onClose: () => void;
@@ -21,6 +22,7 @@ const AddInventaireItemForm: React.FC<AddInventaireItemFormProps> = ({ onClose, 
     const [selectedLocation, setSelectedLocation] = useState<Localisation | null>(null);
     const [numInventaire, setNumInventaire] = useState("");
     const [status, setStatus] = useState("");
+    const [user, setUser] = useState<UserType>();
     const [dateInventaire, setDateInventaire] = useState("");
 
     const [localisations, setLocalisations] = useState<Localisation[]>([]);
@@ -45,9 +47,18 @@ const AddInventaireItemForm: React.FC<AddInventaireItemFormProps> = ({ onClose, 
             } finally {
                 setLoading(false);
             }
+            
         };
+        
         fetchLocalisations();
     }, []);
+
+    useEffect(() => {
+        const authenticatedUser = checkAuth();
+        console.log("Authenticated User:", authenticatedUser);
+        setUser(authenticatedUser);
+    }, []);
+    
 
     const filteredArticles = articles.filter((article) =>
         article.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -58,10 +69,31 @@ const AddInventaireItemForm: React.FC<AddInventaireItemFormProps> = ({ onClose, 
     
 
     const handleSubmit = async () => {
-        if (!selectedArticle || !selectedEmployer || !selectedLocation || !numInventaire || !status) {
+        if (!selectedArticle || !selectedEmployer || !selectedLocation || !numInventaire || !status || !dateInventaire || !user) {
             alert("يرجى ملء جميع الحقول المطلوبة");
             return;
         }
+           const authenticatedUser = checkAuth();
+    console.log("Authenticated User:", authenticatedUser);
+
+    if (!authenticatedUser || !authenticatedUser.id) {
+        alert("حدث خطأ أثناء جلب بيانات المستخدم.");
+        return;
+    }
+    
+
+        console.log("User on submit:", user);
+        console.log("User ID:", user?.id);
+        console.log("Request Payload:", JSON.stringify({
+            idArticle: selectedArticle.id,
+            idUser: user?.id, 
+            idLocalisation: selectedLocation.id,
+            idEmployer: selectedEmployer.id,
+            numInventaire: numInventaire,
+            dateInventaire: dateInventaire,
+            status: status
+        }));
+                
     
         try {
             await fetch(`${Bk_End_SRVR}:5000/api/inventaire`, {
@@ -69,7 +101,7 @@ const AddInventaireItemForm: React.FC<AddInventaireItemFormProps> = ({ onClose, 
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     idArticle: selectedArticle.id,
-                    idUser: 1, // Change this to the actual logged-in user ID
+                    idUser: user.id, // Change this to the actual logged-in user ID
                     idLocalisation: selectedLocation.id,
                     idEmployer: selectedEmployer.id,
                     numInventaire: numInventaire,

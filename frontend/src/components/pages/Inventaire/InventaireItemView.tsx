@@ -11,17 +11,21 @@ import DeleteInventaireItem from "./DeleteInventaireItem";
 import { InventaireItem } from "../../../models/inventaireItemType";
 import useArticlesAndEmployers from "../../../services/useArticlesAndEmployers";
 import useLocation from "../../../services/useLocation";
-
+import { checkAuth, UserType } from "../../../App";
+import useFetchUsers from "../../../services/user/useFetchUsers";
 
 const InventaireItemView: React.FC = () => {
 
   const [loading, setLoading] = useState<boolean>(true);
+  const [user, setUser] = useState<UserType>();
   const [error, setError] = useState<string | null>(null);
   const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
   const [showAddInventaireItemForm, setShowAddInventaireItemForm] = useState<boolean>(false);
   const [showUpdateInventaireItemForm, setShowUpdateInventaireItemForm] = useState<boolean>(false);
   const [selectedInventaireItem, setSelectedInventaireItem] = useState<InventaireItem | null>(null);
+  const { users,fetchUsers } = useFetchUsers();
   const [inventaireItems, setInventaireItems] = useState<InventaireItem[]>([]);
+
   const fetchInventaireItems = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -35,6 +39,7 @@ const InventaireItemView: React.FC = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+  
       if (!response.ok) throw new Error("Failed to fetch inventaire item.");
 
       const data = await response.json();
@@ -63,8 +68,12 @@ const InventaireItemView: React.FC = () => {
 
   useEffect(() => {
     fetchInventaireItems();
+    setUser(checkAuth());
+    setLoading(false);
   }, []);
 
+
+  console.log("user", user);
   const columns = [
     { name: " المعرف", selector: (row: InventaireItem) => row.id ?? 0, sortable: true },
 
@@ -80,7 +89,10 @@ const InventaireItemView: React.FC = () => {
     },
 
 
-    { name: "معرف المستخدم", selector: (row: InventaireItem) => row.idUser ?? 0, sortable: true },
+    { name: "معرف المستخدم", selector: (row: InventaireItem) => {
+      const user = users.find(usr => usr.id === row.idUser);
+      return user ? user.username : "غير معروف"
+    }, sortable: true },
     {
       name: "معرف الموقع", selector: (row: InventaireItem) => {
         const local = localisations.find(loc => loc.id === row.idLocalisation);

@@ -18,14 +18,14 @@ import InventaireItemView from "./components/pages/Inventaire/InventaireItemView
  
 
 interface JwtPayload {
-  _id: string;
+  id: string;
   role: string;
   exp?: number; // Optional expiration field in JWT
 }
 
-type UserType = JwtPayload | null;
+export type UserType = JwtPayload | null;
 
-const checkAuth = (): UserType => {
+export const checkAuth = (): UserType => {
   const token = localStorage.getItem("token");
   if (!token) return null;
 
@@ -33,6 +33,7 @@ const checkAuth = (): UserType => {
     const decoded = jwtDecode<JwtPayload>(token);
     if (decoded.exp && decoded.exp * 1000 < Date.now()) {
       console.warn("⚠️ Token expired. Logging out...");
+      alert("⚠️ Session expired. Please log in again.");
       localStorage.removeItem("token");
       return null;
     }
