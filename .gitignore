@@ -11,3 +11,4 @@ logs/
 *.log
 *.log.*
 frontend/src/configs/conf.ts
+frontend/src/configs/conf.ts
