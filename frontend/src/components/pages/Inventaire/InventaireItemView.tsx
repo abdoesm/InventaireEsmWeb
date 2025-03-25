@@ -38,7 +38,7 @@ const InventaireItemView: React.FC = () => {
       if (!response.ok) throw new Error("Failed to fetch inventaire item.");
 
       const data = await response.json();
-      console.log("data",data);
+      console.log("data", data);
       const mappedData = data.map((item: any) => ({
         id: item.id,
         idArticle: item.id_article,  // Corrected
@@ -49,8 +49,8 @@ const InventaireItemView: React.FC = () => {
         dateInventaire: item.time,  // Corrected
         status: item.status,  // Corrected
       }));
-      
-      
+
+
       setInventaireItems(mappedData);
       setLoading(false);
     } catch (err) {
@@ -58,49 +58,62 @@ const InventaireItemView: React.FC = () => {
       setLoading(false);
     }
   };
-  const { employers,articles} = useArticlesAndEmployers();
-  const { localisations} = useLocation();
+  const { employers, articles } = useArticlesAndEmployers();
+  const { localisations } = useLocation();
 
   useEffect(() => {
     fetchInventaireItems();
   }, []);
- 
-const columns = [ 
-  { name: " المعرف", selector: (row: InventaireItem) => row.id ?? 0, sortable: true },
- 
-  { name: " العنصر", selector: (row: InventaireItem) => {
-    const article = articles.find(art => art.id===row.idArticle);
-    return article ? article.name : "غير معروف"
-  }, sortable: true },
 
-  { name: "معرف المستخدم", selector: (row: InventaireItem) => row.idUser ?? 0, sortable: true },
-  { name: "معرف الموقع", selector: (row: InventaireItem) => {
-    const local = localisations.find(loc => loc.id===row.idLocalisation);
-    return local ? local.loc_name  + " الطابق " + local.floor: "غير معروف"
-  }, sortable: true },
-   { name: " الموظف", selector: (row: InventaireItem) =>{
-        const emplyer = employers.find(emp => emp.id===row.idEmployer);
-        return emplyer ? emplyer.fname+" "+emplyer.lname : "غير معروف"
-      }, sortable: true },
-  { name: "رقم الجرد", selector: (row: InventaireItem) => row.numInventaire ?? "", sortable: true },
-  { name: "تاريخ الجرد", selector: (row: InventaireItem) => row.dateInventaire ?? "", sortable: true },
-  
-  { name: "الإجراءات",    cell: (row: InventaireItem) => (
-    <ActionButtons
-      item={row}
-      onEdit={(item) => {
-        setSelectedInventaireItem(item);
-        setShowUpdateInventaireItemForm(true);
-      }}
-      onDelete={(item) => {
-        setSelectedInventaireItem(item);
-        setShowDeleteForm(true);
-      }}
+  const columns = [
+    { name: " المعرف", selector: (row: InventaireItem) => row.id ?? 0, sortable: true },
 
-    />
-  ),
-  ignoreRowClick: true,
-},];
+    {
+      name: "العنصر",
+      selector: (row: InventaireItem) => {
+        const article = articles.find((art) => art.id === row.idArticle);
+        return article ? article.name : "غير معروف";
+      },
+      sortable: true,
+      minWidth: "400px",
+      maxWidth: "520px",
+    },
+
+
+    { name: "معرف المستخدم", selector: (row: InventaireItem) => row.idUser ?? 0, sortable: true },
+    {
+      name: "معرف الموقع", selector: (row: InventaireItem) => {
+        const local = localisations.find(loc => loc.id === row.idLocalisation);
+        return local ? local.loc_name + " الطابق " + local.floor : "غير معروف"
+      }, sortable: true
+    },
+    {
+      name: " الموظف", selector: (row: InventaireItem) => {
+        const emplyer = employers.find(emp => emp.id === row.idEmployer);
+        return emplyer ? emplyer.fname + " " + emplyer.lname : "غير معروف"
+      }, sortable: true
+    },
+    { name: "رقم الجرد", selector: (row: InventaireItem) => row.numInventaire ?? "", sortable: true }
+    ,
+    { name: "تاريخ الجرد", selector: (row: InventaireItem) => row.dateInventaire ?? "", sortable: true },
+
+    {
+      name: "الإجراءات", cell: (row: InventaireItem) => (
+        <ActionButtons
+          item={row}
+          onEdit={(item) => {
+            setSelectedInventaireItem(item);
+            setShowUpdateInventaireItemForm(true);
+          }}
+          onDelete={(item) => {
+            setSelectedInventaireItem(item);
+            setShowDeleteForm(true);
+          }}
+
+        />
+      ),
+      ignoreRowClick: true,
+    },];
 
 
   return (
@@ -126,34 +139,27 @@ const columns = [
         />
       )}
 
-{showAddInventaireItemForm && (
-  <AddInventaireItemForm onClose={() => setShowAddInventaireItemForm(false)} fetchInventaireitem={fetchInventaireItems} />
-)}
+      {showAddInventaireItemForm && (
+        <AddInventaireItemForm onClose={() => setShowAddInventaireItemForm(false)} fetchInventaireitem={fetchInventaireItems} />
+      )}
 
 
-{showAddInventaireItemForm && selectedInventaireItem && selectedInventaireItem.id !== undefined && (
-  <AddInventaireItemForm
-    onClose={() => setShowAddInventaireItemForm(false)}
-    fetchInventaireitem={fetchInventaireItems}
-   
-  />
-)}
-{showUpdateInventaireItemForm && selectedInventaireItem && (
-  <UpdateInventaireItemForm
-    onClose={() => setShowUpdateInventaireItemForm(false)}
-    fetchInventaireItems={fetchInventaireItems}
-    selectedItem={selectedInventaireItem} // ✅ Pass selected item
-  />
-)}
+      {showUpdateInventaireItemForm && selectedInventaireItem && (
+        <UpdateInventaireItemForm
+          onClose={() => setShowUpdateInventaireItemForm(false)}
+          fetchInventaireItems={fetchInventaireItems}
+          selectedItem={selectedInventaireItem} // ✅ Pass selected item
+        />
+      )}
 
 
 
       {showDeleteForm && selectedInventaireItem && (
         <DeleteInventaireItem
-        onClose={()=> setShowDeleteForm(false)}
+          onClose={() => setShowDeleteForm(false)}
 
-        InventaireItemId={selectedInventaireItem.id ?? 0}
-        fetchInventaireItems={fetchInventaireItems}
+          InventaireItemId={selectedInventaireItem.id ?? 0}
+          fetchInventaireItems={fetchInventaireItems}
         />
       )}
     </div>

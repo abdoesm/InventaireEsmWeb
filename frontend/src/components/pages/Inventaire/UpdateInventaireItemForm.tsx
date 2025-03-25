@@ -13,12 +13,12 @@ import { InventaireItem } from "../../../models/inventaireItemType";
 interface UpdateInventaireItemFormProps {
     onClose: () => void;
     fetchInventaireItems: () => void;
-    selectedItem: InventaireItem; 
-  }
-  
+    selectedItem: InventaireItem;
+}
+
 
 const UpdateInventaireItemForm: React.FC<UpdateInventaireItemFormProps> = ({ onClose, fetchInventaireItems, selectedItem }) => {
-    console.log("selectedItem",selectedItem);
+    console.log("selectedItem", selectedItem);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedArticle, setSelectedArticle] = useState<Article | null>();
     const [selectedEmployer, setSelectedEmployer] = useState<Employer | null>();
@@ -39,27 +39,27 @@ const UpdateInventaireItemForm: React.FC<UpdateInventaireItemFormProps> = ({ onC
         if (selectedItem) {
             setNumInventaire(selectedItem.numInventaire || "");
             setStatus(selectedItem.status || "");
-    
+
             // Ensure proper date formatting (assuming stored format is 'yyyy-MM-dd' or an ISO string)
-            const formattedDate = selectedItem.dateInventaire 
-                ? new Date(selectedItem.dateInventaire).toISOString().split("T")[0] 
+            const formattedDate = selectedItem.dateInventaire
+                ? new Date(selectedItem.dateInventaire).toISOString().split("T")[0]
                 : "";
             setDateInventaire(formattedDate);
-    
+
             // Set selected article
             const foundArticle = articles.find((article) => article.id === selectedItem.idArticle);
             setSelectedArticle(foundArticle || null);
-    
+
             // Set selected employer
             const foundEmployer = employers.find((employer) => employer.id === selectedItem.idEmployer);
             setSelectedEmployer(foundEmployer || null);
-    
+
             // Set selected location
             const foundLocation = localisations.find((loc) => loc.id === selectedItem.idLocalisation);
             setSelectedLocation(foundLocation || null);
         }
     }, [selectedItem, articles, employers, localisations]);
-    
+
 
     useEffect(() => {
         const fetchLocalisations = async () => {
@@ -128,7 +128,7 @@ const UpdateInventaireItemForm: React.FC<UpdateInventaireItemFormProps> = ({ onC
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
-                        <SelectionList
+                            <SelectionList
                                 items={filteredArticles as { id: number; name: string }[]} // ✅ Type casting
                                 selectedItem={selectedArticle as { id: number; name: string } | null} // ✅ Ensure type consistency
                                 onSelect={(article) => setSelectedArticle(article as Article)}
@@ -148,12 +148,12 @@ const UpdateInventaireItemForm: React.FC<UpdateInventaireItemFormProps> = ({ onC
                         </FormGroup>
 
                         <Input
-    label="التاريخ"
-    type="date"
-    name="date"
-    value={dateInventaire}
-    onChange={(e) => setDateInventaire(e.target.value)}
-/>
+                            label="التاريخ"
+                            type="date"
+                            name="date"
+                            value={dateInventaire}
+                            onChange={(e) => setDateInventaire(e.target.value)}
+                        />
 
                         <FormGroup label="رقم الجرد">
                             <input
@@ -177,13 +177,13 @@ const UpdateInventaireItemForm: React.FC<UpdateInventaireItemFormProps> = ({ onC
                         <FormGroup label="الموقع">
                             {loading ? <p>جارٍ تحميل المواقع...</p> : error ? <p className="text-danger">{error}</p> : (
                                 <SelectionList
-                                items={localisations as { id: number; loc_name: string  ; floor: number; id_service: number;}[]} // ✅ Uses correct type
-                                selectedItem={selectedLocation as { id: number; loc_name: string  ; floor: number; id_service: number;} | null} // ✅ Ensure type consistency
-                                onSelect={(location) => setSelectedLocation(location as Localisation)}
-                                getItemLabel={(location) =>  `${ location.loc_name} الطابق ${location.floor}   `   } 
+                                    items={localisations as { id: number; loc_name: string; floor: number; id_service: number; }[]} // ✅ Uses correct type
+                                    selectedItem={selectedLocation as { id: number; loc_name: string; floor: number; id_service: number; } | null} // ✅ Ensure type consistency
+                                    onSelect={(location) => setSelectedLocation(location as Localisation)}
+                                    getItemLabel={(location) => `${location.loc_name} الطابق ${location.floor}   `}
 
-                                emptyMessage="لا توجد مواقع متاحة"
-                            />
+                                    emptyMessage="لا توجد مواقع متاحة"
+                                />
                             )}
                         </FormGroup>
                     </div>
