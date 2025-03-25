@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import { FaPlus } from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -15,7 +15,7 @@ import { BonSortie } from "../../../models/bonSortieType";
 
 
 const BonSortieView: React.FC = () => {
-  const navigate = useNavigate();
+
   const [bonSorties, setBonSorties] = useState<BonSortie[]>([]);
   const [employers, setEmployers] = useState<Employer[]>([]);
   const [services, setServices] = useState<Service[]>([]);

@@ -19,6 +19,7 @@ const UpdateArticleForm: React.FC<Props> = ({ onClose, fetchArticles, article })
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      let id = article.id
       const token = localStorage.getItem("token");
       const response = await fetch(`${Bk_End_SRVR}:5000/api/articles/${article.id}`, {
         method: "PUT",
@@ -26,7 +27,7 @@ const UpdateArticleForm: React.FC<Props> = ({ onClose, fetchArticles, article })
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name, unite, description, remarque, id_category: categoryId }),
+        body: JSON.stringify({ id,name, unite, description, remarque, id_category: categoryId }),
       });
       if (!response.ok) throw new Error("Failed to update article");
       fetchArticles();

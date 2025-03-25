@@ -89,22 +89,37 @@ export class ArticleModel {
 
     async updateArticle(article: Article): Promise<boolean> {
         try {
-            const query = "UPDATE article SET name = ?, unite = ?, remarque = ?, description = ?, id_category = ?, min_quantity = ? WHERE id = ?";
+            console.log("Updating article:", article);
+    
+            // Ensure all properties are defined
+            const safeArticle = {
+                name: article.name ?? null,
+                unite: article.unite ?? null,
+                remarque: article.remarque ?? null,
+                description: article.description ?? null,
+                idCategory: article.idCategory ?? null,
+                minQuantity: article.minQuantity ?? null,
+                id: article.id
+            };
+    
+            const query = `UPDATE article SET name = ?, unite = ?, remarque = ?, description = ?, id_category = ?, min_quantity = ? WHERE id = ?`;
             const [result] = await pool.execute(query, [
-                article.name,
-                article.unite,
-                article.remarque,
-                article.description,
-                article.idCategory,
-                article.minQuantity,
-                article.id,
+                safeArticle.name,
+                safeArticle.unite,
+                safeArticle.remarque,
+                safeArticle.description,
+                safeArticle.idCategory,
+                safeArticle.minQuantity,
+                safeArticle.id,
             ]);
+    
             return (result as ResultSetHeader).affectedRows > 0;
         } catch (error) {
             console.error("Error updating article:", error);
             return false;
         }
     }
+    
     async deleteArticle(id: number): Promise<boolean> {
         try {
             console.log("Checking dependencies before deleting article: " + id);
