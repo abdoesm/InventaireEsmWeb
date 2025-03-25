@@ -154,7 +154,6 @@ const AddInventaireItemForm: React.FC<AddInventaireItemFormProps> = ({ onClose, 
                             </select>
                         </FormGroup>
 
-                
                         {/* Location Selection */}
                         <FormGroup label="الموقع">
                             {loading ? (
@@ -163,10 +162,10 @@ const AddInventaireItemForm: React.FC<AddInventaireItemFormProps> = ({ onClose, 
                                 <p className="text-danger">{error}</p>
                             ) : (
                                 <SelectionList
-                                    items={localisations as { id: number; loc_name: string }[]} // ✅ Uses correct type
-                                    selectedItem={selectedLocation as { id: number; loc_name: string } | null} // ✅ Ensure type consistency
+                                    items={localisations as  { id: number; loc_name: string  ; floor: number; id_service: number;}[]} // ✅ Uses correct type
+                                    selectedItem={selectedLocation as { id: number; loc_name: string  ; floor: number; id_service: number;} | null} // ✅ Ensure type consistency
                                     onSelect={(location) => setSelectedLocation(location as Localisation)}
-                                    getItemLabel={(location) => location.loc_name} // ✅ Uses loc_name instead of name
+                                    getItemLabel={(location) =>  `${ location.loc_name} الطابق ${location.floor}   `   } 
                                     emptyMessage="لا توجد مواقع متاحة"
                                 />
                             )}
