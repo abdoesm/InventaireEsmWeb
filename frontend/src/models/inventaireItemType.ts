@@ -1,4 +1,4 @@
-interface InventaireItem {
+export interface InventaireItem {
     id?: number;
     idArticle: number;
     idUser: number;
@@ -6,4 +6,5 @@ interface InventaireItem {
     idEmployer?: number;
     numInventaire?: string;
     dateInventaire?: string;
+    status?: string;
 }

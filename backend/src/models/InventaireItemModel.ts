@@ -1,6 +1,6 @@
 import { ResultSetHeader } from "mysql2";
 import pool from "../config/db";
-
+import { format } from 'date-fns';
 interface InventaireItem {
     id?: number;
     idArticle: number;
@@ -9,6 +9,7 @@ interface InventaireItem {
     idEmployer?: number;
     numInventaire?: string;
     dateInventaire?: string;
+    status?: string;
 }
 
 export class InventaireItemModel {
@@ -41,15 +42,19 @@ export class InventaireItemModel {
 
     async addInventaireItem(item: InventaireItem): Promise<boolean> {
         try {
-            const query = `INSERT INTO inventaire_item (id_article, user_id, id_localisation, id_employer, num_inventaire, date_inventaire)
-                           VALUES (?, ?, ?, ?, ?, ?)`;
+              const formattedDate = item.dateInventaire
+                            ? format(new Date(item.dateInventaire), 'yyyy-MM-dd HH:mm:ss')
+                            : null;
+            const query = `INSERT INTO inventaire_item (id_article, id_localisation, user_id, time,  id_employer, num_inventaire,status)
+                           VALUES (?, ?, ?, ?, ?,?, ?)`;
             const [result] = await pool.execute(query, [
                 item.idArticle,
-                item.idUser,
                 item.idLocalisation,
+                item.idUser,
+                formattedDate,
                 item.idEmployer,
-                item.numInventaire,
-                item.dateInventaire
+                item.numInventaire, 
+                item.status
             ]);
             return (result as ResultSetHeader).affectedRows > 0;
         } catch (error) {
@@ -60,7 +65,7 @@ export class InventaireItemModel {
 
     async updateInventaireItem(item: InventaireItem): Promise<boolean> {
         try {
-            const query = `UPDATE inventaire_item SET id_article = ?, user_id = ?, id_localisation = ?, id_employer = ?, num_inventaire = ?, date_inventaire = ? WHERE id = ?`;
+            const query = `UPDATE inventaire_item SET id_article = ?, user_id = ?, id_localisation = ?, id_employer = ?, num_inventaire = ?, time = ? WHERE id = ?`;
             const [result] = await pool.execute(query, [
                 item.idArticle,
                 item.idUser,

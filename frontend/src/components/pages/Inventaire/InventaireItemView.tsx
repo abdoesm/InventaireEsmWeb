@@ -1,10 +1,15 @@
-import React, { use, useEffect } from "react";
+import React, { useEffect } from "react";
 
 import { useState } from "react";
 import HomeBtn from "../../common/HomeBtn";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import DataTable from "react-data-table-component";
 import ActionButtons from "../../common/ActionButtons";
+import AddInventaireItemForm from "./AddInventaireItemForm";
+import UpdateInventaireItemForm from "./UpdateInventaireItemForm";
+import DeleteInventaireItem from "./DeleteInventaireItem";
+import UpdateBonEntreeForm from "./UpdateInventaireItemForm";
+import { InventaireItem } from "../../../models/inventaireItemType";
 
 
 const InventaireItemView: React.FC = () => {
@@ -32,18 +37,19 @@ const InventaireItemView: React.FC = () => {
       if (!response.ok) throw new Error("Failed to fetch inventaire item.");
 
       const data = await response.json();
-
-      // Convert API response to match component expectations
+      console.log("data",data);
       const mappedData = data.map((item: any) => ({
         id: item.id,
-        idArticle: item.id_article,
-        idUser: item.user_id,
-        idLocalisation: item.id_localisation,
-        idEmployer: item.id_employer,
-        numInventaire: item.num_inventaire,
-        dateInventaire: item.time, // Assuming 'time' represents the inventory date
+        idArticle: item.id_article,  // Corrected
+        idUser: item.user_id,  // Corrected
+        idLocalisation: item.id_localisation,  // Corrected
+        idEmployer: item.id_employer,  // Corrected
+        numInventaire: item.num_inventaire,  // Corrected
+        dateInventaire: item.time,  // Corrected
+        status: item.status,  // Corrected
       }));
-
+      
+      
       setInventaireItems(mappedData);
       setLoading(false);
     } catch (err) {
@@ -58,14 +64,15 @@ const InventaireItemView: React.FC = () => {
   }, []);
  
 const columns = [ 
-  { name: "المعرف", selector: (row: InventaireItem) => row.id ?? 0, sortable: true },
-  { name: "المعرف الخاص بالمادة", selector: (row: InventaireItem) => row.idArticle ?? 0, sortable: true },
-  { name: "المعرف الخاص بالمستخدم", selector: (row: InventaireItem) => row.idUser ?? 0, sortable: true },
-  { name: "المعرف الخاص بالموقع", selector: (row: InventaireItem) => row.idLocalisation ?? 0, sortable: true },
-  { name: "المعرف الخاص بالموظف", selector: (row: InventaireItem) => row.idEmployer ?? 0, sortable: true },
+  { name: "رقم المعرف", selector: (row: InventaireItem) => row.id ?? 0, sortable: true },
+  { name: "معرف المادة", selector: (row: InventaireItem) => row.idArticle ?? 0, sortable: true },
+  { name: "معرف المستخدم", selector: (row: InventaireItem) => row.idUser ?? 0, sortable: true },
+  { name: "معرف الموقع", selector: (row: InventaireItem) => row.idLocalisation ?? 0, sortable: true },
+  { name: "معرف الموظف", selector: (row: InventaireItem) => row.idEmployer ?? 0, sortable: true },
   { name: "رقم الجرد", selector: (row: InventaireItem) => row.numInventaire ?? "", sortable: true },
   { name: "تاريخ الجرد", selector: (row: InventaireItem) => row.dateInventaire ?? "", sortable: true },
-  { name: "العمليات",    cell: (row: InventaireItem) => (
+  
+  { name: "الإجراءات",    cell: (row: InventaireItem) => (
     <ActionButtons
       item={row}
       onEdit={(item) => {
@@ -103,6 +110,37 @@ const columns = [
           highlightOnHover
           responsive
           striped
+        />
+      )}
+
+{showAddInventaireItemForm && (
+  <AddInventaireItemForm onClose={() => setShowAddInventaireItemForm(false)} fetchInventaireitem={fetchInventaireItems} />
+)}
+
+
+{showAddInventaireItemForm && selectedInventaireItem && selectedInventaireItem.id !== undefined && (
+  <AddInventaireItemForm
+    onClose={() => setShowAddInventaireItemForm(false)}
+    fetchInventaireitem={fetchInventaireItems}
+   
+  />
+)}
+{showUpdateInventaireItemForm && selectedInventaireItem && (
+  <UpdateInventaireItemForm
+    onClose={() => setShowUpdateInventaireItemForm(false)}
+    fetchInventaireItems={fetchInventaireItems}
+    selectedItem={selectedInventaireItem} // ✅ Pass selected item
+  />
+)}
+
+
+
+      {showDeleteForm && selectedInventaireItem && (
+        <DeleteInventaireItem
+        onClose={()=> setShowDeleteForm(false)}
+
+        InventaireItemId={selectedInventaireItem.id ?? 0}
+        fetchInventaireItems={fetchInventaireItems}
         />
       )}
     </div>
