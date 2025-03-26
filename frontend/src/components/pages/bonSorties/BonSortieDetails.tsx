@@ -4,7 +4,7 @@ import { BonSortie } from "../../../models/bonSortieType";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import HomeBtn from "../../common/HomeBtn";
 import useArticlesAndEmployers from "../../../services/useArticlesAndEmployersAndServices";
-
+import html2pdf from "html2pdf.js";
 const BonSortieDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -43,28 +43,57 @@ const BonSortieDetails: React.FC = () => {
   const employer = bonSortie ? employers.find(emp => emp.id === bonSortie.id_employeur) : null;
   const service = bonSortie ? services.find(srv => srv.id === bonSortie.id_service) : null;
   const formattedDate = bonSortie ? new Date(bonSortie.date).toLocaleDateString() : "غير معروف";
-  const totalQuantity = mapSorties.reduce((sum, sortie) => sum + sortie.quantity, 0);
-  const groupedQuantities = mapSorties.reduce((acc, sortie) => {
-    const article = articles.find(a => a.id === sortie.id_article);
-    if (!article) return acc;
-    acc[article.name] = (acc[article.name] || 0) + sortie.quantity;
-    return acc;
-  }, {} as Record<string, number>);
-  const printStyle: React.CSSProperties = {
-    width: "210mm",
-    minHeight: "297mm",
-    padding: "20mm",
-    pageBreakBefore: "always",
-    pageBreakAfter: "always",
-  };
-  const handlePrint = () => {
-    window.print();
-  };
 
+
+
+
+  const handlePrint = () => {
+    console.log("Printing...");
+  
+    // Hide elements before printing
+    document.querySelectorAll(".no-print").forEach(el => {
+      (el as HTMLElement).style.display = "none";
+    });
+  
+    const element = document.getElementById("pdf-content");
+  
+    const options = {
+      margin: [10, 10, 10, 10], 
+      filename: "bon_sortie.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    };
+  
+    html2pdf()
+      .from(element)
+      .set(options)
+      .save()
+      .then(() => {
+        // Restore buttons after PDF is generated
+        document.querySelectorAll(".no-print").forEach(el => {
+          (el as HTMLElement).style.display = "block";
+        });
+      });
+  }; //
+  
+  
   return (
-    <div className="container mt-5" style={printStyle}>
-      <button className="btn btn-secondary mb-3" onClick={() => navigate(-1)}>العودة</button>
-      <button className="btn btn-primary mb-3 ms-2" onClick={handlePrint}>طباعة</button>
+    <div id="pdf-content"  className="container mt-5"  >
+   <style>
+  {`
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+    }
+  `}
+</style>
+
+      <button className="btn btn-secondary mb-3 no-print" onClick={() => navigate(-1)}>العودة</button>
+      <button className="btn btn-primary mb-3 ms-2 no-print" onClick={handlePrint}>
+  طباعة
+</button>
      
       {loading ? (
         <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>
@@ -95,7 +124,7 @@ const BonSortieDetails: React.FC = () => {
             <div className="col-sm fw-bold">
               <p>:رقم الوصل</p>
               <p> :التاريخ</p>
-              <p>: السيد (ة)</p>
+              <p>: السيد </p>
               <p>:المصلحة </p>
             </div>
             </div>
