@@ -9,7 +9,7 @@ import AddInventaireItemForm from "./AddInventaireItemForm";
 import UpdateInventaireItemForm from "./UpdateInventaireItemForm";
 import DeleteInventaireItem from "./DeleteInventaireItem";
 import { InventaireItem } from "../../../models/inventaireItemType";
-import useArticlesAndEmployers from "../../../services/useArticlesAndEmployers";
+import useArticlesAndEmployers from "../../../services/useArticlesAndEmployersAndServices";
 import useLocation from "../../../services/useLocation";
 import { checkAuth, UserType } from "../../../App";
 import useFetchUsers from "../../../services/user/useFetchUsers";
@@ -23,7 +23,7 @@ const InventaireItemView: React.FC = () => {
   const [showAddInventaireItemForm, setShowAddInventaireItemForm] = useState<boolean>(false);
   const [showUpdateInventaireItemForm, setShowUpdateInventaireItemForm] = useState<boolean>(false);
   const [selectedInventaireItem, setSelectedInventaireItem] = useState<InventaireItem | null>(null);
-  const { users,fetchUsers } = useFetchUsers();
+  const { users } = useFetchUsers();
   const [inventaireItems, setInventaireItems] = useState<InventaireItem[]>([]);
 
   const fetchInventaireItems = async () => {
@@ -52,7 +52,7 @@ const InventaireItemView: React.FC = () => {
         idEmployer: item.id_employer,  // Corrected
         numInventaire: item.num_inventaire,  // Corrected
         dateInventaire: item.time,  // Corrected
-        status: item.status,  // Corrected
+        status: item.status, 
       }));
 
 
@@ -73,7 +73,6 @@ const InventaireItemView: React.FC = () => {
   }, []);
 
 
-  console.log("user", user);
   const columns = [
     { name: " المعرف", selector: (row: InventaireItem) => row.id ?? 0, sortable: true },
 

@@ -12,6 +12,7 @@ import { Employer } from "../../../models/employerType";
 import { Service } from "../../../models/serviceTypes";
 import HomeBtn from "../../common/HomeBtn";
 import { BonSortie } from "../../../models/bonSortieType";
+import { useNavigate } from "react-router-dom";
 
 
 const BonSortieView: React.FC = () => {
@@ -25,6 +26,12 @@ const BonSortieView: React.FC = () => {
   const [selectedBonSortie, setSelectedBonSortie] = useState<BonSortie | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const navigate = useNavigate(); // Initialize navigation hook
+
+  const handleRowDoubleClick = (row: BonSortie) => {
+    navigate(`/bonsorties/${row.id}`); // Navigate to the details page with the BonSortie ID
+  };
 
   const fetchBonSorties = async () => {
     try {
@@ -94,6 +101,11 @@ const BonSortieView: React.FC = () => {
     useEffect(() => {
       fetchServices();
     }, []);
+
+    const handlePrint = (bonSortie: BonSortie) => {
+      console.log("Printing:", bonSortie);
+      // Implement actual print function here
+    }; 
   const columns = [
     { name: "المعرف", selector: (row: BonSortie) => row.id, sortable: true },
     { name: " الموظف", selector: (row: BonSortie) =>{
@@ -118,7 +130,7 @@ const BonSortieView: React.FC = () => {
             setSelectedBonSortie(item);
             setShowDeleteForm(true);
           }}
-    
+          onPrint={handlePrint}
         />
       ),
       ignoreRowClick: true,
@@ -147,6 +159,7 @@ const BonSortieView: React.FC = () => {
           highlightOnHover
           responsive
           striped
+          onRowDoubleClicked={handleRowDoubleClick} // Handle double-click event
         />
       )}
 
