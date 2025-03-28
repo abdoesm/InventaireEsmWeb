@@ -44,7 +44,7 @@ const BonSortieDetails: React.FC = () => {
   const service = useMemo(() => bonSortie ? services.find(srv => srv.id === bonSortie.id_service) : null, [bonSortie, services]);
   const formattedDate = bonSortie ? new Date(bonSortie.date).toLocaleDateString() : "غير معروف";
 
-  const handlePrint = () => {
+ const handlePrint = () => {
     if (!bonSortie) {
       console.error("No BonSortie data available for printing.");
       return;
@@ -99,7 +99,7 @@ return (
     ) : error ? (
       <p className="text-danger text-center">{error}</p>
     ) : bonSortie ? (
-      <div className="card shadow p-4">
+      <div className="container">
         {/* Header */}
         <div className="text-center mb-4 fw-bold fs-4" style={{ fontFamily: 'andalus' }}>
           <img src="/img/esm-logo.png" alt="Logo" width={70} className="mb-2" />
@@ -146,7 +146,7 @@ return (
                   <tr key={id}>
                     <td>{id}</td>
                     <td>{article?.name || "غير معروف"}</td>
-                    <td>{article?.remarque || "لا توجد ملاحظة"}</td>
+                    <td>{article?.remarque || ""}</td>
                     <td>{quantity}</td>
                   </tr>
                 );

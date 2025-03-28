@@ -157,13 +157,39 @@ export class ArticleModel {
         }
     }
 
-    async getTotalQuantityByArticleId(articleId: number): Promise<number> {
-        const totalEntree = await this.getTotalEntredQuantityByArticleId(articleId);
-        const totalSortie = await this.getTotalSortieQuantityByArticleId(articleId);
-        const totalRetour = await this.getTotalRetourQuantityByArticleId(articleId);
-        return totalEntree - totalSortie + totalRetour;
+    async getTotalAdjustmentByArticleId(articleId: number): Promise<number> {
+        try {
+            const query = `
+                SELECT 
+                    COALESCE(SUM(CASE WHEN adjustment_type = 'increase' THEN quantity ELSE 0 END), 0) - 
+                    COALESCE(SUM(CASE WHEN adjustment_type = 'decrease' THEN quantity ELSE 0 END), 0) 
+                    AS net_adjustment 
+                FROM stock_adjustment 
+                WHERE article_id = ?`;
+            
+            const [rows] = await pool.query(query, [articleId]);
+            const result = rows as { net_adjustment: number }[];
+            return result[0]?.net_adjustment || 0;
+        } catch (error) {
+            console.error(`Error fetching total adjustment quantity for article ${articleId}:`, error);
+            return 0;
+        }
     }
-
+    
+    async getTotalQuantityByArticleId(articleId: number): Promise<number> {
+        try {
+            const totalEntree = await this.getTotalEntredQuantityByArticleId(articleId);
+            const totalSortie = await this.getTotalSortieQuantityByArticleId(articleId);
+            const totalRetour = await this.getTotalRetourQuantityByArticleId(articleId);
+            const totalAdjustment = await this.getTotalAdjustmentByArticleId(articleId);
+    
+            return totalEntree - totalSortie + totalRetour + totalAdjustment;
+        } catch (error) {
+            console.error(`Error calculating total quantity for article ${articleId}:`, error);
+            return 0;
+        }
+    }
+    
     async getTotalEntredQuantityByArticleId(articleId: number): Promise<number> {
         try {
             const query = "SELECT COALESCE(SUM(quantity), 0) AS total_entree FROM entree WHERE id_article = ?";
@@ -199,41 +225,52 @@ export class ArticleModel {
             return 0;
         }
     }
-
     async getTotalQuantitiesByArticle(): Promise<{ idArticle: number; totalQuantity: number }[]> {
         try {
-            console.log("getTotalQuantitiesByArticle model"); // Removed articleId
+            console.log("getTotalQuantitiesByArticle model");
     
             const query = `
-               SELECT 
-    a.id AS article_id,
-    COALESCE(SUM(e.quantity), 0) AS total_entree,
-    COALESCE(SUM(s.quantity), 0) AS total_sortie,
-    COALESCE(SUM(r.quantity), 0) AS total_retour
-FROM article a
-LEFT JOIN entree e ON e.id_article = a.id
-LEFT JOIN sortie s ON s.id_article = a.id
-LEFT JOIN retour r ON r.id_article = a.id
-WHERE a.id IS NOT NULL  -- Ensure valid IDs
-GROUP BY a.id
-ORDER BY (COALESCE(SUM(e.quantity), 0) - COALESCE(SUM(s.quantity), 0) + COALESCE(SUM(r.quantity), 0)) DESC, a.id ASC;
-
+                SELECT 
+                    a.id AS article_id,
+                    COALESCE(SUM(e.quantity), 0) AS total_entree,
+                    COALESCE(SUM(s.quantity), 0) AS total_sortie,
+                    COALESCE(SUM(r.quantity), 0) AS total_retour,
+                    COALESCE(SUM(CASE WHEN sa.adjustment_type = 'increase' THEN sa.quantity ELSE 0 END), 0) -
+                    COALESCE(SUM(CASE WHEN sa.adjustment_type = 'decrease' THEN sa.quantity ELSE 0 END), 0) AS net_adjustment,
+                    
+                    -- Calculate final stock directly in the query
+                    (COALESCE(SUM(e.quantity), 0) 
+                    - COALESCE(SUM(s.quantity), 0) 
+                    + COALESCE(SUM(r.quantity), 0) 
+                    + (COALESCE(SUM(CASE WHEN sa.adjustment_type = 'increase' THEN sa.quantity ELSE 0 END), 0) 
+                       - COALESCE(SUM(CASE WHEN sa.adjustment_type = 'decrease' THEN sa.quantity ELSE 0 END), 0))) AS total_quantity
+    
+                FROM article a
+                LEFT JOIN entree e ON e.id_article = a.id
+                LEFT JOIN sortie s ON s.id_article = a.id
+                LEFT JOIN retour r ON r.id_article = a.id
+                LEFT JOIN stock_adjustment sa ON sa.article_id = a.id
+                GROUP BY a.id
+                ORDER BY total_quantity DESC, a.id ASC;
             `;
     
             const [rows] = await pool.query(query);
-            const results = rows as { article_id: number; total_entree: number; total_sortie: number; total_retour: number }[];
-    
-            // Convert to array format
-            return results.map(row => ({
+            return (rows as { article_id: number; total_quantity: number }[]).map(row => ({
                 idArticle: row.article_id,
-                totalQuantity: row.total_entree - row.total_sortie + row.total_retour,
+                totalQuantity: row.total_quantity, // Directly use the calculated total_quantity from SQL
             }));
     
-        } catch (error) {
-            console.error("Error fetching total quantities by article:", error);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                console.error("Error fetching total quantities by article:", error.message);
+            } else {
+                console.error("An unknown error occurred:", error);
+            }
             return [];
         }
     }
+    
+    
     
 }
 
