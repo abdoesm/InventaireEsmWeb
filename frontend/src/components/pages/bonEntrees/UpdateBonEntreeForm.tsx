@@ -120,9 +120,7 @@ const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) 
             article.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
     
-        const filteredFournisseurs = fournisseurs.filter(fournisseur =>
-            fournisseur.name.toLowerCase().includes(fournisseurSearchTerm.toLowerCase())
-        );
+     
 
           const handleArticleSelect = (article: Article) => {
                 setSelectedEntrees((prevEntrees) => {

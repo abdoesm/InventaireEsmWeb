@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaSearch } from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
@@ -26,6 +26,7 @@ const BonSortieView: React.FC = () => {
   const [selectedBonSortie, setSelectedBonSortie] = useState<BonSortie | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState<string>("");
 
   const navigate = useNavigate(); // Initialize navigation hook
 
@@ -102,6 +103,21 @@ const BonSortieView: React.FC = () => {
       fetchServices();
     }, []);
 
+    const handleSearch=(e:React.ChangeEvent<HTMLInputElement>) =>{
+      setSearchQuery(e.target.value);
+    }
+
+    const filteredBonSortie= bonSorties.filter((bon)=>
+   bon.id.toString().includes(searchQuery)||
+       bon.date.includes(searchQuery)||
+       bon.id_employeur.toString().includes(searchQuery)||
+       employers.find(e=>e.id===bon.id_employeur)?.fname.toLowerCase().includes(searchQuery.toLowerCase())||
+       employers.find(e=>e.id===bon.id_employeur)?.lname.toLowerCase().includes(searchQuery.toLowerCase())||
+       services.find(s=>s.id===bon.id_service)?.name.toLowerCase().includes(searchQuery.toLowerCase())
+
+
+    )
+
     const handlePrint = (bonSortie: BonSortie) => {
       console.log("Printing:", bonSortie);
       // Implement actual print function here
@@ -146,6 +162,22 @@ const BonSortieView: React.FC = () => {
                     <FaPlus className="me-2" /> إضافة وصل          </button>
       </div>
 
+    {/* Search Input Field */}
+      <div className="mb-4">
+        <div className="input-group">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="ابحث برقم الوثيقة أو التاريخ أو الموظف..."
+            value={searchQuery}
+            onChange={handleSearch}
+          />
+          <span className="input-group-text">
+            <FaSearch />
+          </span>
+        </div>
+      </div>
+  
       {loading ? (
         <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>
       ) : error ? (
@@ -154,7 +186,7 @@ const BonSortieView: React.FC = () => {
         <DataTable
           title="قائمة وصول الخروج"
           columns={columns}
-          data={bonSorties}
+          data={filteredBonSortie}
           pagination
           highlightOnHover
           responsive

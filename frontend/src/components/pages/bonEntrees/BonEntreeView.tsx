@@ -59,6 +59,7 @@ const BonEntreeView: React.FC = () => {
   };
 
   const filteredBonEntrees = bonEntrees.filter((bon) =>
+    bon.id.toString().includes(searchQuery)||
     bon.document_num.toLowerCase().includes(searchQuery.toLowerCase()) ||
     bon.date.includes(searchQuery)||
     bon.id_fournisseur.toString().includes(searchQuery) ||
