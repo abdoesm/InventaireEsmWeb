@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import  { useMemo } from "react";
 import { Article } from "../../models/articleTypes";
 import { Entree } from "../../models/entreeTypes";
 import { Sortie } from "../../models/sortieType";
@@ -50,7 +50,7 @@ const SelectedArticlesTable = <T extends Entree | Sortie | Retour>({
                 <p className="text-muted">لم يتم تحديد أي مقالات.</p>
             ) : (
                 <div style={{ maxHeight: "150px",  overflowX: "auto" }}>
-                    <table className="table table-striped text-center">
+                    <table className="table  text-center">
                         <thead className="table-light">
                             <tr>
                                 <th style={{ width: "30%" }}>المقال</th>

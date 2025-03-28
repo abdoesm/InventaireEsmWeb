@@ -130,7 +130,7 @@ return (
 
         {/* Table Section */}
         {mapSorties.length > 0 ? (
-          <table className="table table-striped table-bordered mt-3 text-center">
+          <table className="table  table-bordered table-responsive mt-3 text-center">
             <thead>
               <tr style={{ fontFamily: 'andalus' }} >
                 <th>المعرف</th>

@@ -57,7 +57,9 @@ const BonEntreeView: React.FC = () => {
   useEffect(() => {
     fetchBonEntrees();
   }, []);
-
+  const handleRowDoubleClick = (row: BonEntree) => {
+    navigate(`/bonentree/${row.id}`);
+  };
   const fetchFournisseurs = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -136,6 +138,7 @@ const BonEntreeView: React.FC = () => {
           highlightOnHover
           responsive
           striped
+          onRowDoubleClicked={handleRowDoubleClick}
         />
       )}
 
