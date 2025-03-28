@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaHome, FaPlus} from "react-icons/fa";
+import { FaHome, FaPlus, FaSearch} from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
@@ -10,20 +10,16 @@ import ActionButtons from "../../common/ActionButtons";
 import DeleteBonEntreeForm from "./DeleteBonEntreeForm";
 import { Fournisseur } from "../../../models/fournisseurTypes";
 import HomeBtn from "../../common/HomeBtn";
+import { BonEntree } from "../../../models/BonEntreeTypes";
 
-interface BonEntree {
-  id: number;
-  id_fournisseur: number;
-  date: string;
-  TVA: number;
-  document_num: string;
-}
+
 
 const BonEntreeView: React.FC = () => {
   const navigate = useNavigate();
   const [bonEntrees, setBonEntrees] = useState<BonEntree[]>([]);
   const [fournisseurs, setFournisseurs] = useState<Fournisseur[]>([]);
   const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [showAddBonEntreeForm, setShowAddBonEntreeForm] = useState<boolean>(false);
   const [showUpdateBonEntreeForm, setShowUpdateBonEntreeForm] = useState<boolean>(false);
   const [selectedBonEntree, setSelectedBonEntree] = useState<BonEntree | null>(null);
@@ -57,6 +53,19 @@ const BonEntreeView: React.FC = () => {
   useEffect(() => {
     fetchBonEntrees();
   }, []);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const filteredBonEntrees = bonEntrees.filter((bon) =>
+    bon.document_num.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    bon.date.includes(searchQuery)||
+    bon.id_fournisseur.toString().includes(searchQuery) ||
+    fournisseurs.find(f => f.id === bon.id_fournisseur)?.name.toLowerCase().includes(searchQuery.toLowerCase())
+
+  );
+
   const handleRowDoubleClick = (row: BonEntree) => {
     navigate(`/bonentree/${row.id}`);
   };
@@ -118,22 +127,44 @@ const BonEntreeView: React.FC = () => {
 
   return (
     <div className="container mt-5">
+      {/* Header Section */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-      <HomeBtn/>
-        <h2 className="fw-bold text-center">إدارة وصول الاستلام </h2>
-        <button className="btn btn-success px-4 py-2" onClick={() => setShowAddBonEntreeForm(true)}>
-            <FaPlus className="me-2" /> إضافة وصل استلام         </button>
+        <HomeBtn />
+        <h2 className="fw-bold text-center flex-grow-1">إدارة وصول الاستلام</h2>
+        <button
+          className="btn btn-success d-flex align-items-center px-4"
+          onClick={() => setShowAddBonEntreeForm(true)}
+        >
+          <FaPlus className="me-2" /> إضافة وصل استلام
+        </button>
       </div>
-
+  
+      {/* Search Input Field */}
+      <div className="mb-4">
+        <div className="input-group">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="ابحث برقم الوثيقة أو التاريخ أو المورد..."
+            value={searchQuery}
+            onChange={handleSearch}
+          />
+          <span className="input-group-text">
+            <FaSearch />
+          </span>
+        </div>
+      </div>
+  
+      {/* Table or Loading/Error Message */}
       {loading ? (
-        <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>
+        <p className="text-center text-secondary fs-5">جارٍ تحميل البيانات...</p>
       ) : error ? (
-        <p className="text-danger">{error}</p>
+        <p className="text-center text-danger fw-bold">{error}</p>
       ) : (
         <DataTable
           title="قائمة وصول الاستلام"
           columns={columns}
-          data={bonEntrees}
+          data={filteredBonEntrees}
           pagination
           highlightOnHover
           responsive
@@ -141,13 +172,15 @@ const BonEntreeView: React.FC = () => {
           onRowDoubleClicked={handleRowDoubleClick}
         />
       )}
-
-    
-
+  
+      {/* Modals or Forms */}
       {showAddBonEntreeForm && (
-        <AddBonEntreeForm onClose={() => setShowAddBonEntreeForm(false)} fetchBonEntrees={fetchBonEntrees} />
+        <AddBonEntreeForm
+          onClose={() => setShowAddBonEntreeForm(false)}
+          fetchBonEntrees={fetchBonEntrees}
+        />
       )}
-
+  
       {showUpdateBonEntreeForm && selectedBonEntree && (
         <UpdateBonEntreeForm
           onClose={() => setShowUpdateBonEntreeForm(false)}
@@ -155,15 +188,17 @@ const BonEntreeView: React.FC = () => {
           id={selectedBonEntree.id}
         />
       )}
-      {
-        showDeleteForm && selectedBonEntree && (<DeleteBonEntreeForm 
-          onClose={() => setShowDeleteForm(false)} 
+  
+      {showDeleteForm && selectedBonEntree && (
+        <DeleteBonEntreeForm
+          onClose={() => setShowDeleteForm(false)}
           bonEntreeid={selectedBonEntree.id}
           fetchBonEntree={fetchBonEntrees}
-        />)
-      }
+        />
+      )}
     </div>
   );
+  
 };
 
 export default BonEntreeView;
