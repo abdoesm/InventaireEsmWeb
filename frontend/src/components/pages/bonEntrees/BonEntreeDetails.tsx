@@ -4,40 +4,46 @@ import { BonEntree } from "../../../models/BonEntreeTypes";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import useArticlesAndEmployers from "../../../services/useArticlesAndEmployersAndServices";
 import html2pdf from "html2pdf.js";
+import useArticlesAndFournisseurs from "../../../services/useArticlesAndFournisseurs";
 
 const BonEntreeDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [bonEntree, setBonEntree] = useState<BonEntree | null>(null);
-  const [mapEntrees, setMapEntrees] = useState<{ id: number; id_article: number; id_be: number; quantity: number }[]>([]);
+  const [mapEntrees, setMapEntrees] = useState<{ id: number; id_article: number; id_be: number; quantity: number; unit_price: number; }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { articles, employers } = useArticlesAndEmployers();
+  const { articles, fournisseurs } = useArticlesAndFournisseurs();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [bonEntreeRes, entreesRes] = await Promise.all([
           fetch(`${Bk_End_SRVR}:5000/api/bonentrees/${id}`),
-          fetch(`${Bk_End_SRVR}:5000/api/bonentrees/entree/${id}`),
+          fetch(`${Bk_End_SRVR}:5000/api/bonentrees/entree/${id}`)
         ]);
-
-        if (!bonEntreeRes.ok) throw new Error("Failed to fetch Bon d'Entrée details");
-        if (!entreesRes.ok) throw new Error("Failed to fetch entrees");
-
-        setBonEntree(await bonEntreeRes.json());
-        setMapEntrees(await entreesRes.json());
+  
+        if (!bonEntreeRes.ok || !entreesRes.ok) {
+          throw new Error("Failed to fetch data.");
+        }
+  
+        const bonEntreeData = await bonEntreeRes.json();
+        const entreesData = await entreesRes.json();
+  
+        setBonEntree(bonEntreeData);
+        setMapEntrees(entreesData);
       } catch (err) {
-        setError((err as Error).message);
+        setError(err instanceof Error ? err.message : "Unexpected error occurred.");
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, [id]);
+  
 
-  const fournisseur = useMemo(() => bonEntree ? employers.find(emp => emp.id === bonEntree.id_fournisseur) : null, [bonEntree, employers]);
+  const fournisseur = useMemo(() => bonEntree ? fournisseurs.find(fr => fr.id === bonEntree.id_fournisseur) : null, [bonEntree, fournisseurs]);
 
   const formattedDate = bonEntree ? new Date(bonEntree.date).toLocaleDateString() : "غير معروف";
 
@@ -73,6 +79,15 @@ const BonEntreeDetails: React.FC = () => {
         document.querySelectorAll(".no-print").forEach(el => el.classList.remove("d-none"));
       });
   };
+  const totalPrixHT = useMemo(
+    () => mapEntrees.reduce((sum, entry) => sum + entry.unit_price * entry.quantity, 0),
+    [mapEntrees]
+  );
+  
+  const tva_amount = useMemo(() => totalPrixHT * 0.19, [totalPrixHT]);
+  const totalValue = useMemo(() => totalPrixHT + tva_amount, [totalPrixHT, tva_amount]);
+  
+
 
   return (
     <div id="pdf-content" className="container mt-5">
@@ -107,13 +122,14 @@ const BonEntreeDetails: React.FC = () => {
               <div className="col-sm text-end fw-bold">
                 <p>{bonEntree.id}</p>
                 <p>{formattedDate}</p>
-                <p>{fournisseur ? `${fournisseur.fname} ${fournisseur.lname}` : "غير معروف"}</p>
+                <p>{fournisseur ? `${fournisseur.name} ` : "غير معروف"}</p>
+                <p>{bonEntree.document_num}</p>
               </div>
-              <div className="col-sm fw-bold text-end"   style={{ fontFamily: 'andalus' }} >
+              <div className="col-sm fw-bold text-end" style={{ fontFamily: 'andalus' }} >
                 <p>:رقم الوصل</p>
-                <p>:التاريخ</p>
-                <p>: السيد </p>
-    
+                <p>:القليعة، في</p>
+                <p>: المورد </p>
+              <p> رقم الفاتورة</p> 
               </div>
             </div>
           </div>
@@ -124,35 +140,52 @@ const BonEntreeDetails: React.FC = () => {
                 <tr style={{ fontFamily: 'andalus' }}>
                   <th>المعرف</th>
                   <th>العنصر</th>
-                  <th>الملاحظة</th>
                   <th>الكمية</th>
+                  <th>سعر الوحدة (U/HT)</th>
+                  <th> المبلغ</th>
+
+
                 </tr>
               </thead>
               <tbody>
-                {mapEntrees.map(({ id, id_article, quantity }) => {
+                {mapEntrees.map(({ id, id_article, quantity,unit_price }) => {
                   const article = articles.find(a => a.id === id_article);
                   return (
                     <tr key={id}>
                       <td>{id}</td>
                       <td>{article?.name || "غير معروف"}</td>
-                      <td>{article?.remarque || ""}</td>
                       <td>{quantity}</td>
+                      <td> {unit_price}</td>
+                      <td> {(unit_price *quantity).toFixed(2) }</td>
                     </tr>
                   );
                 })}
               </tbody>
+              <tfoot>
+                <tr style={{ fontFamily: 'andalus', fontWeight: 'bold' }}>
+                  <td colSpan={4}>المجموع</td>
+                  <td>{totalPrixHT.toFixed(2)}</td>
+                </tr>
+                <tr style={{ fontFamily: 'andalus', fontWeight: 'bold' }}>
+                  <td colSpan={4}>	مبلغ الرسم على القيمة المضافة </td>
+                  <td>{tva_amount.toFixed(2)}</td>
+                </tr>
+                <tr style={{ fontFamily: 'andalus', fontWeight: 'bold' }}>
+                  <td colSpan={4}>إجمالي القيمة</td>
+                  <td>{totalValue.toFixed(2)}</td>
+                </tr>
+
+              </tfoot>
             </table>
           ) : (
             <p className="text-center text-muted">لا توجد إدخالات مرتبطة بهذا الوصل.</p>
           )}
 
-          <div className="mt-4 d-flex justify-content-between"  style={{ fontFamily: 'andalus' }}>
+          <div className="mt-4 d-flex justify-content-between" style={{ fontFamily: 'andalus' }}>
             <div className="text-center w-25">
               <p className="fw-bold fs-5">أمين المخزن</p>
             </div>
-            <div className="text-center w-25">
-              <p className="fw-bold fs-5">المعني</p>
-            </div>
+          
           </div>
         </div>
       ) : (
