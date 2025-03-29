@@ -5,7 +5,7 @@ import SelectionList from "../../common/SelectionList";
 import { Article } from "../../../models/articleTypes";
 import { Employer } from "../../../models/employerType";
 import { Localisation } from "../../../models/localisationType";
-import useArticlesAndEmployers from "../../../services/useArticlesAndEmployersAndServices";
+import useArticlesAndEmployers from "../../../services/hooks/useArticlesAndEmployersAndServices";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import Input from "../../common/Input";
 import { checkAuth, UserType } from "../../../App";

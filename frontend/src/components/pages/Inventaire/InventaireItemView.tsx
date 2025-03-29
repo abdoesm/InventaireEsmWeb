@@ -9,7 +9,7 @@ import AddInventaireItemForm from "./AddInventaireItemForm";
 import UpdateInventaireItemForm from "./UpdateInventaireItemForm";
 import DeleteInventaireItem from "./DeleteInventaireItem";
 import { InventaireItem } from "../../../models/inventaireItemType";
-import useArticlesAndEmployers from "../../../services/useArticlesAndEmployersAndServices";
+import useArticlesAndEmployers from "../../../services/hooks/useArticlesAndEmployersAndServices";
 import useLocation from "../../../services/useLocation";
 import { checkAuth, UserType } from "../../../App";
 import useFetchUsers from "../../../services/user/useFetchUsers";

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Bk_End_SRVR } from "../configs/conf";
-import { Article } from "../models/articleTypes";
-import { Fournisseur } from "../models/fournisseurTypes";
+import { Bk_End_SRVR } from "../../configs/conf";
+import { Article } from "../../models/articleTypes";
+import { Fournisseur } from "../../models/fournisseurTypes";
 
 
 const useArticlesAndFournisseurs = () => {

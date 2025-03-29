@@ -5,7 +5,7 @@ import FormGroup from "../../common/FormGroup";
 import SearchInput from "../../common/SearchInput";
 import ArticleSelection from "../../common/ArticleSelection";
 import SelectedArticlesTable from "../../common/SelectedArticlesTable";
-import useArticlesAndEmployeurs from "../../../services/useArticlesAndEmployersAndServices";
+import useArticlesAndEmployeurs from "../../../services/hooks/useArticlesAndEmployersAndServices";
 import { Employer } from "../../../models/employerType";
 import { Article } from "../../../models/articleTypes";
 import { Retour } from "../../../models/retourType";

@@ -2,9 +2,9 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { BonEntree } from "../../../models/BonEntreeTypes";
 import { Bk_End_SRVR } from "../../../configs/conf";
-import useArticlesAndEmployers from "../../../services/useArticlesAndEmployersAndServices";
+import useArticlesAndEmployers from "../../../services/hooks/useArticlesAndEmployersAndServices";
 import html2pdf from "html2pdf.js";
-import useArticlesAndFournisseurs from "../../../services/useArticlesAndFournisseurs";
+import useArticlesAndFournisseurs from "../../../services/hooks/useArticlesAndFournisseurs";
 
 const BonEntreeDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();

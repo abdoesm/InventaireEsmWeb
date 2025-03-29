@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { BonSortie } from "../../../models/bonSortieType";
 import { Bk_End_SRVR } from "../../../configs/conf";
-import useArticlesAndEmployers from "../../../services/useArticlesAndEmployersAndServices";
+import useArticlesAndEmployers from "../../../services/hooks/useArticlesAndEmployersAndServices";
 import html2pdf from "html2pdf.js";
 
 const BonSortieDetails: React.FC = () => {

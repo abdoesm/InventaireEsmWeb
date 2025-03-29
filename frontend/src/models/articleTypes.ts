@@ -1,6 +1,7 @@
 
   
 export interface Article {
+  id_category: number;
   id?: number;
   name: string;
   unite: string;

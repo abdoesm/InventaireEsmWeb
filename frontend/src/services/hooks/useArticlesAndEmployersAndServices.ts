@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
-import { Bk_End_SRVR } from "../configs/conf";
-import { Article } from "../models/articleTypes";
-import { Employer } from "../models/employerType";
-import { Service } from "../models/serviceTypes";
+import { Bk_End_SRVR } from "../../configs/conf";
+import { Article } from "../../models/articleTypes";
+import { Employer } from "../../models/employerType";
+import { Service } from "../../models/serviceTypes";
 
 interface QuantityInfo {
   idArticle: number;
   totalQuantity: number;
 }
 
-const useArticlesAndEmployers = () => {
+const useArticlesAndEmployersAndServices = () => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [employers, setEmployers] = useState<Employer[]>([]);
   const [services, setServices] = useState<Service[]>([]);
@@ -73,4 +73,4 @@ const useArticlesAndEmployers = () => {
   return { articles, employers, services, loading, error, fetchArticles };
 };
 
-export default useArticlesAndEmployers;
+export default useArticlesAndEmployersAndServices;

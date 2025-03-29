@@ -1,58 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaHome } from "react-icons/fa";
+import {  FaPlus } from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import AddCategoryForm from "./AddCategoryForm";
 import UpdateCategoryForm from "./UpdateCategoryForm";
 import DeleteCategoryForm from "./DeleteCategoryForm";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Bk_End_SRVR } from "../../../configs/conf";
 import { Category } from "../../../models/categoryTypes";
 import ActionButtons from "../../common/ActionButtons";
+import HomeBtn from "../../common/HomeBtn";
+import useCategories from "../../../services/categories/useCategories";
 
 const Categories: React.FC = () => {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
   const [showUpdateForm, setShowUpdateForm] = useState<boolean>(false);
   const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-
-  const fetchCategories = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("No token found. Please log in.");
-        setLoading(false);
-        return;
-      }
-
-      const response = await fetch(`${Bk_End_SRVR}:5000/api/categories`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch categories.");
-
-      const data: Category[] = await response.json();
-      console.log(data);
-      setCategories(data);
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("An unknown error occurred.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
+  const {categories,loading,error,fetchCategories} = useCategories();
   const columns = [
     { name: "المعرف", selector: (row: Category) => row.id, sortable: true },
     { name: "الاسم", selector: (row: Category) => row.name_cat, sortable: true },
@@ -69,7 +35,6 @@ const Categories: React.FC = () => {
             setSelectedCategory(item);
             setShowDeleteForm(true);
           }}
-          onAddition={() => setShowAddForm(true)}
         />
       ),
       ignoreRowClick: true,
@@ -79,10 +44,10 @@ const Categories: React.FC = () => {
   return (
     <div className="container mt-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <button onClick={() => navigate("/dashboard")} className="btn btn-outline-primary">
-          <FaHome className="me-2" /> الصفحة الرئيسية
-        </button>
+      <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة الفئات</h2>
+         <button className="btn btn-success px-4 py-2" onClick={() => setShowAddForm(true)}>
+                            <FaPlus className="me-2" /> إضافة فئة          </button>
       </div>
 
       {loading ? (
@@ -106,14 +71,14 @@ const Categories: React.FC = () => {
       {showUpdateForm && selectedCategory && (
         <UpdateCategoryForm
           onClose={() => setShowUpdateForm(false)}
-          category={{ ...selectedCategory, id: selectedCategory.id.toString() }}
+          category={{ ...selectedCategory}}
           fetchCategories={fetchCategories}
         />
       )}
       {showDeleteForm && selectedCategory && (
         <DeleteCategoryForm
           onClose={() => setShowDeleteForm(false)}
-          category={{ ...selectedCategory, id: selectedCategory.id.toString() }}
+          category={{ ...selectedCategory }}
           fetchCategories={fetchCategories}
         />
       )}

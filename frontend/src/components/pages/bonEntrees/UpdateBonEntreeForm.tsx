@@ -5,7 +5,7 @@ import FormGroup from "../../common/FormGroup";
 import SearchInput from "../../common/SearchInput";
 import ArticleSelection from "../../common/ArticleSelection";
 import SelectedArticlesTable from "../../common/SelectedArticlesTable";
-import useArticlesAndFournisseurs from "../../../services/useArticlesAndFournisseurs";
+import useArticlesAndFournisseurs from "../../../services/hooks/useArticlesAndFournisseurs";
 import { Fournisseur } from "../../../models/fournisseurTypes";
 import { Entree } from "../../../models/entreeTypes";
 import { Article } from "../../../models/articleTypes";
