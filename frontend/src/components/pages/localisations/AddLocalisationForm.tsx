@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import { Service } from "../../../models/serviceTypes";
+import useService from "../../../services/useServices";
 
 interface Props {
   onClose: () => void;
@@ -10,25 +11,11 @@ interface Props {
 const AddLocalisationForm: React.FC<Props> = ({ onClose, fetchLocalisations }) => {
   const [name, setName] = useState("");
   const [floor, setFloor] = useState("");
-  const [services, setServices] = useState<Service[]>([]);
-  const [selectedService, setSelectedService] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [error, setError] = useState("");
-
-  // Fetch available services
-  useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const response = await fetch(`${Bk_End_SRVR}:5000/api/services`);
-        if (!response.ok) throw new Error("Failed to fetch services");
-        const servicesData = await response.json();
-        setServices(servicesData);
-      } catch (err) {
-        console.error("Error fetching services:", err);
-      }
-    };
-    fetchServices();
-  }, []);
+  const [loading, setLoading] = useState(false);
+  
+  const { services } = useService();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +31,11 @@ const AddLocalisationForm: React.FC<Props> = ({ onClose, fetchLocalisations }) =
       const response = await fetch(`${Bk_End_SRVR}:5000/api/localisations`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ loc_name: name, floor: parseInt(floor), id_service: selectedService }),
+        body: JSON.stringify({
+          loc_name: name,
+          floor: parseInt(floor, 10),
+          id_service: selectedService.id,
+        }),
       });
 
       if (!response.ok) throw new Error("فشل في إضافة الموقع");
@@ -52,13 +43,8 @@ const AddLocalisationForm: React.FC<Props> = ({ onClose, fetchLocalisations }) =
       fetchLocalisations();
       onClose();
     } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("حدث خطأ غير متوقع.");
-        }
-      }
-      finally {
+      setError(err instanceof Error ? err.message : "حدث خطأ غير متوقع.");
+    } finally {
       setLoading(false);
     }
   };
@@ -74,6 +60,7 @@ const AddLocalisationForm: React.FC<Props> = ({ onClose, fetchLocalisations }) =
           <form onSubmit={handleSubmit}>
             <div className="modal-body">
               {error && <div className="alert alert-danger">{error}</div>}
+              
               <input 
                 type="text" 
                 className="form-control mb-2" 
@@ -82,6 +69,7 @@ const AddLocalisationForm: React.FC<Props> = ({ onClose, fetchLocalisations }) =
                 onChange={(e) => setName(e.target.value)} 
                 required 
               />
+              
               <input 
                 type="number" 
                 className="form-control mb-2" 
@@ -90,10 +78,14 @@ const AddLocalisationForm: React.FC<Props> = ({ onClose, fetchLocalisations }) =
                 onChange={(e) => setFloor(e.target.value)} 
                 required 
               />
+              
               <select 
                 className="form-control mb-2" 
-                value={selectedService} 
-                onChange={(e) => setSelectedService(e.target.value)} 
+                value={selectedService?.id || ""}
+                onChange={(e) => {
+                  const service = services.find(s => s.id === parseInt(e.target.value, 10));
+                  setSelectedService(service || null);
+                }}
                 required
               >
                 <option value="">اختر مصلحة</option>

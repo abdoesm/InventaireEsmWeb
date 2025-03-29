@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Bk_End_SRVR } from "../configs/conf";
-import { Localisation } from "../models/localisationType";
+import { Bk_End_SRVR } from "../../configs/conf";
+import { Localisation } from "../../models/localisationType";
 
 
  

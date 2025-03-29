@@ -10,6 +10,7 @@ interface Localisation {
 
 export class LocalisationModel {
     async createLocalisation(localisation: Localisation): Promise<number | null> {
+        console.log("createLocalisation from model",localisation)
         const query = "INSERT INTO localisation (loc_name, floor, id_service) VALUES (?, ?, ?)";
         try {
             const [result] = await pool.execute<ResultSetHeader>(query, [

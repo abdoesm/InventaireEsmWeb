@@ -51,6 +51,7 @@ export const getLocalisationsByService = async (req: Request, res: Response) => 
 // Create new localisation
 export const createLocalisation = async (req: Request, res: Response) => {
     try {
+        console.log("createLocalisation from controller ",req.body)
         const insertId = await localisationModel.createLocalisation(req.body);
         if (insertId) {
             res.status(201).json({ message: "Localisation added successfully", id: insertId });

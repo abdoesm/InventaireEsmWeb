@@ -13,13 +13,13 @@ import { Service } from "../../../models/serviceTypes";
 import HomeBtn from "../../common/HomeBtn";
 import { BonSortie } from "../../../models/bonSortieType";
 import { useNavigate } from "react-router-dom";
+import useArticlesAndEmployersAndServices from "../../../services/hooks/useArticlesAndEmployersAndServices";
 
 
 const BonSortieView: React.FC = () => {
 
   const [bonSorties, setBonSorties] = useState<BonSortie[]>([]);
-  const [employers, setEmployers] = useState<Employer[]>([]);
-  const [services, setServices] = useState<Service[]>([]);
+
   const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
   const [showAddBonSortieForm, setShowAddBonSortieForm] = useState<boolean>(false);
   const [showUpdateBonSortieForm, setShowUpdateBonSortieForm] = useState<boolean>(false);
@@ -33,7 +33,7 @@ const BonSortieView: React.FC = () => {
   const handleRowDoubleClick = (row: BonSortie) => {
     navigate(`/bonsorties/${row.id}`); // Navigate to the details page with the BonSortie ID
   };
-
+const {employers,services} =useArticlesAndEmployersAndServices()
   const fetchBonSorties = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -61,47 +61,7 @@ const BonSortieView: React.FC = () => {
   useEffect(() => {
     fetchBonSorties();
   }, []);
-  useEffect(() => {
-    const fetchEmployers = async () => {
-      try {
-        const response = await fetch(`${Bk_End_SRVR}:5000/api/employers`);
-        if (!response.ok) throw new Error("Failed to fetch employers");
-        const data = await response.json();
-        setEmployers(data);
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchEmployers();
-  }, []);
-    const fetchServices = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          setError("No token found. Please log in.");
-          setLoading(false);
-          return;
-        }
-  
-        const response = await fetch(`${Bk_End_SRVR}:5000/api/services`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-  
-        if (!response.ok) throw new Error("Failed to fetch services.");
-  
-        const data: Service[] = await response.json();
-        setServices(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An unknown error occurred.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    useEffect(() => {
-      fetchServices();
-    }, []);
+
 
     const handleSearch=(e:React.ChangeEvent<HTMLInputElement>) =>{
       setSearchQuery(e.target.value);
