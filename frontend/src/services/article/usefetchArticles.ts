@@ -31,12 +31,14 @@ const useFetchArticles = () => {
       if(!quantitiesRes.ok) throw new Error("Failed to fetch quantitis ");
 
       const articlesData: Article[] = await articlesRes.json();
+      
       const quantitiesData: QuantityInfo[] = await quantitiesRes.json();
         // Combine articles with their quantities
         articlesData.forEach((article) => {
           const quantityInfo = quantitiesData.find((q) => q.idArticle === article.id);
           article.totalQuantity = quantityInfo ? quantityInfo.totalQuantity : 0;
         });
+        console.log("articlesData with quantities" ,articlesData)
         setArticles(articlesData);
     } catch (err) {
       if (err instanceof Error) {

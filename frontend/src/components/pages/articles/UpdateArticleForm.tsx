@@ -13,7 +13,8 @@ const UpdateArticleForm: React.FC<Props> = ({ onClose, fetchArticles, article })
   const [unite, setUnite] = useState(article.unite);
   const [description, setDescription] = useState(article.description);
   const [remarque, setRemarque] = useState(article.remarque);
-  const [categoryId, setCategoryId] = useState<number>(article.idCategory);
+  const [categoryId, setCategoryId] = useState<number>(article.id_category);
+   const [minQuantity,setMinQuantitiy]=useState<number>(article.min_quantity);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,7 +28,7 @@ const UpdateArticleForm: React.FC<Props> = ({ onClose, fetchArticles, article })
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ id,name, unite, description, remarque, id_category: categoryId }),
+        body: JSON.stringify({ id,name, unite, description, remarque, id_category: categoryId ,min_quantity:minQuantity}),
       });
       if (!response.ok) throw new Error("Failed to update article");
       fetchArticles();
@@ -99,6 +100,19 @@ const UpdateArticleForm: React.FC<Props> = ({ onClose, fetchArticles, article })
                   className="form-control"
                   value={categoryId}
                   onChange={(e) => setCategoryId(Number(e.target.value))}
+                  required
+                />
+              </div>
+              
+                  {/* Min Quantitiy Input */}
+                  <div className="mb-3">
+                <label className="form-label">الكمية الدنيا للعنصر </label>
+                <input
+                  type="number"
+                  className="form-control"
+                  placeholder="أدخل  الكمية الدنيا"
+                  value={minQuantity}
+                  onChange={(e) => setMinQuantitiy(Number(e.target.value))}
                   required
                 />
               </div>

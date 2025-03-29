@@ -25,8 +25,8 @@ const{categories} = useCategories();
     { name: "الاسم", selector: (row: Article) => row.name ?? "", sortable: true },
     { name: "الوحدة", selector: (row: Article) => row.unite ?? "", sortable: true },
     { name: "الوصف", selector: (row: Article) => row.description ?? "لا يوجد" },
-    { name: "الكمية تجربة", selector: (row: Article) => row.totalQuantity ?? 0 },
-    { name: "الكمية الدنيا", selector: (row: Article) => row.minQuantity ?? 0 },
+    { name: "الكمية", selector: (row: Article) => row.totalQuantity ?? 0 },
+    { name: "الكمية الدنيا", selector: (row: Article) => row.min_quantity ?? 0 },
 
 
     { name: "ملاحظات", selector: (row: Article) => row.remarque ?? "لا يوجد" },

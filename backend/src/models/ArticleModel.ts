@@ -7,8 +7,8 @@ interface Article {
     unite: string;
     remarque: string;
     description: string;
-    idCategory: number;
-    minQuantity: number;
+    id_category: number;
+    min_quantity: number;
 }
 
 export class ArticleModel {
@@ -64,8 +64,8 @@ export class ArticleModel {
                 article.unite,
                 article.remarque,
                 article.description,
-                article.idCategory,
-                article.minQuantity,
+                article.id_category,
+                article.min_quantity,
             ]);
             return (result as ResultSetHeader).affectedRows > 0;
         } catch (error) {
@@ -78,7 +78,7 @@ export class ArticleModel {
         if (articles.length === 0) return false;
         try {
             const query = "INSERT INTO article (name, unite, remarque, description, id_category, min_quantity) VALUES ?";
-            const values = articles.map((a) => [a.name, a.unite, a.remarque, a.description, a.idCategory, a.minQuantity]);
+            const values = articles.map((a) => [a.name, a.unite, a.remarque, a.description, a.id_category, a.min_quantity]);
             const [result] = await pool.query(query, [values]);
             return (result as ResultSetHeader).affectedRows > 0;
         } catch (error) {
@@ -97,8 +97,8 @@ export class ArticleModel {
                 unite: article.unite ?? null,
                 remarque: article.remarque ?? null,
                 description: article.description ?? null,
-                idCategory: article.idCategory ?? null,
-                minQuantity: article.minQuantity ?? null,
+                id_category: article.id_category ?? null,
+                minQuantity: article.min_quantity ?? null,
                 id: article.id
             };
     
@@ -108,7 +108,7 @@ export class ArticleModel {
                 safeArticle.unite,
                 safeArticle.remarque,
                 safeArticle.description,
-                safeArticle.idCategory,
+                safeArticle.id_category,
                 safeArticle.minQuantity,
                 safeArticle.id,
             ]);

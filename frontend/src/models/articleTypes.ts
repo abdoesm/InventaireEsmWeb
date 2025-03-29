@@ -7,8 +7,7 @@ export interface Article {
   unite: string;
   remarque: string;
   description: string;
-  idCategory: number;
-  minQuantity: number;
+  min_quantity: number;
   totalQuantity?: number;
   last_edited?: string;
 }

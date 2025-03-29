@@ -12,7 +12,8 @@ const AddArticleForm: React.FC<Props> = ({ onClose, fetchArticles }) => {
   const [unite, setUnite] = useState("");
   const [description, setDescription] = useState("");
   const [remarque, setRemarque] = useState("");
-  const [categoryId, setCategoryId] = useState<number | "">("");
+  const [categoryId, setCategoryId] = useState<number | 0>(0);
+  const [minQuantity,setMinQuantitiy]=useState<number>(0)
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,6 +32,7 @@ const AddArticleForm: React.FC<Props> = ({ onClose, fetchArticles }) => {
           description,
           remarque,
           id_category: categoryId,
+          min_quantity: minQuantity,
         }),
       });
       if (!response.ok) throw new Error("Failed to add article");
@@ -108,6 +110,19 @@ const AddArticleForm: React.FC<Props> = ({ onClose, fetchArticles }) => {
                   placeholder="أدخل معرف الفئة"
                   value={categoryId}
                   onChange={(e) => setCategoryId(Number(e.target.value))}
+                  required
+                />
+              </div>
+
+                  {/* Min Quantitiy Input */}
+                  <div className="mb-3">
+                <label className="form-label">الكمية الدنيا للعنصر </label>
+                <input
+                  type="number"
+                  className="form-control"
+                  placeholder="أدخل  الكمية الدنيا"
+                  value={minQuantity}
+                  onChange={(e) => setMinQuantitiy(Number(e.target.value))}
                   required
                 />
               </div>
