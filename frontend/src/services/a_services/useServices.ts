@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Service } from "../models/serviceTypes";
-import { Bk_End_SRVR } from "../configs/conf";
+import { Service } from "../../models/serviceTypes";
+import { Bk_End_SRVR } from "../../configs/conf";
 
 
  

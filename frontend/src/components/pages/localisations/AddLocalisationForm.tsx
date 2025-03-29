@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import { Service } from "../../../models/serviceTypes";
-import useService from "../../../services/useServices";
+import useService from "../../../services/a_services/useServices";
 
 interface Props {
   onClose: () => void;

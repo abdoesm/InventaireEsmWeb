@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 
 import { useState } from "react";
 import HomeBtn from "../../common/HomeBtn";
-import { Bk_End_SRVR } from "../../../configs/conf";
 import DataTable from "react-data-table-component";
 import ActionButtons from "../../common/ActionButtons";
 import AddInventaireItemForm from "./AddInventaireItemForm";
@@ -13,63 +12,22 @@ import useArticlesAndEmployers from "../../../services/hooks/useArticlesAndEmplo
 import useLocation from "../../../services/localisations/useLocation";
 import { checkAuth, UserType } from "../../../App";
 import useFetchUsers from "../../../services/user/useFetchUsers";
+import useInventaireItems from "../../../services/Inventaire/useInventaireItem";
 
 const InventaireItemView: React.FC = () => {
 
-  const [loading, setLoading] = useState<boolean>(true);
+
   const [user, setUser] = useState<UserType>();
-  const [error, setError] = useState<string | null>(null);
   const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
   const [showAddInventaireItemForm, setShowAddInventaireItemForm] = useState<boolean>(false);
   const [showUpdateInventaireItemForm, setShowUpdateInventaireItemForm] = useState<boolean>(false);
   const [selectedInventaireItem, setSelectedInventaireItem] = useState<InventaireItem | null>(null);
   const { users } = useFetchUsers();
-  const [inventaireItems, setInventaireItems] = useState<InventaireItem[]>([]);
-
-  const fetchInventaireItems = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("No token found. Please log in.");
-        setLoading(false);
-        return;
-      }
-
-      const response = await fetch(`${Bk_End_SRVR}:5000/api/inventaire`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-  
-      if (!response.ok) throw new Error("Failed to fetch inventaire item.");
-
-      const data = await response.json();
-      console.log("data", data);
-      const mappedData = data.map((item: any) => ({
-        id: item.id,
-        idArticle: item.id_article,  // Corrected
-        idUser: item.user_id,  // Corrected
-        idLocalisation: item.id_localisation,  // Corrected
-        idEmployer: item.id_employer,  // Corrected
-        numInventaire: item.num_inventaire,  // Corrected
-        dateInventaire: item.time,  // Corrected
-        status: item.status, 
-      }));
-
-
-      setInventaireItems(mappedData);
-      setLoading(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred.");
-      setLoading(false);
-    }
-  };
   const { employers, articles } = useArticlesAndEmployers();
   const { localisations } = useLocation();
-
+const { inventaireItems, loading, error, fetchInventaireItems } =useInventaireItems()
   useEffect(() => {
-    fetchInventaireItems();
     setUser(checkAuth());
-    setLoading(false);
   }, []);
 
 

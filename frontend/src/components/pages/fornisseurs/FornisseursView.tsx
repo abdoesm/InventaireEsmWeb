@@ -9,44 +9,16 @@ import AddFournisseurForm from "./AddFournisseurForm";
 import UpdateFournisseurForm from "./UpdateFournisseurForm";
 import DeleteFournisseurForm from "./DeleteFournisseurForm";
 import HomeBtn from "../../common/HomeBtn";
+import useFornisseurs from "../../../services/fornisseurs/useFornisseurs";
 
 const FournisseurView: React.FC = () => {
-  const navigate = useNavigate();
-  const [fournisseurs, setFournisseurs] = useState<Fournisseur[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+ 
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
   const [showUpdateForm, setShowUpdateForm] = useState<boolean>(false);
   const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
   const [selectedFournisseur, setSelectedFournisseur] = useState<Fournisseur | null>(null);
 
-  const fetchFournisseurs = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("No token found. Please log in.");
-        setLoading(false);
-        return;
-      }
-
-      const response = await fetch(`${Bk_End_SRVR}:5000/api/fournisseurs`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch fournisseurs.");
-
-      const data: Fournisseur[] = await response.json();
-      setFournisseurs(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchFournisseurs();
-  }, []);
+const {fournisseurs,error,loading,fetchFournisseurs}=useFornisseurs();
 
   return (
     <div className="container mt-5">
