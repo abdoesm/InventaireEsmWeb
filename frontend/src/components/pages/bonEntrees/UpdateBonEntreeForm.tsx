@@ -11,14 +11,18 @@ import { Article } from "../../../models/articleTypes";
 import SelectionList from "../../common/SelectionList";
 import useFornisseurs from "../../../services/fornisseurs/useFornisseurs";
 import useFetchArticles from "../../../services/article/usefetchArticles";
+import useBonEntreeDetails from "../../../services/bonEntrees/useBonEntreeDetails";
 
 type Props = {
-    id: number;
+    id: string;
     onClose: () => void;
     fetchBonEntrees: () => void;
 };
 
 const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) => {
+    const { bonEntree, mapEntrees,loading ,error} = useBonEntreeDetails(id ?? "");
+    const { fournisseurs } = useFornisseurs();
+    const {articles} =useFetchArticles();
     const [data, setData] = useState({
         id_fournisseur: 0,
         date: "",
@@ -26,57 +30,35 @@ const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) 
         document_num: "",
     });
 
-    const [error, setError] = useState<string | null>(null);
+    
     const [selectedEntrees, setSelectedEntrees] = useState<Entree[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [fournisseurSearchTerm, setFournisseurSearchTerm] = useState("");
     const [selectedFournisseur, setSelectedFournisseur] = useState<Fournisseur | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const { fournisseurs } = useFornisseurs();
-    const {articles,loading} =useFetchArticles();
+   
+   
 
     // Fetch Bon Entree data when the component mounts
     useEffect(() => {
-        const fetchBonEntreeData = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                if (!token) {
-                    setError("No token found. Please log in.");
-                    return;
-                }
+      if(bonEntree){
+        setData({
+            id_fournisseur: bonEntree.id_fournisseur,
+            date: bonEntree.date.split("T")[0],
+            TVA: bonEntree.TVA,
+            document_num: bonEntree.document_num,
+        });
 
-                const [bonEntreeRes, entreesRes] = await Promise.all([
-                    fetch(`${Bk_End_SRVR}:5000/api/bonentrees/${id}`, { headers: { Authorization: `Bearer ${token}` } }),
-                    fetch(`${Bk_End_SRVR}:5000/api/bonentrees/entree/${id}`, { headers: { Authorization: `Bearer ${token}` } }),
-                ]);
-
-                if (!bonEntreeRes.ok || !entreesRes.ok) throw new Error("Failed to fetch data.");
-
-                const bonEntreeData = await bonEntreeRes.json();
-                const entreesData = await entreesRes.json();
-
-                setData({
-                    id_fournisseur: bonEntreeData.id_fournisseur,
-                    date: bonEntreeData.date.split("T")[0],
-                    TVA: bonEntreeData.TVA,
-                    document_num: bonEntreeData.document_num,
-                });
-
-                setSelectedEntrees(entreesData.map((entree: any) => ({
-                    idArticle: entree.id_article,
-                    quantity: entree.quantity,
-                    unitPrice: entree.unit_price,
-                })));
-
-                setSelectedFournisseur(fournisseurs.find((f) => f.id === bonEntreeData.id_fournisseur) || null);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : "An unknown error occurred.");
-            }
-        };
-
-        if (id && fournisseurs.length > 0) fetchBonEntreeData();
-    }, [id, fournisseurs]);
+        setSelectedEntrees(mapEntrees.map(entree => ({
+            idArticle: entree.id_article,
+            quantity: entree.quantity,
+            unitPrice: entree.unit_price,
+        })));
+        setSelectedFournisseur(fournisseurs.find(f => f.id === bonEntree.id_fournisseur) || null);
+    } 
+       
+    }, [bonEntree, mapEntrees, fournisseurs]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -85,7 +67,7 @@ const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) 
         try {
             const token = localStorage.getItem("token");
             if (!token) {
-                setError("No token found. Please log in.");
+                console.error("No token found. Please log in.");
                 return;
             }
 
@@ -106,7 +88,7 @@ const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) 
             fetchBonEntrees();
             onClose();
         } catch (err) {
-            setError(err instanceof Error ? err.message : "An unknown error occurred.");
+            console.error(err instanceof Error ? err.message : "An unknown error occurred.");
         } finally {
             setIsLoading(false);
         }
@@ -167,6 +149,7 @@ const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) 
                     </div>
                     <div className="modal-body" style={{ maxHeight: "70vh", overflowY: "auto" }}>
                         {error && <p className="text-danger">{error}</p>}
+
                         {loading ? (
                             <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>
                         ) : (
