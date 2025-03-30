@@ -86,7 +86,7 @@ const { inventaireItems, loading, error, fetchInventaireItems } =useInventaireIt
 
 
   return (
-    <div className="container mt-5">
+    <>
       <HomeBtn />
       <h2 className="fw-bold text-center">إدارة الجرد</h2>
       <button className="btn btn-success " onClick={() => setShowAddInventaireItemForm(true)}>
@@ -131,7 +131,7 @@ const { inventaireItems, loading, error, fetchInventaireItems } =useInventaireIt
           fetchInventaireItems={fetchInventaireItems}
         />
       )}
-    </div>
+    </>
   );
 };
 

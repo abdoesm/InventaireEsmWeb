@@ -6,6 +6,7 @@ interface MenuItem {
   label: string;
   icon: React.ReactNode;
   className: string;
+  style: React.CSSProperties;
 }
 
 interface SidebarProps {
@@ -16,19 +17,20 @@ const SidebarMenu: React.FC<SidebarProps> = ({ menuItems }) => {
   const navigate = useNavigate();
 
   return (
-    <aside className="sidebar">
-      <div className="menu-list">
-        {menuItems.map(({ path, className, label, icon }) => (
-          <button
-            key={path}
-            onClick={() => navigate(path)}
-            className={`menu-item ${className}`}
-          >
-            {icon} <span className="menu-text">{label}</span>
-          </button>
-        ))}
-      </div>
-    </aside>
+
+<div className="d-grid gap-2">
+      {menuItems.map(({ path, className, label, icon, style }) => (
+        <button
+          key={path}
+          onClick={() => navigate(path)}
+          className={`btn ${className}  text-white d-flex align-items-center justify-content-start p-3 rounded`}
+          style={style} // Apply the background color
+        >
+         <span className="me-2">{icon}</span>
+         <span>{label}</span>
+        </button>
+      ))}
+    </div>
   );
 };
 

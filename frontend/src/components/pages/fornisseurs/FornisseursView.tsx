@@ -21,7 +21,7 @@ const FournisseurView: React.FC = () => {
 const {fournisseurs,error,loading,fetchFournisseurs}=useFornisseurs();
 
   return (
-    <div className="container mt-5">
+    <>
       <div className="d-flex justify-content-between align-items-center mb-4">
       <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة الموردين</h2>
@@ -69,7 +69,7 @@ const {fournisseurs,error,loading,fetchFournisseurs}=useFornisseurs();
           fetchFournisseurs={fetchFournisseurs} 
         />
       )}
-    </div>
+    </>
   );
 };
 

@@ -12,6 +12,7 @@ import DeleteBonEntreeForm from "./DeleteBonEntreeForm";
 import HomeBtn from "../../common/HomeBtn";
 import { BonEntree } from "../../../models/BonEntreeTypes";
 import useFornisseurs from "../../../services/fornisseurs/useFornisseurs";
+import SearchInput from "../../common/SearchInput";
 
 
 
@@ -117,7 +118,7 @@ const BonEntreeView: React.FC = () => {
       {/* Search Input Field */}
       <div className="mb-4">
         <div className="input-group">
-          <input
+          <SearchInput
             type="text"
             className="form-control"
             placeholder="ابحث برقم الوثيقة أو التاريخ أو المورد..."

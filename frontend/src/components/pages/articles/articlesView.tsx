@@ -57,10 +57,16 @@ const{categories} = useCategories();
   ];
   
   return (
-    <div className="container mt-5">
+    <>
       <div className="d-flex justify-content-between align-items-center mb-4">
        <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة المقالات</h2>
+      </div>
+      
+      <div className="d-flex justify-content-center mt-3">
+        <button className="btn btn-success" onClick={() => setShowAddForm(true)}>
+          <FaPlus className="me-2" /> إضافة مقال
+        </button>
       </div>
   
       {loading ? (
@@ -79,11 +85,6 @@ const{categories} = useCategories();
         />
       )}
   
-      <div className="d-flex justify-content-center mt-3">
-        <button className="btn btn-success" onClick={() => setShowAddForm(true)}>
-          <FaPlus className="me-2" /> إضافة مقال
-        </button>
-      </div>
   
       {showAddForm && (
      
@@ -102,7 +103,7 @@ const{categories} = useCategories();
           <DeleteArticleForm onClose={() => setShowDeleteForm(false)} article={selectedArticle} fetchArticles={fetchArticles} />
      
       )}
-    </div>
+    </>
   );
   
 };

@@ -11,7 +11,7 @@ const Footer: React.FC<FooterProps> = ({ logout }) => {
 
   return (
     <footer>
-      <div className="footer-buttons">
+      <div>
         <button onClick={logout} className="btn btn-danger btn-sm">
           <FaSignOutAlt className="me-1" /> تسجيل الخروج
         </button>

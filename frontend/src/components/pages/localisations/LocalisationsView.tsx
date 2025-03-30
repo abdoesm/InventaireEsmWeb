@@ -105,7 +105,7 @@ const LocalisationsView: React.FC = () => {
   ];
 
   return (
-    <div className="container mt-5">
+    <>
       <div className="d-flex justify-content-between align-items-center mb-4">
       <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة المواقع</h2>
@@ -145,7 +145,7 @@ const LocalisationsView: React.FC = () => {
           fetchLocalisations={fetchLocalisations}
         />
       )}
-    </div>
+    </>
   );
 };
 

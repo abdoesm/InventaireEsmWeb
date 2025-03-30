@@ -15,13 +15,18 @@ const SearchInput: React.FC<InputProps> = ({
   onChange,
   className = "form-control mb-2",
 }) => (
+  <form className="d-flex input-group w-auto ms-lg-3 my-3 my-lg-0">
   <input
-    type="text"
+    type="search"
     className={className}
     placeholder={placeholder}
     value={value}
     onChange={onChange} // Correctly passing the event
   />
+  </form>
 );
+
+
+
 
 export default SearchInput;

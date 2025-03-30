@@ -90,7 +90,8 @@ const BonEntreeDetails: React.FC = () => {
 
 
   return (
-    <div id="pdf-content" className="container mt-5">
+    <>
+    <div id="pdf-content"  >
       <style>{`
         @media print {
           .no-print { display: none !important; }
@@ -191,7 +192,8 @@ const BonEntreeDetails: React.FC = () => {
       ) : (
         <p className="text-center text-danger">لم يتم العثور على التفاصيل.</p>
       )}
-    </div>
+      </div>
+    </>
   );
 };
 

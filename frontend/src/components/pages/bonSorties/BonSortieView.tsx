@@ -14,6 +14,7 @@ import HomeBtn from "../../common/HomeBtn";
 import { BonSortie } from "../../../models/bonSortieType";
 import { useNavigate } from "react-router-dom";
 import useArticlesAndEmployersAndServices from "../../../services/hooks/useArticlesAndEmployersAndServices";
+import SearchInput from "../../common/SearchInput";
 
 
 const BonSortieView: React.FC = () => {
@@ -114,7 +115,7 @@ const {employers,services} =useArticlesAndEmployersAndServices()
   ];
 
   return (
-    <div className="container mt-5">
+    <>
       <div className="d-flex justify-content-between align-items-center mb-4">
       <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة وصول الخروج</h2>
@@ -124,19 +125,17 @@ const {employers,services} =useArticlesAndEmployersAndServices()
 
     {/* Search Input Field */}
       <div className="mb-4">
-        <div className="input-group">
-          <input
+      
+          <SearchInput
             type="text"
             className="form-control"
             placeholder="ابحث برقم الوثيقة أو التاريخ أو الموظف..."
             value={searchQuery}
             onChange={handleSearch}
           />
-          <span className="input-group-text">
-            <FaSearch />
-          </span>
+     
         </div>
-      </div>
+   
   
       {loading ? (
         <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>
@@ -176,7 +175,7 @@ const {employers,services} =useArticlesAndEmployersAndServices()
         fetchBonSortie={fetchBonSorties}
         />
       )}
-    </div>
+    </>
   );
 };
 

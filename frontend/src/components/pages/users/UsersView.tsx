@@ -13,7 +13,6 @@ import HomeBtn from "../../common/HomeBtn";
 
 
 const Users: React.FC = () => {
-  const navigate = useNavigate();
   const { users, loading, error, fetchUsers } = useFetchUsers();
   const [showAddUserForm, setShowAddUserForm] = useState<boolean>(false);
   const [showUpdateUserForm, setShowUpdateUserForm] = useState<boolean>(false);
@@ -44,7 +43,7 @@ const Users: React.FC = () => {
   ];
 
   return (
-    <div className="container mt-5">
+    <>
       <div className="d-flex justify-content-between align-items-center mb-4">
       <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة المستخدمين</h2>
@@ -77,7 +76,7 @@ const Users: React.FC = () => {
       {showDeleteUserForm && selectedUser && (
         <DeleteUserForm onClose={() => setShowDeleteUserForm(false)} user={selectedUser} fetchUsers={fetchUsers} />
       )}
-    </div>
+    </>
   );
 };
 
