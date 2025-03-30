@@ -4,11 +4,12 @@ interface FormGroupProps {
   label?: string;
   children: ReactNode;
   className?: string;
+  labelClassName?: string;
 }
 
-const FormGroup: React.FC<FormGroupProps> = ({ label, children, className = "mb-3" }) => (
+const FormGroup: React.FC<FormGroupProps> = ({ label, children, className = "mb-3", labelClassName }) => (
   <div className={`form-group ${className}`}>
-    {label && <label className="form-label">{label}</label>}
+    {label && <label className={`form-label ${labelClassName}`}>{label}</label>}
     {children}
   </div>
 );

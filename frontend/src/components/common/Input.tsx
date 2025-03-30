@@ -7,6 +7,7 @@ interface InputProps {
   placeholder?:string;
   type?: string;
   value: any;
+  required?: boolean;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 

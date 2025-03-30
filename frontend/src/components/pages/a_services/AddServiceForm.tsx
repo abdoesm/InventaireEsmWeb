@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import { Employer } from "../../../models/employerType";
-
-
-
+import Input from "../../common/Input";
+import FormGroup from "../../common/FormGroup";
+import { FaUserTie, FaSave, FaTimes } from "react-icons/fa";
 
 type Props = {
   onClose: () => void;
@@ -16,9 +16,12 @@ const AddServiceForm: React.FC<Props> = ({ onClose, fetchServices }) => {
   const [chefServiceId, setChefServiceId] = useState<number | null>(null);
   const [employers, setEmployers] = useState<Employer[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchEmployers = async () => {
+      setIsLoading(true);
       try {
         const response = await fetch(`${Bk_End_SRVR}:5000/api/employers`);
         if (!response.ok) throw new Error("Failed to fetch employers");
@@ -26,6 +29,8 @@ const AddServiceForm: React.FC<Props> = ({ onClose, fetchServices }) => {
         setEmployers(data);
       } catch (err) {
         setError((err as Error).message);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchEmployers();
@@ -34,6 +39,7 @@ const AddServiceForm: React.FC<Props> = ({ onClose, fetchServices }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setIsSubmitting(true);
     
     try {
       const token = localStorage.getItem("token");
@@ -60,52 +66,106 @@ const AddServiceForm: React.FC<Props> = ({ onClose, fetchServices }) => {
       onClose();
     } catch (err) {
       setError((err as Error).message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="modal fade show d-block" tabIndex={-1} role="dialog">
+    <div className="modal fade show d-block" tabIndex={-1} role="dialog" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
       <div className="modal-dialog modal-dialog-centered" role="document">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">إضافة مصلحة جديدة</h5>
-            <button type="button" className="btn-close" onClick={onClose}></button>
+        <div className="modal-content border-0 shadow-lg">
+          <div className="modal-header bg-primary text-white">
+            <h5 className="modal-title d-flex align-items-center">
+              <FaUserTie className="me-2" /> إضافة مصلحة جديدة
+            </h5>
+            <button 
+              type="button" 
+              className="btn-close btn-close-white" 
+              onClick={onClose}
+              aria-label="Close"
+            ></button>
           </div>
           <div className="modal-body">
-            {error && <p className="text-danger">{error}</p>}
+            {error && (
+              <div className="alert alert-danger d-flex align-items-center" role="alert">
+                <div className="flex-grow-1">{error}</div>
+                <button 
+                  type="button" 
+                  className="btn-close" 
+                  onClick={() => setError(null)}
+                  aria-label="Close"
+                ></button>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit}>
-              <div className="mb-3">
-                <label className="form-label">المصلحة</label>
-                <input
+              <FormGroup label="اسم المصلحة" labelClassName="fw-bold">
+                <Input
                   type="text"
-                  className="form-control"
+                  className="form-control rounded-0 border-2 border-primary"
                   placeholder="أدخل اسم المصلحة"
                   value={name}
+                  name="name"
                   onChange={(e) => setName(e.target.value)}
                   required
                 />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">رئيس المصلحة</label>
-                <select
-                  className="form-control"
-                  value={chefServiceId ?? ""}
-                  onChange={(e) => {
-                    const selectedValue = e.target.value;
-                    setChefServiceId(selectedValue ? Number(selectedValue) : null);
-                  }}
+              </FormGroup>
+              
+              <FormGroup label="رئيس المصلحة" labelClassName="fw-bold">
+                {isLoading ? (
+                  <div className="d-flex align-items-center">
+                    <div className="spinner-border spinner-border-sm text-primary me-2" role="status">
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                    <span>جاري تحميل الموظفين...</span>
+                  </div>
+                ) : (
+                  <select
+                    className="form-select rounded-0 border-2 border-primary"
+                    value={chefServiceId ?? ""}
+                    onChange={(e) => {
+                      const selectedValue = e.target.value;
+                      setChefServiceId(selectedValue ? Number(selectedValue) : null);
+                    }}
+                    aria-label="Select service chief"
+                  >
+                    <option value="">-- اختر رئيس المصلحة --</option>
+                    {employers.map((emp) => (
+                      <option key={emp.id} value={emp.id}>
+                        {`${emp.fname} ${emp.lname}`}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </FormGroup>
+
+              <div className="modal-footer border-top-0">
+                <button 
+                  type="button" 
+                  className="btn btn-outline-secondary rounded-0 d-flex align-items-center"
+                  onClick={onClose}
                 >
-                  <option></option>
-                  {employers.map((emp) => (
-                    <option key={emp.id} value={emp.id}>
-                      {`${emp.fname} ${emp.lname}`}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="modal-footer">
-                <button type="submit" className="btn btn-primary">إضافة</button>
-                <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
+                  <FaTimes className="me-2" /> إلغاء
+                </button>
+                <button 
+                  type="submit" 
+                  className="btn btn-primary rounded-0 d-flex align-items-center"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="spinner-border spinner-border-sm me-2" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                      </div>
+                      جاري الحفظ...
+                    </>
+                  ) : (
+                    <>
+                      <FaSave className="me-2" /> حفظ
+                    </>
+                  )}
+                </button>
               </div>
             </form>
           </div>
