@@ -1,23 +1,22 @@
-import '../../assets/css/Login.css';
 import React, { useState, FormEvent, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Input from '../common/Input';
 import { Bk_End_SRVR } from '../../configs/conf';
-
+import "bootstrap/dist/css/bootstrap.min.css";
 
 interface LoginProps {
   login: (token: string) => void;
 }
 
 const Login: React.FC<LoginProps> = ({ login }) => {
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [error, setError] = useState<string>('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(""); // Clear previous errors
+    setError("");
 
     try {
       const response = await fetch(`${Bk_End_SRVR}:5000/api/login`, {
@@ -42,25 +41,29 @@ const Login: React.FC<LoginProps> = ({ login }) => {
   };
 
   return (
-    <div className="login-container">
-      <h2>Login</h2>
-      <form onSubmit={handleLogin} className="login-form">
-        <Input
-          label="USERNAME"
-          name="username"
-          value={username}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
-        />
-        <Input
-          label="PASSWORD"
-          name="password"
-          type="password"
-          value={password}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-        />
-        {error && <p className="error-message">{error}</p>}
-        <button type="submit" className="login-button">Login</button>
-      </form>
+    <div className="d-flex justify-content-center align-items-center vh-100">
+      <div className="card p-4 shadow-lg" style={{ width: '350px' }}>
+        <h2 className="text-center mb-4">Login</h2>
+        {error && <div className="alert alert-danger">{error}</div>}
+        <form onSubmit={handleLogin}>
+          <Input
+            label="Username"
+            name="username"
+            value={username}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
+            className="form-control"
+          />
+          <Input
+            label="Password"
+            name="password"
+            type="password"
+            value={password}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+            className="form-control"
+          />
+          <button type="submit" className="btn btn-secondary w-100 mt-3">Login</button>
+        </form>
+      </div>
     </div>
   );
 };
