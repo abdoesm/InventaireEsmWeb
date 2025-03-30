@@ -77,7 +77,7 @@ const UpdateBonSortieForm : React.FC<Props>= ({ id, onClose, fetchBonSorties }) 
         setSelectedSorties(prevSorties => {
             const newEntries = new Map(prevSorties.map(s => [s.idArticle, s]));
             newEntries.has(article.id!) ? newEntries.delete(article.id!) :
-                newEntries.set(article.id!, { idArticle: article.id!, quantity: 1, idBs: parseInt(id) });
+                newEntries.set(article.id!, { idArticle: article.id!, quantity: 1, idBs: id });
             return Array.from(newEntries.values());
         });
     };
