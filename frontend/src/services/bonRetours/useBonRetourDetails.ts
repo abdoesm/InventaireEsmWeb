@@ -5,7 +5,7 @@ import { BonRetour } from "../../models/bonRetourTypes";
 
 
 const useBonRetourDetails = (bonRetour_id: string) => {
-    const [bonRetour, setBonRetour] = useState<BonRetour[]>([]);
+    const [bonRetour, setBonRetour] = useState<BonRetour>();
     const [retours, setRetours] = useState<Retour[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);

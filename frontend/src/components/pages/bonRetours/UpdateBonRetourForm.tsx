@@ -1,18 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { Bk_End_SRVR } from "../../../configs/conf";
+import React, { useState, useEffect, useMemo } from "react";
 import Input from "../../common/Input";
 import FormGroup from "../../common/FormGroup";
 import SearchInput from "../../common/SearchInput";
 import SelectedArticlesTable from "../../common/SelectedArticlesTable";
 import SelectionList from "../../common/SelectionList";
-import { Retour } from "../../../models/retourType";
-import { Service } from "../../../models/serviceTypes";
 import { Employer } from "../../../models/employerType";
+import { Service } from "../../../models/serviceTypes";
 import { Article } from "../../../models/articleTypes";
-import ArticleSelection from "../../common/ArticleSelection";
 import useFetchArticles from "../../../services/article/usefetchArticles";
 import useEmployers from "../../../services/employers/useEmployers";
 import useService from "../../../services/a_services/useServices";
+import useBonRetourDetails from "../../../services/bonRetours/useBonRetourDetails";
+import ArticleSelection from "../../common/ArticleSelection";
+import { Bk_End_SRVR } from "../../../configs/conf";
+import { Retour } from "../../../models/retourType";
+import { BonRetour } from "../../../models/bonRetourTypes";
 
 type Props = {
     onClose: () => void;
@@ -21,118 +23,88 @@ type Props = {
 };
 
 const UpdateBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours, bonRetour_id }) => {
-    const [bonRetour, setbonRetour] = useState({
-        id_employeur: 0,
-        id_service: 0,
-        date: "",
-        document_num: "",
-        return_reason: "",
+    const { services } = useService();
+    const { articles } = useFetchArticles();
+    const { employers } = useEmployers();
+    const { bonRetour: fetchedBonRetour, retours, error: fetchError, isLoading } = useBonRetourDetails(bonRetour_id.toString());
+    
+    const [bonRetour, setBonRetour] = useState<BonRetour>({ 
+        id_employeur: 0, 
+        id_service: 0, 
+        date: "", 
+        return_reason: "" 
     });
+    const [selectedRetours, setSelectedRetours] = useState<Retour[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [employeurSearchTerm, setEmployeurSearchTerm] = useState("");
-    const [selectedEmployeur, setSelectedEmployeur] = useState<Employer | null>(null);
-    const [selectedRetours, setSelectedRetours] = useState<Retour[]>([]);
-    const [selectedService, setSelectedService] = useState<Service | null>(null);
- 
     const [serviceSearchTerm, setServiceSearchTerm] = useState("");
-    const [error, setError] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const {services} =useService();
-    const { articles} = useFetchArticles();
-    const {employers} = useEmployers();
+    const [selectedEmployeur, setSelectedEmployeur] = useState<Employer | null>(null);
+    const [selectedService, setSelectedService] = useState<Service | null>(null);
+    const [submitError, setSubmitError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Filter Services
-    const filteredServices = services.filter(service =>
-        service.name.toLowerCase().includes(serviceSearchTerm.toLowerCase())
+    // Memoized filtered data
+    const filteredServices = useMemo(() => 
+        services.filter(service => 
+            service.name.toLowerCase().includes(serviceSearchTerm.toLowerCase())
+        ), 
+        [services, serviceSearchTerm]
     );
 
-    // Filter Articles
-    const filteredArticles = articles.filter(article =>
-        article.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredArticles = useMemo(() => 
+        articles.filter(article => 
+            article.name.toLowerCase().includes(searchTerm.toLowerCase())
+        ),
+        [articles, searchTerm]
     );
 
-    // Filter Employers
-    const filteredEmployer = employers.filter(employer =>
-        employer.fname.toLowerCase().includes(employeurSearchTerm.toLowerCase()) ||
-        employer.lname.toLowerCase().includes(employeurSearchTerm.toLowerCase())
+    const filteredEmployer = useMemo(() => 
+        employers.filter(employer =>
+            employer.fname.toLowerCase().includes(employeurSearchTerm.toLowerCase()) ||
+            employer.lname.toLowerCase().includes(employeurSearchTerm.toLowerCase())
+        ),
+        [employers, employeurSearchTerm]
     );
+
+    // Initialize form data from fetched data
     useEffect(() => {
-        const fetchBonRetour = async () => {
-            setIsLoading(true);
-            try {
-                const token = localStorage.getItem("token");
-                if (!token) {
-                    setError("No token found. Please log in.");
-                    return;
-                }
-    
-                // Fetch bonRetour and retours simultaneously
-                const [bonRetourRes, retoursRes] = await Promise.all([
-                    fetch(`${Bk_End_SRVR}:5000/api/bonretours/${bonRetour_id}`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }),
-                    fetch(`${Bk_End_SRVR}:5000/api/bonretours/retour/${bonRetour_id}`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }),
-                ]);
-    
-                if (!bonRetourRes.ok || !retoursRes.ok) throw new Error("Failed to fetch BonRetour details.");
-    
-                const bonRetourData = await bonRetourRes.json();
-                const retoursData = await retoursRes.json();
-    
-                // Set the main bonRetour data
-                setbonRetour({
-                    id_employeur: bonRetourData.id_employeur,
-                    id_service: bonRetourData.id_service || 0,
-                    date: bonRetourData.date.split("T")[0], // Ensure date is formatted correctly
-                    document_num: bonRetourData.document_num,
-                    return_reason: bonRetourData.return_reason || "",
-                });
-    
-                // Set the selected retours
-                setSelectedRetours(retoursData.map((retour: any) => ({
-                    idArticle: retour.id_article,
-                    quantity: retour.quantity,
-                })));
-    
-                // Set selected employer and service
-                if (employers.length > 0) {
-                    setSelectedEmployeur(employers.find((e) => e.id === bonRetourData.id_employeur) || null);
-                }
-                if (services.length > 0) {
-                    setSelectedService(services.find((s) => s.id === bonRetourData.id_service) || null);
-                }
-            } catch (err) {
-                setError(err instanceof Error ? err.message : "An unknown error occurred.");
-            } finally {
-                setIsLoading(false);
-            }
-        };
-    
-        if (bonRetour_id && employers.length > 0 && services.length > 0) fetchBonRetour();
-    }, [bonRetour_id, employers, services]);
+        if (fetchedBonRetour) {
+            setBonRetour(fetchedBonRetour);
+        }
+    }, [fetchedBonRetour]);
 
+    useEffect(() => {
+        if (retours) {
+            setSelectedRetours(retours.map((retour: any) => ({
+                idArticle: retour.id_article,
+                quantity: retour.quantity,
+                id_br: retour.id_br,
+            })));
+        }
+    }, [retours]);
 
-    // Handle Input Changes
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setbonRetour((prevData) => ({ ...prevData, [name]: value }));
-    };
+    useEffect(() => {
+        if (bonRetour && employers.length > 0 && services.length > 0) {
+            setSelectedEmployeur(employers.find(e => e.id === bonRetour.id_employeur) || null);
+            setSelectedService(services.find(s => s.id === bonRetour.id_service) || null);
+        }
+    }, [bonRetour, employers, services]);
 
-    // Handle Employer Selection
     const handleEmployeurSelect = (employeur: Employer) => {
         setSelectedEmployeur(employeur);
-        setbonRetour({ ...bonRetour, id_employeur: employeur.id });
+        setBonRetour(prev => ({ ...prev, id_employeur: employeur.id }));
     };
 
-    // Handle Service Selection
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setBonRetour(prev => ({ ...prev, [name]: value }));
+    };
+
     const handleServiceSelect = (service: Service) => {
         setSelectedService(service);
-        setbonRetour(prevData => ({ ...prevData, id_service: service.id || prevData.id_service }));
+        setBonRetour(prev => ({ ...prev, id_service: service.id || 0 }));
     };
 
-    // Handle Article Selection
     const handleArticleSelect = (article: Article) => {
         setSelectedRetours((prevRetours) => {
             const newEntries = new Map(prevRetours.map((s) => [s.idArticle, s]));
@@ -142,14 +114,13 @@ const UpdateBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours, bonRet
                 newEntries.set(article.id!, {
                     idArticle: article.id!,
                     quantity: 1,
-                    id_br: 0,
+                    id_br: bonRetour_id,
                 });
             }
             return Array.from(newEntries.values());
         });
     };
 
-    // Handle Retours Update
     const handleRetourChange = <K extends keyof Retour>(index: number, field: K, value: Retour[K]) => {
         if (value === undefined || value === null) return;
         setSelectedRetours(prevRetours => {
@@ -159,36 +130,38 @@ const UpdateBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours, bonRet
         });
     };
 
-    // Handle Form Submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setSubmitError(null);
+        
         if (!selectedEmployeur) {
-            setError("الرجاء اختيار الموظف.");
+            setSubmitError("الرجاء اختيار الموظف.");
             return;
         }
-        if (!bonRetour.id_service) {
-            setError("الرجاء اختيار مصلحة.");
+        if (!selectedService) {
+            setSubmitError("الرجاء اختيار مصلحة.");
             return;
         }
         if (selectedRetours.length === 0) {
-            setError("الرجاء إضافة مقالات.");
+            setSubmitError("الرجاء إضافة مقالات.");
             return;
         }
         if (!bonRetour.date) {
-            setError("الرجاء إدخال تاريخ صحيح.");
+            setSubmitError("الرجاء إدخال تاريخ صحيح.");
             return;
         }
 
+        setIsSubmitting(true);
         try {
             const token = localStorage.getItem("token");
             if (!token) {
-                setError("No token found. Please log in.");
+                setSubmitError("No token found. Please log in.");
                 return;
             }
 
             const requestBody = {
-                id_employeur: bonRetour.id_employeur,
-                id_service: bonRetour.id_service,
+                id_employeur: selectedEmployeur.id,
+                id_service: selectedService.id,
                 date: bonRetour.date,
                 return_reason: bonRetour.return_reason,
                 retours: selectedRetours.map(retour => ({
@@ -199,24 +172,29 @@ const UpdateBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours, bonRet
 
             const response = await fetch(`${Bk_End_SRVR}:5000/api/bonretours/${bonRetour_id}`, {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
+                headers: { 
+                    "Content-Type": "application/json", 
+                    Authorization: `Bearer ${token}` 
                 },
                 body: JSON.stringify(requestBody),
             });
 
-            if (!response.ok) throw new Error("فشل في تحديث وصل الإرجاع.");
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "فشل في تحديث وصل الإرجاع.");
+            }
 
             fetchBonRetours();
             onClose();
         } catch (err) {
-            setError(err instanceof Error ? err.message : "حدث خطأ غير معروف.");
+            setSubmitError(err instanceof Error ? err.message : "حدث خطأ غير معروف.");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <div className="text-center py-4">جاري التحميل...</div>;
     }
 
     return (
@@ -225,43 +203,61 @@ const UpdateBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours, bonRet
                 <div className="modal-content">
                     <div className="modal-header">
                         <h5 className="modal-title">تحديث وصل إرجاع</h5>
-                        <button type="button" className="btn-close" aria-label="إغلاق" onClick={onClose}></button>
+                        <button 
+                            type="button" 
+                            className="btn-close" 
+                            aria-label="إغلاق" 
+                            onClick={onClose}
+                            disabled={isSubmitting}
+                        ></button>
                     </div>
                     <div className="modal-body">
-                        {error && <p className="text-danger">{error}</p>}
+                        {(fetchError || submitError) && (
+                            <div className="alert alert-danger">{fetchError || submitError}</div>
+                        )}
                         <form onSubmit={handleSubmit}>
                             {/* Employee Selection */}
-                            <SearchInput
-                                placeholder="ابحث عن الموظف"
-                                value={employeurSearchTerm}
-                                onChange={(e) => setEmployeurSearchTerm(e.target.value)}
-                            />
-                            <SelectionList
-                                items={filteredEmployer}
-                                selectedItem={selectedEmployeur}
-                                onSelect={handleEmployeurSelect}
-                                getItemLabel={(employer) => `${employer.fname} ${employer.lname}`}
-                                emptyMessage="لا يوجد موظفون متاحون"
-                            />
+                            <FormGroup label="الموظف">
+                                <SearchInput 
+                                    placeholder="ابحث عن الموظف" 
+                                    value={employeurSearchTerm} 
+                                    onChange={(e) => setEmployeurSearchTerm(e.target.value)} 
+                                />
+                                <SelectionList 
+                                    items={filteredEmployer} 
+                                    selectedItem={selectedEmployeur} 
+                                    onSelect={handleEmployeurSelect} 
+                                    getItemLabel={(e) => `${e.fname} ${e.lname}`} 
+                                    emptyMessage="لا يوجد موظفون متاحون" 
+                                />
+                            </FormGroup>
 
                             {/* Date Input */}
                             <FormGroup label="التاريخ">
-                                <Input type="date" name="date" value={bonRetour.date} onChange={handleChange} />
+                                <Input 
+                                    type="date" 
+                                    name="date" 
+                                    value={bonRetour.date} 
+                                    onChange={handleChange} 
+                               
+                                />
                             </FormGroup>
+
+                         
 
                             {/* Service Selection */}
                             <FormGroup label="المصلحة">
-                                <SearchInput
-                                    placeholder="ابحث عن المصلحة"
-                                    value={serviceSearchTerm}
-                                    onChange={(e) => setServiceSearchTerm(e.target.value)}
+                                <SearchInput 
+                                    placeholder="ابحث عن المصلحة" 
+                                    value={serviceSearchTerm} 
+                                    onChange={(e) => setServiceSearchTerm(e.target.value)} 
                                 />
-                                <SelectionList
-                                    items={filteredServices}
-                                    selectedItem={selectedService}
-                                    onSelect={handleServiceSelect}
-                                    getItemLabel={(service) => service.name}
-                                    emptyMessage="لا يوجد مصالح متاحة"
+                                <SelectionList 
+                                    items={filteredServices} 
+                                    selectedItem={selectedService} 
+                                    onSelect={handleServiceSelect} 
+                                    getItemLabel={(s) => s.name} 
+                                    emptyMessage="لا يوجد مصالح متاحة" 
                                 />
                             </FormGroup>
 
@@ -277,10 +273,10 @@ const UpdateBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours, bonRet
                             </FormGroup>
 
                             {/* Article Selection */}
-                            <ArticleSelection
-                                articles={filteredArticles}
-                                selectedEntrees={selectedRetours}
-                                onArticleSelect={handleArticleSelect}
+                            <ArticleSelection 
+                                articles={filteredArticles} 
+                                selectedEntrees={selectedRetours} 
+                                onArticleSelect={handleArticleSelect} 
                             />
 
                             {/* Selected Articles Table */}
@@ -292,8 +288,21 @@ const UpdateBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours, bonRet
 
                             {/* Modal Footer */}
                             <div className="modal-footer">
-                                <button type="submit" className="btn btn-primary">إضافة</button>
-                                <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
+                                <button 
+                                    type="submit" 
+                                    className="btn btn-primary"
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting ? "جاري التحديث..." : "تحديث"}
+                                </button>
+                                <button 
+                                    type="button" 
+                                    className="btn btn-secondary" 
+                                    onClick={onClose}
+                                    disabled={isSubmitting}
+                                >
+                                    إلغاء
+                                </button>
                             </div>
                         </form>
                     </div>
