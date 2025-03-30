@@ -5,11 +5,13 @@ import FormGroup from "../../common/FormGroup";
 import SearchInput from "../../common/SearchInput";
 import ArticleSelection from "../../common/ArticleSelection";
 import SelectedArticlesTable from "../../common/SelectedArticlesTable";
-import useArticlesAndFournisseurs from "../../../services/hooks/useArticlesAndFournisseurs";
+
 import { Fournisseur } from "../../../models/fournisseurTypes";
 import { Article } from "../../../models/articleTypes";
 import { Entree } from "../../../models/entreeTypes";
 import SelectionList from "../../common/SelectionList";
+import useFetchArticles from "../../../services/article/usefetchArticles";
+import useFornisseurs from "../../../services/fornisseurs/useFornisseurs";
 
 
 type Props = {
@@ -33,7 +35,8 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
     const [fournisseurSearchTerm, setFournisseurSearchTerm] = useState("");
     const [selectedFournisseur, setSelectedFournisseur] = useState<Fournisseur | null>(null);
 
-    const { articles, fournisseurs, error: fetchError, loading } = useArticlesAndFournisseurs();
+    const { articles, error: fetchError, loading } = useFetchArticles();
+    const { fournisseurs} = useFornisseurs();
 
     const filteredArticles = articles.filter(article =>
         article.name.toLowerCase().includes(searchTerm.toLowerCase())

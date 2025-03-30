@@ -2,9 +2,10 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { BonEntree } from "../../../models/BonEntreeTypes";
 import { Bk_End_SRVR } from "../../../configs/conf";
-import useArticlesAndEmployers from "../../../services/hooks/useArticlesAndEmployersAndServices";
 import html2pdf from "html2pdf.js";
-import useArticlesAndFournisseurs from "../../../services/hooks/useArticlesAndFournisseurs";
+import useFetchArticles from "../../../services/article/usefetchArticles";
+import useFornisseurs from "../../../services/fornisseurs/useFornisseurs";
+
 
 const BonEntreeDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,7 +14,8 @@ const BonEntreeDetails: React.FC = () => {
   const [mapEntrees, setMapEntrees] = useState<{ id: number; id_article: number; id_be: number; quantity: number; unit_price: number; }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { articles, fournisseurs } = useArticlesAndFournisseurs();
+  const { articles } = useFetchArticles();
+  const {fournisseurs} =useFornisseurs()
 
   useEffect(() => {
     const fetchData = async () => {

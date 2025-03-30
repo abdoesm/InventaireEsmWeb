@@ -5,12 +5,14 @@ import FormGroup from "../../common/FormGroup";
 import SearchInput from "../../common/SearchInput";
 import ArticleSelection from "../../common/ArticleSelection";
 import SelectedArticlesTable from "../../common/SelectedArticlesTable";
-import useArticlesAndEmployeurs from "../../../services/hooks/useArticlesAndEmployersAndServices";
+
 import { Employer } from "../../../models/employerType";
 import { Article } from "../../../models/articleTypes";
 import { Retour } from "../../../models/retourType";
 import SelectionList from "../../common/SelectionList";
 import { Service } from "../../../models/serviceTypes";
+import useFetchArticles from "../../../services/article/usefetchArticles";
+import useEmployers from "../../../services/employers/useEmployers";
 
 type Props = {
     onClose: () => void;
@@ -41,8 +43,8 @@ const AddBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours }) => {
     );
 
 
-    const { articles, employers, error: fetchError, loading } = useArticlesAndEmployeurs();
-
+    const { articles } = useFetchArticles();
+const {employers }=useEmployers()
     const filteredArticles = articles.filter(article =>
         article.name.toLowerCase().includes(searchTerm.toLowerCase())
     );

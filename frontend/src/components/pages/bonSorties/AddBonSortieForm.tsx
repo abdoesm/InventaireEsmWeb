@@ -4,12 +4,14 @@ import FormGroup from "../../common/FormGroup";
 import SearchInput from "../../common/SearchInput";
 import ArticleSelection from "../../common/ArticleSelection";
 import SelectedArticlesTable from "../../common/SelectedArticlesTable";
-import useArticlesAndEmployers from "../../../services/hooks/useArticlesAndEmployersAndServices";
 import { Article } from "../../../models/articleTypes";
 import { Sortie } from "../../../models/sortieType";
 import { Employer } from "../../../models/employerType";
 import { Service } from "../../../models/serviceTypes";
 import SelectionList from "../../common/SelectionList";
+import useFetchArticles from "../../../services/article/usefetchArticles";
+import useEmployers from "../../../services/employers/useEmployers";
+import useService from "../../../services/a_services/useServices";
 
 
 
@@ -36,7 +38,9 @@ const AddBonSortieForm: React.FC<Props> = ({ onClose, fetchBonSorties }) => {
     const [selectedService, setSelectedService] = useState<Service | null>(null);
 
 
-    const { articles, error: fetchError, loading, employers, services } = useArticlesAndEmployers();
+    const { error: fetchError, loading, employers} = useEmployers();
+    const { articles} =useFetchArticles();
+    const { services }=useService();
 
     const filteredArticles = articles.filter(article =>
         article.name.toLowerCase().includes(searchTerm.toLowerCase())

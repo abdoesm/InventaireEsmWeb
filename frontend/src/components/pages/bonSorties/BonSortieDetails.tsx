@@ -2,8 +2,10 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { BonSortie } from "../../../models/bonSortieType";
 import { Bk_End_SRVR } from "../../../configs/conf";
-import useArticlesAndEmployers from "../../../services/hooks/useArticlesAndEmployersAndServices";
 import html2pdf from "html2pdf.js";
+import useFetchArticles from "../../../services/article/usefetchArticles";
+import useEmployers from "../../../services/employers/useEmployers";
+import useService from "../../../services/a_services/useServices";
 
 const BonSortieDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -12,7 +14,9 @@ const BonSortieDetails: React.FC = () => {
   const [mapSorties, setMapSorties] = useState<{ id: number; id_article: number; id_bs: number; quantity: number }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { articles, employers, services } = useArticlesAndEmployers();
+  const { articles } = useFetchArticles();
+  const {employers} =useEmployers();
+  const { services}= useService();
 
   useEffect(() => {
     const fetchData = async () => {

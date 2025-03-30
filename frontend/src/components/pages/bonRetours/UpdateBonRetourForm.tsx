@@ -4,13 +4,14 @@ import Input from "../../common/Input";
 import FormGroup from "../../common/FormGroup";
 import SearchInput from "../../common/SearchInput";
 import SelectedArticlesTable from "../../common/SelectedArticlesTable";
-import useArticlesAndEmployeurs from "../../../services/hooks/useArticlesAndEmployersAndServices";
 import SelectionList from "../../common/SelectionList";
 import { Retour } from "../../../models/retourType";
 import { Service } from "../../../models/serviceTypes";
 import { Employer } from "../../../models/employerType";
 import { Article } from "../../../models/articleTypes";
 import ArticleSelection from "../../common/ArticleSelection";
+import useFetchArticles from "../../../services/article/usefetchArticles";
+import useEmployers from "../../../services/employers/useEmployers";
 
 type Props = {
     onClose: () => void;
@@ -36,7 +37,8 @@ const UpdateBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours, bonRet
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const { articles, employers, error: fetchError, loading } = useArticlesAndEmployeurs();
+    const { articles} = useFetchArticles();
+    const {employers} = useEmployers();
 
     // Filter Services
     const filteredServices = services.filter(service =>

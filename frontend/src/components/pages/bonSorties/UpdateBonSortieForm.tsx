@@ -4,13 +4,16 @@ import FormGroup from "../../common/FormGroup";
 import SearchInput from "../../common/SearchInput";
 import ArticleSelection from "../../common/ArticleSelection";
 import SelectedArticlesTable from "../../common/SelectedArticlesTable";
-import useArticlesAndEmployers from "../../../services/hooks/useArticlesAndEmployersAndServices";
+
 import { Article } from "../../../models/articleTypes";
 import { Sortie } from "../../../models/sortieType";
 import { Employer } from "../../../models/employerType";
 import { Service } from "../../../models/serviceTypes";
 import SelectionList from "../../common/SelectionList";
 import { BonSortie } from "../../../models/bonSortieType";
+import useEmployers from "../../../services/employers/useEmployers";
+import useService from "../../../services/a_services/useServices";
+import useFetchArticles from "../../../services/article/usefetchArticles";
 
 type Props = {
     id: number;
@@ -32,7 +35,10 @@ const UpdateBonSortieForm: React.FC<Props> = ({ id, onClose, fetchBonSorties }) 
     const [selectedService, setSelectedService] = useState<Service | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const { articles, error: fetchError, loading, employers, services } = useArticlesAndEmployers();
+    const { articles } = useFetchArticles();
+    const {employers} =useEmployers();
+    const { services}= useService();
+  
 
     // Fetch Bon Sortie data when the component mounts
     useEffect(() => {
@@ -179,8 +185,8 @@ const UpdateBonSortieForm: React.FC<Props> = ({ id, onClose, fetchBonSorties }) 
                     </div>
                     <div className="modal-body" style={{ maxHeight: "70vh", overflowY: "auto" }}>
                         {error && <p className="text-danger">{error}</p>}
-                        {fetchError && <p className="text-danger">{fetchError}</p>}
-                        {loading ? (
+                
+                        {isLoading ? (
                             <div className="text-center">
                                 <div className="spinner-border text-secondary" role="status">
                                     <span className="visually-hidden">جارٍ تحميل البيانات...</span>
@@ -264,3 +270,4 @@ const UpdateBonSortieForm: React.FC<Props> = ({ id, onClose, fetchBonSorties }) 
 };
 
 export default UpdateBonSortieForm;
+

@@ -8,22 +8,25 @@ import AddInventaireItemForm from "./AddInventaireItemForm";
 import UpdateInventaireItemForm from "./UpdateInventaireItemForm";
 import DeleteInventaireItem from "./DeleteInventaireItem";
 import { InventaireItem } from "../../../models/inventaireItemType";
-import useArticlesAndEmployers from "../../../services/hooks/useArticlesAndEmployersAndServices";
+
 import useLocation from "../../../services/localisations/useLocation";
 import { checkAuth, UserType } from "../../../App";
 import useFetchUsers from "../../../services/user/useFetchUsers";
 import useInventaireItems from "../../../services/Inventaire/useInventaireItem";
+import useEmployers from "../../../services/employers/useEmployers";
+import useFetchArticles from "../../../services/article/usefetchArticles";
 
 const InventaireItemView: React.FC = () => {
 
 
-  const [user, setUser] = useState<UserType>();
+  const [, setUser] = useState<UserType>();
   const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
   const [showAddInventaireItemForm, setShowAddInventaireItemForm] = useState<boolean>(false);
   const [showUpdateInventaireItemForm, setShowUpdateInventaireItemForm] = useState<boolean>(false);
   const [selectedInventaireItem, setSelectedInventaireItem] = useState<InventaireItem | null>(null);
   const { users } = useFetchUsers();
-  const { employers, articles } = useArticlesAndEmployers();
+  const { employers} = useEmployers();
+  const { articles } =useFetchArticles();
   const { localisations } = useLocation();
 const { inventaireItems, loading, error, fetchInventaireItems } =useInventaireItems()
   useEffect(() => {

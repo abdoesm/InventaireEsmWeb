@@ -5,11 +5,12 @@ import FormGroup from "../../common/FormGroup";
 import SearchInput from "../../common/SearchInput";
 import ArticleSelection from "../../common/ArticleSelection";
 import SelectedArticlesTable from "../../common/SelectedArticlesTable";
-import useArticlesAndFournisseurs from "../../../services/hooks/useArticlesAndFournisseurs";
 import { Fournisseur } from "../../../models/fournisseurTypes";
 import { Entree } from "../../../models/entreeTypes";
 import { Article } from "../../../models/articleTypes";
 import SelectionList from "../../common/SelectionList";
+import useFornisseurs from "../../../services/fornisseurs/useFornisseurs";
+import useFetchArticles from "../../../services/article/usefetchArticles";
 
 type Props = {
     id: number;
@@ -32,7 +33,8 @@ const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) 
     const [selectedFournisseur, setSelectedFournisseur] = useState<Fournisseur | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    const { articles, fournisseurs, error: fetchError, loading } = useArticlesAndFournisseurs();
+    const { fournisseurs } = useFornisseurs();
+    const {articles,loading} =useFetchArticles();
 
     // Fetch Bon Entree data when the component mounts
     useEffect(() => {
@@ -165,7 +167,6 @@ const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) 
                     </div>
                     <div className="modal-body" style={{ maxHeight: "70vh", overflowY: "auto" }}>
                         {error && <p className="text-danger">{error}</p>}
-                        {fetchError && <p className="text-danger">{fetchError}</p>}
                         {loading ? (
                             <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>
                         ) : (

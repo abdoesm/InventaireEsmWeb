@@ -8,13 +8,14 @@ import UpdateBonSortieForm from "./UpdateBonSortieForm";
 import DeleteBonSortieForm from "./DeleteBonSortieForm";
 import ActionButtons from "../../common/ActionButtons";
 import AddBonSortieForm from "./AddBonSortieForm";
-import { Employer } from "../../../models/employerType";
-import { Service } from "../../../models/serviceTypes";
+
 import HomeBtn from "../../common/HomeBtn";
 import { BonSortie } from "../../../models/bonSortieType";
 import { useNavigate } from "react-router-dom";
-import useArticlesAndEmployersAndServices from "../../../services/hooks/useArticlesAndEmployersAndServices";
+
 import SearchInput from "../../common/SearchInput";
+import useEmployers from "../../../services/employers/useEmployers";
+import useService from "../../../services/a_services/useServices";
 
 
 const BonSortieView: React.FC = () => {
@@ -34,7 +35,8 @@ const BonSortieView: React.FC = () => {
   const handleRowDoubleClick = (row: BonSortie) => {
     navigate(`/bonsorties/${row.id}`); // Navigate to the details page with the BonSortie ID
   };
-const {employers,services} =useArticlesAndEmployersAndServices()
+const {employers} =useEmployers();
+const {services} = useService();
   const fetchBonSorties = async () => {
     try {
       const token = localStorage.getItem("token");

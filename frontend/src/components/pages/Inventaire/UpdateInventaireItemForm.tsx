@@ -5,10 +5,12 @@ import SelectionList from "../../common/SelectionList";
 import { Article } from "../../../models/articleTypes";
 import { Employer } from "../../../models/employerType";
 import { Localisation } from "../../../models/localisationType";
-import useArticlesAndEmployers from "../../../services/hooks/useArticlesAndEmployersAndServices";
+
 import { Bk_End_SRVR } from "../../../configs/conf";
 import Input from "../../common/Input";
 import { InventaireItem } from "../../../models/inventaireItemType";
+import useFetchArticles from "../../../services/article/usefetchArticles";
+import useEmployers from "../../../services/employers/useEmployers";
 
 interface UpdateInventaireItemFormProps {
     onClose: () => void;
@@ -31,7 +33,8 @@ const UpdateInventaireItemForm: React.FC<UpdateInventaireItemFormProps> = ({ onC
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    const { articles, employers } = useArticlesAndEmployers();
+    const { employers } = useEmployers();
+    const {articles} = useFetchArticles();
     const filteredArticles = articles.filter((article) =>
         article.name.toLowerCase().includes(searchTerm.toLowerCase())
     );

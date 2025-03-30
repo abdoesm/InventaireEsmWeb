@@ -5,10 +5,11 @@ import SelectionList from "../../common/SelectionList";
 import { Article } from "../../../models/articleTypes";
 import { Employer } from "../../../models/employerType";
 import { Localisation } from "../../../models/localisationType";
-import useArticlesAndEmployers from "../../../services/hooks/useArticlesAndEmployersAndServices";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import Input from "../../common/Input";
 import { checkAuth, UserType } from "../../../App";
+import useFetchArticles from "../../../services/article/usefetchArticles";
+import useEmployers from "../../../services/employers/useEmployers";
 
 interface AddInventaireItemFormProps {
     onClose: () => void;
@@ -29,7 +30,9 @@ const AddInventaireItemForm: React.FC<AddInventaireItemFormProps> = ({ onClose, 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    const { articles, employers } = useArticlesAndEmployers();
+    const { articles } = useFetchArticles();
+    const { employers} =useEmployers();
+
 
     useEffect(() => {
         const fetchLocalisations = async () => {

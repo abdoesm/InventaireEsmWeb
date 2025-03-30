@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { FaHome, FaPlus } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Bk_End_SRVR } from "../../../configs/conf";
@@ -9,21 +8,23 @@ import UpdateBonRetourForm from "./UpdateBonRetourForm";
 import DeleteBonRetourForm from "./DeleteBonRetourForm";
 import ActionButtons from "../../common/ActionButtons";
 import { BonRetour } from "../../../models/bonRetourTypes";
-import { Employer } from "../../../models/employerType";
+
 import HomeBtn from "../../common/HomeBtn";
+import useEmployers from "../../../services/employers/useEmployers";
 
 
 
 const BonRetourView: React.FC = () => {
-  const navigate = useNavigate();
+
   const [bonRetours, setBonRetours] = useState<BonRetour[]>([]);
-  const [employeurs, setEmployeurs] = useState<Employer[]>([]);
   const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
   const [showAddBonRetourForm, setShowAddBonRetourForm] = useState<boolean>(false);
   const [showUpdateBonRetourForm, setShowUpdateBonRetourForm] = useState<boolean>(false);
   const [selectedBonRetour, setSelectedBonRetour] = useState<BonRetour | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+const {employers}= useEmployers();
 
   const fetchBonRetours = async () => {
     try {
@@ -52,38 +53,7 @@ const BonRetourView: React.FC = () => {
   useEffect(() => {
     fetchBonRetours();
   }, []);
-   const fetchEmployers = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          setError("No token found. Please log in.");
-          setLoading(false);
-          return;
-        }
-  
-        const response = await fetch(`${Bk_End_SRVR}:5000/api/employers`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-  
-        if (!response.ok) throw new Error("Failed to fetch employers.");
-  
-        const data: Employer[] = await response.json();
-        console.log(data);
-        setEmployeurs(data);
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("An unknown error occurred.");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    useEffect(() => {
-      fetchEmployers();
-    }, []);
+
     const columns = [
       { 
         name: "المعرف", 
@@ -93,7 +63,7 @@ const BonRetourView: React.FC = () => {
       { 
         name: "رقم الموظف", 
         selector: (row: BonRetour) => {
-          const employer = employeurs.find(emp => emp.id === row.id_employeur);
+          const employer = employers.find(emp => emp.id === row.id_employeur);
           return employer ? `${employer.fname} ${employer.lname}` : "غير معروف";
         }, 
         sortable: true 
