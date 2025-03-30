@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Bk_End_SRVR } from "../../configs/conf";
 import { BonEntree } from "../../models/BonEntreeTypes";
 
-const useBonEntreeDetails = (id: string) => {
 
+const useBonEntreeDetails = (id: string) => {
      
       
     const [bonEntree, setBonEntree] = useState<BonEntree | null>(null);

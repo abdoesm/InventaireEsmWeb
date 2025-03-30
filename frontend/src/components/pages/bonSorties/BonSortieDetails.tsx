@@ -1,48 +1,21 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { BonSortie } from "../../../models/bonSortieType";
-import { Bk_End_SRVR } from "../../../configs/conf";
 import html2pdf from "html2pdf.js";
 import useFetchArticles from "../../../services/article/usefetchArticles";
 import useEmployers from "../../../services/employers/useEmployers";
 import useService from "../../../services/a_services/useServices";
+import useBonSortieDetails from "../../../services/bonSorties/useBonSortieDetails";
 
 const BonSortieDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [bonSortie, setBonSortie] = useState<BonSortie | null>(null);
-  const [mapSorties, setMapSorties] = useState<{ id: number; id_article: number; id_bs: number; quantity: number }[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
   const { articles } = useFetchArticles();
   const {employers} =useEmployers();
   const { services}= useService();
+  let nemriqueID = parseInt(id!);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [bonSortieRes, sortiesRes] = await Promise.all([
-          fetch(`${Bk_End_SRVR}:5000/api/bonsorties/${id}`),
-          fetch(`${Bk_End_SRVR}:5000/api/bonsorties/sortie/${id}`),
-        ]);
-
-        if (!bonSortieRes.ok) throw new Error("Failed to fetch Bon de Sortie details");
-        if (!sortiesRes.ok) throw new Error("Failed to fetch sorties");
-
-        setBonSortie(await bonSortieRes.json());
-        setMapSorties(await sortiesRes.json());
-      } catch (err) {
-      
-          setError((err as Error).message);
-        
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-
-  }, [id]);
+  const { bonSortie, mapSorties, loading, error } = useBonSortieDetails(nemriqueID);
 
   const employer = useMemo(() => bonSortie ? employers.find(emp => emp.id === bonSortie.id_employeur) : null, [bonSortie, employers]);
   const service = useMemo(() => bonSortie ? services.find(srv => srv.id === bonSortie.id_service) : null, [bonSortie, services]);

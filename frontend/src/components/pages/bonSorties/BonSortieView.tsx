@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
-import { FaPlus, FaSearch } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Bk_End_SRVR } from "../../../configs/conf";
 import UpdateBonSortieForm from "./UpdateBonSortieForm";
 import DeleteBonSortieForm from "./DeleteBonSortieForm";
 import ActionButtons from "../../common/ActionButtons";
@@ -16,85 +15,60 @@ import { useNavigate } from "react-router-dom";
 import SearchInput from "../../common/SearchInput";
 import useEmployers from "../../../services/employers/useEmployers";
 import useService from "../../../services/a_services/useServices";
+import useBonSortie from "../../../services/bonSorties/useBonSortie";
 
 
 const BonSortieView: React.FC = () => {
 
-  const [bonSorties, setBonSorties] = useState<BonSortie[]>([]);
 
   const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
   const [showAddBonSortieForm, setShowAddBonSortieForm] = useState<boolean>(false);
   const [showUpdateBonSortieForm, setShowUpdateBonSortieForm] = useState<boolean>(false);
   const [selectedBonSortie, setSelectedBonSortie] = useState<BonSortie | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-    const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const navigate = useNavigate(); // Initialize navigation hook
 
   const handleRowDoubleClick = (row: BonSortie) => {
     navigate(`/bonsorties/${row.id}`); // Navigate to the details page with the BonSortie ID
   };
-const {employers} =useEmployers();
-const {services} = useService();
-  const fetchBonSorties = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("No token found. Please log in.");
-        setLoading(false);
-        return;
-      }
+  const { employers } = useEmployers();
+  const { services } = useService();
+  const { bonSorties, error, loading, fetchBonSorties } = useBonSortie();
 
-      const response = await fetch(`${Bk_End_SRVR}:5000/api/bonsorties`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  }
 
-      if (!response.ok) throw new Error("Failed to fetch bon de sortie.");
+  const filteredBonSortie = bonSorties.filter((bon) =>
+    bon.id.toString().includes(searchQuery) ||
+    bon.date.includes(searchQuery) ||
+    bon.id_employeur.toString().includes(searchQuery) ||
+    employers.find(e => e.id === bon.id_employeur)?.fname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    employers.find(e => e.id === bon.id_employeur)?.lname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    services.find(s => s.id === bon.id_service)?.name.toLowerCase().includes(searchQuery.toLowerCase())
 
-      const data: BonSortie[] = await response.json();
-      setBonSorties(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred.");
-    } finally {
-      setLoading(false);
-    }
+
+  )
+
+  const handlePrint = (bonSortie: BonSortie) => {
+    console.log("Printing:", bonSortie);
+    // Implement actual print function here
   };
-
-  useEffect(() => {
-    fetchBonSorties();
-  }, []);
-
-
-    const handleSearch=(e:React.ChangeEvent<HTMLInputElement>) =>{
-      setSearchQuery(e.target.value);
-    }
-
-    const filteredBonSortie= bonSorties.filter((bon)=>
-   bon.id.toString().includes(searchQuery)||
-       bon.date.includes(searchQuery)||
-       bon.id_employeur.toString().includes(searchQuery)||
-       employers.find(e=>e.id===bon.id_employeur)?.fname.toLowerCase().includes(searchQuery.toLowerCase())||
-       employers.find(e=>e.id===bon.id_employeur)?.lname.toLowerCase().includes(searchQuery.toLowerCase())||
-       services.find(s=>s.id===bon.id_service)?.name.toLowerCase().includes(searchQuery.toLowerCase())
-
-
-    )
-
-    const handlePrint = (bonSortie: BonSortie) => {
-      console.log("Printing:", bonSortie);
-      // Implement actual print function here
-    }; 
   const columns = [
     { name: "المعرف", selector: (row: BonSortie) => row.id, sortable: true },
-    { name: " الموظف", selector: (row: BonSortie) =>{
-      const emplyer = employers.find(emp => emp.id===row.id_employeur);
-      return emplyer ? emplyer.fname+" "+emplyer.lname : "غير معروف"
-    }, sortable: true },
-    { name: "المصلحة", selector: (row: BonSortie) => {
-      const service = services.find( srv => srv.id===row.id_service);
-      return service ? service.name : "غير معروفة"
-    }, sortable: true },
+    {
+      name: " الموظف", selector: (row: BonSortie) => {
+        const emplyer = employers.find(emp => emp.id === row.id_employeur);
+        return emplyer ? emplyer.fname + " " + emplyer.lname : "غير معروف"
+      }, sortable: true
+    },
+    {
+      name: "المصلحة", selector: (row: BonSortie) => {
+        const service = services.find(srv => srv.id === row.id_service);
+        return service ? service.name : "غير معروفة"
+      }, sortable: true
+    },
     { name: "التاريخ", selector: (row: BonSortie) => row.date, sortable: true },
     {
       name: "الإجراءات",
@@ -119,26 +93,26 @@ const {services} = useService();
   return (
     <>
       <div className="d-flex justify-content-between align-items-center mb-4">
-      <HomeBtn/>
+        <HomeBtn />
         <h2 className="fw-bold text-center">إدارة وصول الخروج</h2>
-         <button className="btn btn-success px-4 py-2" onClick={() => setShowAddBonSortieForm(true)}>
-                    <FaPlus className="me-2" /> إضافة وصل          </button>
+        <button className="btn btn-success px-4 py-2" onClick={() => setShowAddBonSortieForm(true)}>
+          <FaPlus className="me-2" /> إضافة وصل          </button>
       </div>
 
-    {/* Search Input Field */}
+      {/* Search Input Field */}
       <div className="mb-4">
-      
-          <SearchInput
-            type="text"
-            className="form-control"
-            placeholder="ابحث برقم الوثيقة أو التاريخ أو الموظف..."
-            value={searchQuery}
-            onChange={handleSearch}
-          />
-     
-        </div>
-   
-  
+
+        <SearchInput
+          type="text"
+          className="form-control"
+          placeholder="ابحث برقم الوثيقة أو التاريخ أو الموظف..."
+          value={searchQuery}
+          onChange={handleSearch}
+        />
+
+      </div>
+
+
       {loading ? (
         <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>
       ) : error ? (
@@ -156,25 +130,25 @@ const {services} = useService();
         />
       )}
 
-{showAddBonSortieForm && (
-  <AddBonSortieForm onClose={() => setShowAddBonSortieForm(false)} fetchBonSorties={fetchBonSorties} />
-)}
+      {showAddBonSortieForm && (
+        <AddBonSortieForm onClose={() => setShowAddBonSortieForm(false)} fetchBonSorties={fetchBonSorties} />
+      )}
 
 
-{showUpdateBonSortieForm && selectedBonSortie && (
-  <UpdateBonSortieForm
-    onClose={() => setShowUpdateBonSortieForm(false)}
-    fetchBonSorties={fetchBonSorties}
-    id={selectedBonSortie.id}
-  />
-)}
+      {showUpdateBonSortieForm && selectedBonSortie && (
+        <UpdateBonSortieForm
+          onClose={() => setShowUpdateBonSortieForm(false)}
+          fetchBonSorties={fetchBonSorties}
+          id={selectedBonSortie.id}
+        />
+      )}
 
 
       {showDeleteForm && selectedBonSortie && (
         <DeleteBonSortieForm
-        onClose={()=> setShowDeleteForm(false)}
-        bonSortieId={selectedBonSortie.id}
-        fetchBonSortie={fetchBonSorties}
+          onClose={() => setShowDeleteForm(false)}
+          bonSortieId={selectedBonSortie.id}
+          fetchBonSortie={fetchBonSorties}
         />
       )}
     </>
