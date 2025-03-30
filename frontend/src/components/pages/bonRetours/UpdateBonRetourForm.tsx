@@ -12,6 +12,7 @@ import { Article } from "../../../models/articleTypes";
 import ArticleSelection from "../../common/ArticleSelection";
 import useFetchArticles from "../../../services/article/usefetchArticles";
 import useEmployers from "../../../services/employers/useEmployers";
+import useService from "../../../services/a_services/useServices";
 
 type Props = {
     onClose: () => void;
@@ -20,7 +21,7 @@ type Props = {
 };
 
 const UpdateBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours, bonRetour_id }) => {
-    const [data, setData] = useState({
+    const [bonRetour, setbonRetour] = useState({
         id_employeur: 0,
         id_service: 0,
         date: "",
@@ -32,11 +33,11 @@ const UpdateBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours, bonRet
     const [selectedEmployeur, setSelectedEmployeur] = useState<Employer | null>(null);
     const [selectedRetours, setSelectedRetours] = useState<Retour[]>([]);
     const [selectedService, setSelectedService] = useState<Service | null>(null);
-    const [services, setServices] = useState<Service[]>([]);
+ 
     const [serviceSearchTerm, setServiceSearchTerm] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-
+    const {services} =useService();
     const { articles} = useFetchArticles();
     const {employers} = useEmployers();
 
@@ -81,7 +82,7 @@ const UpdateBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours, bonRet
                 const retoursData = await retoursRes.json();
     
                 // Set the main bonRetour data
-                setData({
+                setbonRetour({
                     id_employeur: bonRetourData.id_employeur,
                     id_service: bonRetourData.id_service || 0,
                     date: bonRetourData.date.split("T")[0], // Ensure date is formatted correctly
@@ -111,48 +112,24 @@ const UpdateBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours, bonRet
     
         if (bonRetour_id && employers.length > 0 && services.length > 0) fetchBonRetour();
     }, [bonRetour_id, employers, services]);
-    // Fetch Services
-    useEffect(() => {
-        const fetchServices = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                if (!token) {
-                    setError("No token found. Please log in.");
-                    return;
-                }
 
-                const response = await fetch(`${Bk_End_SRVR}:5000/api/services`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-
-                if (!response.ok) throw new Error("Failed to fetch services.");
-
-                const data: Service[] = await response.json();
-                setServices(data);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : "An unknown error occurred.");
-            }
-        };
-
-        fetchServices();
-    }, []);
 
     // Handle Input Changes
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setData((prevData) => ({ ...prevData, [name]: value }));
+        setbonRetour((prevData) => ({ ...prevData, [name]: value }));
     };
 
     // Handle Employer Selection
     const handleEmployeurSelect = (employeur: Employer) => {
         setSelectedEmployeur(employeur);
-        setData({ ...data, id_employeur: employeur.id });
+        setbonRetour({ ...bonRetour, id_employeur: employeur.id });
     };
 
     // Handle Service Selection
     const handleServiceSelect = (service: Service) => {
         setSelectedService(service);
-        setData(prevData => ({ ...prevData, id_service: service.id || prevData.id_service }));
+        setbonRetour(prevData => ({ ...prevData, id_service: service.id || prevData.id_service }));
     };
 
     // Handle Article Selection
@@ -189,7 +166,7 @@ const UpdateBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours, bonRet
             setError("الرجاء اختيار الموظف.");
             return;
         }
-        if (!data.id_service) {
+        if (!bonRetour.id_service) {
             setError("الرجاء اختيار مصلحة.");
             return;
         }
@@ -197,7 +174,7 @@ const UpdateBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours, bonRet
             setError("الرجاء إضافة مقالات.");
             return;
         }
-        if (!data.date) {
+        if (!bonRetour.date) {
             setError("الرجاء إدخال تاريخ صحيح.");
             return;
         }
@@ -210,10 +187,10 @@ const UpdateBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours, bonRet
             }
 
             const requestBody = {
-                id_employeur: data.id_employeur,
-                id_service: data.id_service,
-                date: data.date,
-                return_reason: data.return_reason,
+                id_employeur: bonRetour.id_employeur,
+                id_service: bonRetour.id_service,
+                date: bonRetour.date,
+                return_reason: bonRetour.return_reason,
                 retours: selectedRetours.map(retour => ({
                     id_article: retour.idArticle,
                     quantity: retour.quantity,
@@ -269,7 +246,7 @@ const UpdateBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours, bonRet
 
                             {/* Date Input */}
                             <FormGroup label="التاريخ">
-                                <Input type="date" name="date" value={data.date} onChange={handleChange} />
+                                <Input type="date" name="date" value={bonRetour.date} onChange={handleChange} />
                             </FormGroup>
 
                             {/* Service Selection */}
@@ -293,7 +270,7 @@ const UpdateBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours, bonRet
                                 <Input
                                     type="text"
                                     name="return_reason"
-                                    value={data.return_reason}
+                                    value={bonRetour.return_reason}
                                     onChange={handleChange}
                                     placeholder="أدخل سبب الإرجاع"
                                 />

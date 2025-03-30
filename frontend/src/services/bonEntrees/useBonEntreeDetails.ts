@@ -39,7 +39,7 @@ const fetchData = async () => {
     
   
     fetchData();
-  }, [id]);
+  }, [fetchData, id]);
   return { bonEntree, mapEntrees, loading, error };
 
 }

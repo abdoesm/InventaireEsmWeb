@@ -20,9 +20,9 @@ type Props = {
 };
 
 const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) => {
-    const { bonEntree, mapEntrees,loading ,error} = useBonEntreeDetails(id ?? "");
+    const { bonEntree, mapEntrees, loading, error } = useBonEntreeDetails(id ?? "");
     const { fournisseurs } = useFornisseurs();
-    const {articles} =useFetchArticles();
+    const { articles } = useFetchArticles();
     const [data, setData] = useState({
         id_fournisseur: 0,
         date: "",
@@ -30,34 +30,34 @@ const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) 
         document_num: "",
     });
 
-    
+
     const [selectedEntrees, setSelectedEntrees] = useState<Entree[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [fournisseurSearchTerm, setFournisseurSearchTerm] = useState("");
     const [selectedFournisseur, setSelectedFournisseur] = useState<Fournisseur | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-   
-   
+
+
 
     // Fetch Bon Entree data when the component mounts
     useEffect(() => {
-      if(bonEntree){
-        setData({
-            id_fournisseur: bonEntree.id_fournisseur,
-            date: bonEntree.date.split("T")[0],
-            TVA: bonEntree.TVA,
-            document_num: bonEntree.document_num,
-        });
+        if (bonEntree) {
+            setData({
+                id_fournisseur: bonEntree.id_fournisseur,
+                date: bonEntree.date.split("T")[0],
+                TVA: bonEntree.TVA,
+                document_num: bonEntree.document_num,
+            });
 
-        setSelectedEntrees(mapEntrees.map(entree => ({
-            idArticle: entree.id_article,
-            quantity: entree.quantity,
-            unitPrice: entree.unit_price,
-        })));
-        setSelectedFournisseur(fournisseurs.find(f => f.id === bonEntree.id_fournisseur) || null);
-    } 
-       
+            setSelectedEntrees(mapEntrees.map(entree => ({
+                idArticle: entree.id_article,
+                quantity: entree.quantity,
+                unitPrice: entree.unit_price,
+            })));
+            setSelectedFournisseur(fournisseurs.find(f => f.id === bonEntree.id_fournisseur) || null);
+        }
+
     }, [bonEntree, mapEntrees, fournisseurs]);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -93,51 +93,51 @@ const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) 
             setIsLoading(false);
         }
     };
-        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            const { name, value } = e.target;
-            setData((prevData) => ({
-                ...prevData,
-                [name]: name === "TVA" ? parseFloat(value) || 0 : value, // Convert TVA to number
-            }));
-        };
-        const filteredArticles = articles.filter(article =>
-            article.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-    
-     
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setData((prevData) => ({
+            ...prevData,
+            [name]: name === "TVA" ? parseFloat(value) || 0 : value, // Convert TVA to number
+        }));
+    };
+    const filteredArticles = articles.filter(article =>
+        article.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-          const handleArticleSelect = (article: Article) => {
-                setSelectedEntrees((prevEntrees) => {
-                    console.log("prevEntrees",prevEntrees)
-                    const newEntries = new Map(prevEntrees.map((e) => [e.idArticle, e]));
-                    if (newEntries.has(article.id!)) {
-                        newEntries.delete(article.id!);
-                    } else {
-                        newEntries.set(article.id!, { idArticle: article.id!, quantity: 1, unitPrice: 0 });
-                    }
-                    return Array.from(newEntries.values());
-                });
-            };
-        
-            const handleFournisseurSelect = (fournisseur: Fournisseur) => {
-                setSelectedFournisseur(fournisseur);
-                setData({ ...data, id_fournisseur: fournisseur.id });
-            };
-        
-          const handleEntreeChange = <K extends keyof Entree>(
-                index: number,
-                field: K,
-                value: Entree[K]
-            ) => {
-                if (value === undefined) return; // Prevent assignment of `undefined`
-                setSelectedEntrees((prev) =>
-                    prev.map((entree, i) =>
-                        i === index ? { ...entree, [field]: value } : entree
-                    )
-                );
-            };
-       
-    
+
+
+    const handleArticleSelect = (article: Article) => {
+        setSelectedEntrees((prevEntrees) => {
+            console.log("prevEntrees", prevEntrees)
+            const newEntries = new Map(prevEntrees.map((e) => [e.idArticle, e]));
+            if (newEntries.has(article.id!)) {
+                newEntries.delete(article.id!);
+            } else {
+                newEntries.set(article.id!, { idArticle: article.id!, quantity: 1, unitPrice: 0 });
+            }
+            return Array.from(newEntries.values());
+        });
+    };
+
+    const handleFournisseurSelect = (fournisseur: Fournisseur) => {
+        setSelectedFournisseur(fournisseur);
+        setData({ ...data, id_fournisseur: fournisseur.id });
+    };
+
+    const handleEntreeChange = <K extends keyof Entree>(
+        index: number,
+        field: K,
+        value: Entree[K]
+    ) => {
+        if (value === undefined) return; // Prevent assignment of `undefined`
+        setSelectedEntrees((prev) =>
+            prev.map((entree, i) =>
+                i === index ? { ...entree, [field]: value } : entree
+            )
+        );
+    };
+
+
 
     return (
         <div className="modal fade show d-block" tabIndex={-1} role="dialog" aria-hidden="true">
@@ -154,61 +154,61 @@ const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) 
                             <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>
                         ) : (
                             <form onSubmit={handleSubmit}>
-                            <div className="row">
-                                <div className="col-md-6">
-                                    <Input label="التاريخ" type="date" name="date" value={data.date} onChange={handleChange} />
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <Input label="التاريخ" type="date" name="date" value={data.date} onChange={handleChange} />
+                                    </div>
+
+                                    <div className="col-md-6">
+                                        <Input label="رقم الوثيقة" type="text" name="document_num" value={data.document_num} onChange={handleChange} />
+                                    </div>
                                 </div>
 
-                                <div className="col-md-6">
-                                    <Input label="رقم الوثيقة" type="text" name="document_num" value={data.document_num} onChange={handleChange} />
+                                <FormGroup label="المورد">
+                                    <SearchInput
+                                        placeholder="ابحث عن المورد..."
+                                        value={fournisseurSearchTerm}
+                                        onChange={(e) => setFournisseurSearchTerm(e.target.value)}
+                                    />
+                                    <SelectionList
+                                        items={fournisseurs}
+                                        selectedItem={selectedFournisseur}
+                                        onSelect={handleFournisseurSelect}
+                                        getItemLabel={(fournisseur) => fournisseur.name}
+                                        emptyMessage="لا يوجد موردون متاحون"
+                                    />
+
+                                </FormGroup>
+
+                                <FormGroup label="حدد المقالات لإضافتها">
+                                    <SearchInput
+                                        placeholder="ابحث عن المقال..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                    />
+
+                                    <ArticleSelection
+                                        articles={filteredArticles}
+                                        selectedEntrees={selectedEntrees}
+                                        onArticleSelect={handleArticleSelect}
+                                    />
+                                </FormGroup>
+
+                                <SelectedArticlesTable
+                                    selectedItems={selectedEntrees}
+                                    articles={articles}
+                                    onItemChange={handleEntreeChange}
+                                />
+
+                                <div className="modal-footer">
+                                    <button type="submit" className="btn btn-primary" disabled={isLoading}>
+                                        {isLoading ? "جاري التحديث..." : "تحديث"}
+                                    </button>
+                                    <button type="button" className="btn btn-secondary" onClick={onClose}>
+                                        إلغاء
+                                    </button>
                                 </div>
-                            </div>
-
-                            <FormGroup label="المورد">
-                                <SearchInput
-                                    placeholder="ابحث عن المورد..."
-                                    value={fournisseurSearchTerm}
-                                    onChange={(e) => setFournisseurSearchTerm(e.target.value)}
-                                />
-                           <SelectionList
-    items={fournisseurs}
-    selectedItem={selectedFournisseur}
-    onSelect={handleFournisseurSelect}
-    getItemLabel={(fournisseur) => fournisseur.name}
-    emptyMessage="لا يوجد موردون متاحون"
-/>
-
-                            </FormGroup>
-
-                            <FormGroup label="حدد المقالات لإضافتها">
-                                <SearchInput
-                                    placeholder="ابحث عن المقال..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                />
-                            
-                                <ArticleSelection
-                                    articles={filteredArticles}
-                                    selectedEntrees={selectedEntrees}
-                                    onArticleSelect={handleArticleSelect}
-                                />
-                            </FormGroup>
-
-                            <SelectedArticlesTable
-                                selectedItems={selectedEntrees}
-                                articles={articles}
-                                onItemChange={handleEntreeChange}
-                            />
-
-                            <div className="modal-footer">
-                                <button type="submit" className="btn btn-primary" disabled={isLoading}>
-                                    {isLoading ? "جاري التحديث..." : "تحديث"}
-                                </button>
-                                <button type="button" className="btn btn-secondary" onClick={onClose}>
-                                    إلغاء
-                                </button>
-                            </div>
-                        </form>
+                            </form>
                         )}
                     </div>
                 </div>

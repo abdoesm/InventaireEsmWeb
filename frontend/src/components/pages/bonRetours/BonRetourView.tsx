@@ -11,48 +11,23 @@ import { BonRetour } from "../../../models/bonRetourTypes";
 
 import HomeBtn from "../../common/HomeBtn";
 import useEmployers from "../../../services/employers/useEmployers";
+import useBonRetour from "../../../services/bonRetours/useBonRetour";
 
 
 
 const BonRetourView: React.FC = () => {
 
-  const [bonRetours, setBonRetours] = useState<BonRetour[]>([]);
+ 
   const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
   const [showAddBonRetourForm, setShowAddBonRetourForm] = useState<boolean>(false);
   const [showUpdateBonRetourForm, setShowUpdateBonRetourForm] = useState<boolean>(false);
   const [selectedBonRetour, setSelectedBonRetour] = useState<BonRetour | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+ 
+
 
 const {employers}= useEmployers();
 
-  const fetchBonRetours = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("No token found. Please log in.");
-        setLoading(false);
-        return;
-      }
-
-      const response = await fetch(`${Bk_End_SRVR}:5000/api/bonretours`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch bon de retour.");
-
-      const data: BonRetour[] = await response.json();
-      setBonRetours(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchBonRetours();
-  }, []);
+ const {bonRetours,error,loading,fetchBonRetours}= useBonRetour();
 
     const columns = [
       { 
