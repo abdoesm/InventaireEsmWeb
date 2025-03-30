@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+// @ts-ignore
 import mysqldump from "mysqldump";
 import fs from "fs";
 import path from "path";
@@ -15,7 +16,7 @@ export const backupDatabase = async (req: Request, res: Response) => {
         host: process.env.DB_HOST || "localhost",
         user: process.env.DB_USER || "root",
         password: process.env.DB_PASSWORD || "",
-        database: process.env.DB_NAME || "your_database",
+        database: process.env.DB_NAME || "invlouiza",
       },
       dumpToFile: backupPath,
     });
