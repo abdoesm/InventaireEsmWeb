@@ -12,6 +12,7 @@ import SelectionList from "../../common/SelectionList";
 import useFornisseurs from "../../../services/fornisseurs/useFornisseurs";
 import useFetchArticles from "../../../services/article/usefetchArticles";
 import useBonEntreeDetails from "../../../services/bonEntrees/useBonEntreeDetails";
+import DateInput from "../../common/DateInput";
 
 type Props = {
     id: string;
@@ -155,9 +156,9 @@ const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) 
                         ) : (
                             <form onSubmit={handleSubmit}>
                                 <div className="row">
-                                    <div className="col-md-6">
-                                        <Input label="التاريخ" type="date" name="date" value={data.date} onChange={handleChange} />
-                                    </div>
+                                  
+                                        <DateInput label="التاريخ"  name="date" value={data.date} onChange={handleChange} />
+                                  
 
                                     <div className="col-md-6">
                                         <Input label="رقم الوثيقة" type="text" name="document_num" value={data.document_num} onChange={handleChange} />

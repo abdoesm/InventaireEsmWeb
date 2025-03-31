@@ -12,6 +12,7 @@ import SelectionList from "../../common/SelectionList";
 import useFetchArticles from "../../../services/article/usefetchArticles";
 import useEmployers from "../../../services/employers/useEmployers";
 import useService from "../../../services/a_services/useServices";
+import DateInput from "../../common/DateInput";
 
 
 
@@ -183,15 +184,15 @@ const AddBonSortieForm: React.FC<Props> = ({ onClose, fetchBonSorties }) => {
                             <form onSubmit={handleSubmit}>
                                 {/* Date Input */}
                                 <div className="row mb-3">
-                                    <div className="col-md-6">
-                                        <input
-                                            type="date"
+                                   
+                                        <DateInput
+                                        label="تاريخ الخروج"
                                             name="date"
                                             value={data.date}
                                             onChange={handleChange}
-                                            required
+                                    
                                         />
-                                    </div>
+                            
                                 </div>
 
                                 {/* Employer and Service Selection Side by Side */}

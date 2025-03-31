@@ -12,6 +12,7 @@ import { Entree } from "../../../models/entreeTypes";
 import SelectionList from "../../common/SelectionList";
 import useFetchArticles from "../../../services/article/usefetchArticles";
 import useFornisseurs from "../../../services/fornisseurs/useFornisseurs";
+import DateInput from "../../common/DateInput";
 
 
 type Props = {
@@ -140,9 +141,14 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
                                 {/* Two-column layout */}
                                 <div className="row">
                                     {/* Date Input */}
-                                    <div className="col-md-6">
-                                        <Input label="التاريخ" type="date" name="date" value={data.date} onChange={handleChange} />
-                                    </div>
+                                  <DateInput
+                                        label="تاريخ الاستلام"
+                                        name="date"
+                                        value={data.date}
+                                        onChange={handleChange}
+                                    />
+
+
 
                                     {/* Document Number */}
                                     <div className="col-md-6">

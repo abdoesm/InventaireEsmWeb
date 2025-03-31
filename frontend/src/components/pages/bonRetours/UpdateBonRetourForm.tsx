@@ -15,6 +15,7 @@ import ArticleSelection from "../../common/ArticleSelection";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import { Retour } from "../../../models/retourType";
 import { BonRetour } from "../../../models/bonRetourTypes";
+import DateInput from "../../common/DateInput";
 
 type Props = {
     onClose: () => void;
@@ -232,16 +233,10 @@ const UpdateBonRetourForm: React.FC<Props> = ({ onClose, fetchBonRetours, bonRet
                                 />
                             </FormGroup>
 
-                            {/* Date Input */}
                             <FormGroup label="التاريخ">
-                                <Input 
-                                    type="date" 
-                                    name="date" 
-                                    value={bonRetour.date} 
-                                    onChange={handleChange} 
-                               
-                                />
+                                <DateInput   name="date" value={bonRetour.date} onChange={handleChange} />
                             </FormGroup>
+    
 
                          
 

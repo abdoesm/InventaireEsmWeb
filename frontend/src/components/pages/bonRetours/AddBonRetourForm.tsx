@@ -13,6 +13,7 @@ import SelectionList from "../../common/SelectionList";
 import { Service } from "../../../models/serviceTypes";
 import useFetchArticles from "../../../services/article/usefetchArticles";
 import useEmployers from "../../../services/employers/useEmployers";
+import DateInput from "../../common/DateInput";
 
 type Props = {
     onClose: () => void;
@@ -202,7 +203,7 @@ const {employers }=useEmployers()
     
                             {/* Date Input */}
                             <FormGroup label="التاريخ">
-                                <Input type="date" name="date" value={data.date} onChange={handleChange} />
+                                <DateInput   name="date" value={data.date} onChange={handleChange} />
                             </FormGroup>
     
                             {/* Service Selection */}
