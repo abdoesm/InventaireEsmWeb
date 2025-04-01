@@ -21,12 +21,20 @@ export class BonSortieModel {
         
     async updateBonSortie(bonSortieData: BonSortie, sorties: Sortie[]): Promise<BonSortie | null> {
         try {
+            console.log("updateBonSortie from model", bonSortieData);
+
+           
+ 
             const { id, id_employeur, id_service, date } = bonSortieData;
+              // Ensure the date is in the correct format
+              const formattedDate = date
+              ? format(new Date(date), 'yyyy-MM-dd HH:mm:ss')
+              : null;
     
             // Update bon_sortie table
             const [result] = await pool.query<ResultSetHeader>(
                 "UPDATE bon_sortie SET id_employeur = ?, id_service = ?, date = ?, last_edited = NOW() WHERE id = ?",
-                [id_employeur, id_service, date, id]
+                [id_employeur, id_service, formattedDate, id]
             );
     
             if (result.affectedRows === 0) {

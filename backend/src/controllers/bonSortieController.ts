@@ -53,6 +53,8 @@ export const updateBonSortie = async (req: Request, res: Response) => {
         const sorties = bonSortieData.sorties || [];
         bonSortieData.id = Number(id);
 
+        console.log("updateBonSortie from controller", bonSortieData);
+
         const updatedBonSortie = await bonSortieModel.updateBonSortie(bonSortieData, sorties);
 
         if (updatedBonSortie) {

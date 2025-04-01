@@ -45,9 +45,7 @@ const UpdateBonSortieForm : React.FC<Props>= ({ id, onClose, fetchBonSorties }) 
         article.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-  useEffect(() => {
-    try
-        {
+    useEffect(() => {
         if (bonSortie) {
             setBonSortie({
                 id: bonSortie.id,
@@ -55,7 +53,7 @@ const UpdateBonSortieForm : React.FC<Props>= ({ id, onClose, fetchBonSorties }) 
                 id_employeur: bonSortie.id_employeur,
                 id_service: bonSortie.id_service,
             });
-
+    
             setSelectedSorties(mapSorties.map((sortie: any) => ({
                 idArticle: sortie.id_article,
                 quantity: sortie.quantity,
@@ -64,13 +62,14 @@ const UpdateBonSortieForm : React.FC<Props>= ({ id, onClose, fetchBonSorties }) 
             setSelectedEmployer(employers.find((emp) => emp.id === bonSortie.id_employeur) || null);
             setSelectedService(services.find((serv) => serv.id === bonSortie.id_service) || null); 
         }
-    }catch (error) {
-        console.error("Error setting bonSortie:", error);
-    }   
- } , [bonSortie, employers, mapSorties, services]);
+    }, [id, employers, services, mapSorties]);  // Remove 'bonSortie' from the dependencies
+    
 
-
-    const handleEmployerSelect = (employer: Employer) => setSelectedEmployer(employer);
+    const handleEmployerSelect = (employer: Employer) => {
+        console.log("Selected Employer:", employer);  // Check if this log shows the correct employer
+        setSelectedEmployer(employer);
+    };
+    
     const handleServiceSelect = (service: Service) => setSelectedService(service);
 
     const handleArticleSelect = (article :Article) => {
@@ -96,23 +95,31 @@ const UpdateBonSortieForm : React.FC<Props>= ({ id, onClose, fetchBonSorties }) 
         try {
             const token = localStorage.getItem("token");
             if (!token) throw new Error("No token found. Please log in.");
-
+    
+            console.log("Selected Employer:", selectedEmployer);  // This should show the correct employer
+            console.log("Selected Service:", selectedService);  // This should show the correct service
+            console.log("Selected Sorties:", selectedSorties);  // Ensure selected sorties are correct
+    
             const response = await fetch(`${Bk_End_SRVR}:5000/api/bonsorties/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
                 body: JSON.stringify({
-                    ...bonSortie,
-                    sorties: selectedSorties,
+                    id: bonSortie?.id,  // Keep the bonSortie ID
+                    date: bonSortie?.date,  // Assuming you're not changing the date
+                    id_employeur: selectedEmployer?.id,  // Use the selected employer's ID (from state)
+                    id_service: selectedService?.id,  // Use the selected service's ID (from state)
+                    sorties: selectedSorties,  // Use the selected sorties (articles)
                 }),
             });
-
+    
             if (!response.ok) throw new Error("Failed to update Bon Sortie.");
-            fetchBonSorties();
-            onClose();
+            fetchBonSorties();  // Refresh the data after updating
+            onClose();  // Close the form after submission
         } catch (err) {
             console.error(err);
         }
     };
+    
 
     return (
         <div className="modal fade show d-block" tabIndex={-1} role="dialog" aria-hidden="true">
