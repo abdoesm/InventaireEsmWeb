@@ -150,7 +150,7 @@ const UpdateBonSortieForm : React.FC<Props>= ({ id, onClose, fetchBonSorties }) 
                                     <div className="col-md-6">
                                         <FormGroup label="المصلحة">
                                             <SearchInput value={serviceSearchTerm} onChange={e => setServiceSearchTerm(e.target.value)} />
-                                            <SelectionList items={services} 
+                                            <SelectionList items={filteredServices} 
                                             selectedItem={selectedService}
                                              onSelect={handleServiceSelect} 
                                                 getItemLabel={(service) => service.name}
@@ -161,7 +161,7 @@ const UpdateBonSortieForm : React.FC<Props>= ({ id, onClose, fetchBonSorties }) 
                                 </div>
                                 <FormGroup label="حدد المقالات للخروج">
                                     <SearchInput value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
-                                    <ArticleSelection articles={articles} selectedEntrees={selectedSorties} onArticleSelect={handleArticleSelect} />
+                                    <ArticleSelection articles={filteredArticles} selectedEntrees={selectedSorties} onArticleSelect={handleArticleSelect} />
                                 </FormGroup>
                                 <SelectedArticlesTable<Sortie>
                                  selectedItems={selectedSorties}
