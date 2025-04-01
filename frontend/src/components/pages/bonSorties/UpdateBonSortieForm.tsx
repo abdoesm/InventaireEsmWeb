@@ -1,184 +1,213 @@
-import React, { useEffect, useState } from "react";
-import { Bk_End_SRVR } from "../../../configs/conf";
-import FormGroup from "../../common/FormGroup";
-import SearchInput from "../../common/SearchInput";
-import ArticleSelection from "../../common/ArticleSelection";
-import SelectedArticlesTable from "../../common/SelectedArticlesTable";
-import SelectionList from "../../common/SelectionList";
-import useEmployers from "../../../services/employers/useEmployers";
-import useService from "../../../services/a_services/useServices";
-import useFetchArticles from "../../../services/article/usefetchArticles";
-
-import { Employer } from "../../../models/employerType";
-import { Service } from "../../../models/serviceTypes";
-import { Sortie } from "../../../models/sortieType";
-import useBonSortieDetails from "../../../services/bonSorties/useBonSortieDetails";
-import { Article } from "../../../models/articleTypes";
-import { BonSortie } from "../../../models/bonSortieType";
+import React, { useState, useEffect } from 'react';
+import Modal from '../../common/Modal';
+import useBonSortieDetails from '../../../services/bonSorties/useBonSortieDetails';
+import DateInput from '../../common/DateInput';
+import SelectionList from '../../common/SelectionList';
+import { Employer } from '../../../models/employerType';
+import useEmployers from '../../../services/employers/useEmployers';
+import ArticleSelection from '../../common/ArticleSelection';
+import useFetchArticles from '../../../services/article/usefetchArticles';
+import { Sortie } from '../../../models/sortieType';
+import { Article } from '../../../models/articleTypes';
+import { BonSortie } from '../../../models/bonSortieType';
+import { Service } from '../../../models/serviceTypes';
+import useService from '../../../services/a_services/useServices';
+import SelectedArticlesTable from '../../common/SelectedArticlesTable';
+import SearchInput from '../../common/SearchInput';
+import { Bk_End_SRVR } from '../../../configs/conf';
+import { data } from 'react-router-dom';
 
 type Props = {
-    id: number;
-    onClose: () => void;
-    fetchBonSorties: () => void;
+  id: number;
+  onClose: () => void;
+  fetchBonSorties: () => void;
 };
-const UpdateBonSortieForm : React.FC<Props>= ({ id, onClose, fetchBonSorties }) => {
-    const { bonSortie, mapSorties, loading, error } = useBonSortieDetails(id);
-    const { articles } = useFetchArticles();
-    const { employers } = useEmployers();
-    const { services } = useService();
- const [, setBonSortie] = useState<BonSortie>({ id: 0, id_employeur: 0, id_service: 0, date: "" });
-    const [selectedSorties, setSelectedSorties] = useState<Sortie[]>([]);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [employerSearchTerm, setEmployerSearchTerm] = useState("");
-    const [serviceSearchTerm, setServiceSearchTerm] = useState("");
-    const [selectedEmployer, setSelectedEmployer] = useState<Employer | null>(null);
-    const [selectedService, setSelectedService] = useState<Service | null>(null);
 
-    const filteredEmployers = employers.filter(employer =>
-        employer.fname.toLowerCase().includes(employerSearchTerm.toLowerCase()) ||
-        employer.lname.toLowerCase().includes(employerSearchTerm.toLowerCase())
-    );
-    const filteredServices = services.filter(service =>
-        service.name.toLowerCase().includes(serviceSearchTerm.toLowerCase())
-    );
-    const filteredArticles = articles.filter(article =>
-        article.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+const TestUpdateBs: React.FC<Props> = ({ id, onClose, fetchBonSorties }) => {
+  const [selectedEmployer, setSelectedEmployer] = useState<Employer | null>(null);
+  const [selectedSorties, setSelectedSorties] = useState<Sortie[]>([]);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [employerSearchTerm, setEmployerSearchTerm] = useState('');
+  const [articleSearchTerm, setArticleSearchTerm] = useState('');
+  const [serviceSearchTerm, setServiceSearchTerm] = useState('');
+  
+  // Initialize form fields once the data is available
+  const [bonSortie, setBonSortie] = useState<BonSortie | null>(null);
 
-    useEffect(() => {
-        if (bonSortie) {
-            setBonSortie({
-                id: bonSortie.id,
-                date: bonSortie.date.split("T")[0],
-                id_employeur: bonSortie.id_employeur,
-                id_service: bonSortie.id_service,
-            });
-    
-            setSelectedSorties(mapSorties.map((sortie: any) => ({
-                idArticle: sortie.id_article,
-                quantity: sortie.quantity,
-                idBs: sortie.id_bs,
-            })));
-            setSelectedEmployer(employers.find((emp) => emp.id === bonSortie.id_employeur) || null);
-            setSelectedService(services.find((serv) => serv.id === bonSortie.id_service) || null); 
-        }
-    }, [id, employers, services, mapSorties]);  // Remove 'bonSortie' from the dependencies
-    
+  // Fetching bonSortie details and other data
+  const { bonSortie: fetchedBonSortie, mapSorties, loading, error } = useBonSortieDetails(id);
+  const { employers } = useEmployers();
+  const { articles } = useFetchArticles();
+  const { services } = useService();
 
-    const handleEmployerSelect = (employer: Employer) => {
-        console.log("Selected Employer:", employer);  // Check if this log shows the correct employer
-        setSelectedEmployer(employer);
-    };
-    
-    const handleServiceSelect = (service: Service) => setSelectedService(service);
+  // Initialize form state once the fetched bonSortie is available
+  useEffect(() => {
+    if (fetchedBonSortie) {
+      setBonSortie(fetchedBonSortie);
+      const employer = employers.find((e) => e.id === fetchedBonSortie.id_employeur);
+      setSelectedEmployer(employer || null);
+      
+      const service = services.find((e) => e.id === fetchedBonSortie.id_service);
+      setSelectedService(service || null);
 
-    const handleArticleSelect = (article :Article) => {
-        setSelectedSorties(prevSorties => {
-            const newEntries = new Map(prevSorties.map(s => [s.idArticle, s]));
-            newEntries.has(article.id!) ? newEntries.delete(article.id!) :
-                newEntries.set(article.id!, { idArticle: article.id!, quantity: 1, idBs: id });
-            return Array.from(newEntries.values());
-        });
-    };
-    const handleSortieChange = <K extends keyof Sortie>(index: number, field: K, value: Sortie[K]) => {
-        setSelectedSorties((prevSorties) => {
-            const updatedSorties = [...prevSorties];
-            updatedSorties[index] = {
-                ...updatedSorties[index],
-                [field]: (value ?? 0) as number,
-            };
-            return updatedSorties;
-        });
-    };
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            const token = localStorage.getItem("token");
-            if (!token) throw new Error("No token found. Please log in.");
-    
-            console.log("Selected Employer:", selectedEmployer);  // This should show the correct employer
-            console.log("Selected Service:", selectedService);  // This should show the correct service
-            console.log("Selected Sorties:", selectedSorties);  // Ensure selected sorties are correct
-    
-            const response = await fetch(`${Bk_End_SRVR}:5000/api/bonsorties/${id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                body: JSON.stringify({
-                    id: bonSortie?.id,  // Keep the bonSortie ID
-                    date: bonSortie?.date,  // Assuming you're not changing the date
-                    id_employeur: selectedEmployer?.id,  // Use the selected employer's ID (from state)
-                    id_service: selectedService?.id,  // Use the selected service's ID (from state)
-                    sorties: selectedSorties,  // Use the selected sorties (articles)
-                }),
-            });
-    
-            if (!response.ok) throw new Error("Failed to update Bon Sortie.");
-            fetchBonSorties();  // Refresh the data after updating
-            onClose();  // Close the form after submission
-        } catch (err) {
-            console.error(err);
-        }
-    };
-    
+      setSelectedSorties(
+        mapSorties.map((sortie: any) => ({
+          idArticle: sortie.id_article,
+          quantity: sortie.quantity,
+          idBs: sortie.id_bs,
+        }))
+      );
+    }
+  }, [fetchedBonSortie, employers, mapSorties, services]); // Re-run when bonSortie, employers, or services data changes
 
-    return (
-        <div className="modal fade show d-block" tabIndex={-1} role="dialog" aria-hidden="true">
-            <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div className="modal-content">
-                    <div className="modal-header">
-                        <h5 className="modal-title">تحديث وصل خروج</h5>
-                        <button type="button" className="btn-close" aria-label="إغلاق" onClick={onClose}></button>
-                    </div>
-                    <div className="modal-body" style={{ maxHeight: "70vh", overflowY: "auto" }}>
-                        {loading ? <p>جارٍ تحميل البيانات...</p> : error ? <p className="text-danger">{error}</p> : (
-                            <form onSubmit={handleSubmit}>
-                                <FormGroup label="التاريخ">
-                                    <input type="date" name="date" value={bonSortie?.date.split("T")[0] || ""} readOnly />
-                                </FormGroup>
-                                <div className="row mb-3">
-                                    <div className="col-md-6">
-                                        <FormGroup label="الموظف">
-                                            <SearchInput value={employerSearchTerm} onChange={e => setEmployerSearchTerm(e.target.value)} />
-                                            <SelectionList items={filteredEmployers} 
-                                            selectedItem={selectedEmployer}
-                                             onSelect={handleEmployerSelect }
-                                               getItemLabel={(employer) => `${employer.fname} ${employer.lname}`}
-                                                emptyMessage="لا يوجد موظفون متاحون"
-                                              />
-                                        </FormGroup>
-                                    </div>
-                                    <div className="col-md-6">
-                                        <FormGroup label="المصلحة">
-                                            <SearchInput value={serviceSearchTerm} onChange={e => setServiceSearchTerm(e.target.value)} />
-                                            <SelectionList items={filteredServices} 
-                                            selectedItem={selectedService}
-                                             onSelect={handleServiceSelect} 
-                                                getItemLabel={(service) => service.name}
-                                                emptyMessage="لا يوجد مصالح متاحون"
-                                              />
-                                        </FormGroup>
-                                    </div>
-                                </div>
-                                <FormGroup label="حدد المقالات للخروج">
-                                    <SearchInput value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
-                                    <ArticleSelection articles={filteredArticles} selectedEntrees={selectedSorties} onArticleSelect={handleArticleSelect} />
-                                </FormGroup>
-                                <SelectedArticlesTable<Sortie>
-                                 selectedItems={selectedSorties}
-                                  articles={articles} 
-                                  onItemChange={handleSortieChange}
-                                  />
-                                <div className="modal-footer">
-                                    <button type="submit" className="btn btn-primary">تحديث</button>
-                                    <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
-                                </div>
-                            </form>
-                        )}
-                    </div>
-                </div>
+  // Sync selectedSorties changes to bonSortie
+  useEffect(() => {
+    if (bonSortie) {
+      setBonSortie((prevBonSortie) => ({
+        ...prevBonSortie!,
+        sorties: selectedSorties,
+      }));
+    }
+  }, [selectedSorties]); // Triggered when selectedSorties change
+
+  const filteredEmployers = employers.filter((employer) =>
+    employer.fname.toLowerCase().includes(employerSearchTerm.toLowerCase()) ||
+    employer.lname.toLowerCase().includes(employerSearchTerm.toLowerCase())
+  );
+
+  const filteredArticles = articles.filter((article) =>
+    article.name.toLowerCase().includes(articleSearchTerm.toLowerCase())
+  );
+
+  const filteredServices = services.filter((service) =>
+    service.name.toLowerCase().includes(serviceSearchTerm.toLowerCase())
+  );
+
+  const handleSortieChange = <K extends keyof Sortie>(index: number, field: K, value: Sortie[K]) => {
+    setSelectedSorties((prevSorties) => {
+      const updatedSorties = [...prevSorties];
+      updatedSorties[index] = { ...updatedSorties[index], [field]: value ?? 0 };
+      return updatedSorties;
+    });
+  };
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No token found. Please log in.');
+      if (!bonSortie) {
+        console.error('No bonSortie data available to update.');
+        return;
+      }
+  /**
+   *     id: number;
+    id_employeur: number;
+    id_service: number;
+    date: string;
+   */
+      // Ensure the updated 'selectedSorties' are synced into 'bonSortie'
+      const updatedBonSortie = {
+        ...bonSortie,
+        sorties: selectedSorties,  // Ensure we send the latest 'selectedSorties'
+        id_employeur: selectedEmployer?.id,  // Only update if employer was changed
+        id_service:selectedService?.id,
+
+       
+      };
+  
+      // Send the updated bonSortie to the server
+      const response = await fetch(`${Bk_End_SRVR}:5000/api/bonsorties/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(updatedBonSortie),
+      });
+  
+      if (!response.ok) throw new Error('Failed to update Bon Sortie.');
+      fetchBonSorties(); // Refresh data after updating
+      onClose(); // Close the form
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  
+
+  const handleArticleSelect = (article: Article) => {
+    setSelectedSorties((prevSorties) => {
+      const newEntries = new Map(prevSorties.map((s) => [s.idArticle, s]));
+      newEntries.has(article.id!)
+        ? newEntries.delete(article.id!)
+        : newEntries.set(article.id!, { idArticle: article.id!, quantity: 1, idBs: id });
+      return Array.from(newEntries.values());
+    });
+  };
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>): void {
+    if (!bonSortie) {
+      console.error('No bonSortie data available to update.');
+      return;
+    }
+
+    const { name, value } = e.target;
+    setBonSortie((prevBonSortie) => {
+      if (!prevBonSortie) return null;
+      return {
+        ...prevBonSortie,
+        [name]: value,
+      } as BonSortie;
+    });
+  }
+
+  return (
+    <>
+      <Modal isOpen={true} onClose={onClose} title="تحديث وصل خروج">
+        {loading ? (
+          <p>جارٍ تحميل البيانات...</p>
+        ) : error ? (
+          <p className="text-danger">{error}</p>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            {/* Ensure DateInput is populated with the initial bonSortie.date */}
+            <DateInput label="التاريخ" name="date" value={bonSortie?.date.split('T')[0] || ''} onChange={handleChange} />
+            <SearchInput value={employerSearchTerm} onChange={(e) => setEmployerSearchTerm(e.target.value)} />
+            {/* SelectionList should be populated with the selected employer */}
+            <SelectionList
+              items={filteredEmployers}
+              selectedItem={selectedEmployer}
+              onSelect={(employer) => setSelectedEmployer(employer)}
+              getItemLabel={(employer) => `${employer.fname} ${employer.lname}`}
+              emptyMessage="لا يوجد موظفون متاحون"
+            />
+
+            <SearchInput value={serviceSearchTerm} onChange={(e) => setServiceSearchTerm(e.target.value)} />
+            <SelectionList
+              items={filteredServices}
+              selectedItem={selectedService}
+              onSelect={(service) => setSelectedService(service)}
+              getItemLabel={(service) => service.name}
+              emptyMessage="لا يوجد مصالح متاحون"
+            />
+
+            {/* ArticleSelection should show the selected sorties */}
+            <ArticleSelection
+              articles={filteredArticles}
+              selectedEntrees={selectedSorties}
+              onArticleSelect={handleArticleSelect}
+            />
+            <SelectedArticlesTable
+              selectedItems={selectedSorties}
+              articles={articles}
+              onItemChange={handleSortieChange}
+            />
+            <div className="modal-footer">
+              <button type="submit" className="btn btn-primary">تحديث</button>
+              <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
             </div>
-        </div>
-    );
+          </form>
+        )}
+      </Modal>
+    </>
+  );
 };
 
-export default UpdateBonSortieForm;
+export default TestUpdateBs;

@@ -18,6 +18,8 @@ import useService from "../../../services/a_services/useServices";
 import useBonSortie from "../../../services/bonSorties/useBonSortie";
 
 
+
+
 const BonSortieView: React.FC = () => {
 
 
@@ -142,6 +144,9 @@ const BonSortieView: React.FC = () => {
           id={selectedBonSortie.id}
         />
       )}
+
+      
+    
 
 
       {showDeleteForm && selectedBonSortie && (
