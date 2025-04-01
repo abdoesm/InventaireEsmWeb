@@ -100,6 +100,7 @@ const UpdateBonSortieForm: React.FC<Props> = ({ id, onClose, fetchBonSorties }) 
         return;
       }
   /**
+   * bonsortie data 
    *     id: number;
     id_employeur: number;
     id_service: number;
@@ -112,7 +113,6 @@ const UpdateBonSortieForm: React.FC<Props> = ({ id, onClose, fetchBonSorties }) 
         id_employeur: selectedEmployer?.id,  // Only update if employer was changed
         id_service:selectedService?.id,
 
-       
       };
   
       // Send the updated bonSortie to the server
@@ -182,7 +182,7 @@ const UpdateBonSortieForm: React.FC<Props> = ({ id, onClose, fetchBonSorties }) 
             <SearchInput 
               placeholder="البحث عن موظف" 
               value={employerSearchTerm} 
-              onChange={(e) => setEmployerSearchTerm(e.target.value)} 
+              onChange={handleChange} 
             />
             <SelectionList
               items={filteredEmployers}
@@ -196,7 +196,7 @@ const UpdateBonSortieForm: React.FC<Props> = ({ id, onClose, fetchBonSorties }) 
             <SearchInput 
               placeholder="البحث عن خدمة" 
               value={serviceSearchTerm} 
-              onChange={(e) => setServiceSearchTerm(e.target.value)} 
+              onChange={handleChange} 
             />
             <SelectionList
               items={filteredServices}
@@ -210,7 +210,7 @@ const UpdateBonSortieForm: React.FC<Props> = ({ id, onClose, fetchBonSorties }) 
             <SearchInput 
               placeholder="البحث عن مادة" 
               value={articleSearchTerm} 
-              onChange={(e) => setArticleSearchTerm(e.target.value)} 
+              onChange={handleChange} 
             />
             <ArticleSelection
               articles={filteredArticles}
