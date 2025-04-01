@@ -15,8 +15,6 @@ import useService from '../../../services/a_services/useServices';
 import SelectedArticlesTable from '../../common/SelectedArticlesTable';
 import SearchInput from '../../common/SearchInput';
 import { Bk_End_SRVR } from '../../../configs/conf';
-import { data } from 'react-router-dom';
-import FormGroup from '../../common/FormGroup';
 
 type Props = {
   id: number;
@@ -24,7 +22,7 @@ type Props = {
   fetchBonSorties: () => void;
 };
 
-const TestUpdateBs: React.FC<Props> = ({ id, onClose, fetchBonSorties }) => {
+const UpdateBonSortieForm: React.FC<Props> = ({ id, onClose, fetchBonSorties }) => {
   const [selectedEmployer, setSelectedEmployer] = useState<Employer | null>(null);
   const [selectedSorties, setSelectedSorties] = useState<Sortie[]>([]);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
@@ -246,4 +244,4 @@ const TestUpdateBs: React.FC<Props> = ({ id, onClose, fetchBonSorties }) => {
   
 };
 
-export default TestUpdateBs;
+export default UpdateBonSortieForm;
