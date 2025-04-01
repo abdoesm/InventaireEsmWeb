@@ -16,6 +16,7 @@ import SelectedArticlesTable from '../../common/SelectedArticlesTable';
 import SearchInput from '../../common/SearchInput';
 import { Bk_End_SRVR } from '../../../configs/conf';
 import { data } from 'react-router-dom';
+import FormGroup from '../../common/FormGroup';
 
 type Props = {
   id: number;
@@ -162,15 +163,29 @@ const TestUpdateBs: React.FC<Props> = ({ id, onClose, fetchBonSorties }) => {
     <>
       <Modal isOpen={true} onClose={onClose} title="تحديث وصل خروج">
         {loading ? (
-          <p>جارٍ تحميل البيانات...</p>
+          <div className="loading-container">
+            <p>جارٍ تحميل البيانات...</p>
+          </div>
         ) : error ? (
-          <p className="text-danger">{error}</p>
+          <div className="error-container">
+            <p className="text-danger">{`حدث خطأ: ${error}`}</p>
+          </div>
         ) : (
           <form onSubmit={handleSubmit}>
-            {/* Ensure DateInput is populated with the initial bonSortie.date */}
-            <DateInput label="التاريخ" name="date" value={bonSortie?.date.split('T')[0] || ''} onChange={handleChange} />
-            <SearchInput value={employerSearchTerm} onChange={(e) => setEmployerSearchTerm(e.target.value)} />
-            {/* SelectionList should be populated with the selected employer */}
+            {/* Date Input: Ensure it's populated with the correct initial date */}
+            <DateInput 
+              label="التاريخ" 
+              name="date" 
+              value={bonSortie?.date?.split('T')[0] || ''} 
+              onChange={handleChange} 
+            />
+  
+            {/* Employer Search and Selection */}
+            <SearchInput 
+              placeholder="البحث عن موظف" 
+              value={employerSearchTerm} 
+              onChange={(e) => setEmployerSearchTerm(e.target.value)} 
+            />
             <SelectionList
               items={filteredEmployers}
               selectedItem={selectedEmployer}
@@ -178,8 +193,13 @@ const TestUpdateBs: React.FC<Props> = ({ id, onClose, fetchBonSorties }) => {
               getItemLabel={(employer) => `${employer.fname} ${employer.lname}`}
               emptyMessage="لا يوجد موظفون متاحون"
             />
-
-            <SearchInput value={serviceSearchTerm} onChange={(e) => setServiceSearchTerm(e.target.value)} />
+  
+            {/* Service Search and Selection */}
+            <SearchInput 
+              placeholder="البحث عن خدمة" 
+              value={serviceSearchTerm} 
+              onChange={(e) => setServiceSearchTerm(e.target.value)} 
+            />
             <SelectionList
               items={filteredServices}
               selectedItem={selectedService}
@@ -187,27 +207,43 @@ const TestUpdateBs: React.FC<Props> = ({ id, onClose, fetchBonSorties }) => {
               getItemLabel={(service) => service.name}
               emptyMessage="لا يوجد مصالح متاحون"
             />
-
-            {/* ArticleSelection should show the selected sorties */}
+  
+            {/* Article Search and Selection */}
+            <SearchInput 
+              placeholder="البحث عن مادة" 
+              value={articleSearchTerm} 
+              onChange={(e) => setArticleSearchTerm(e.target.value)} 
+            />
             <ArticleSelection
               articles={filteredArticles}
               selectedEntrees={selectedSorties}
               onArticleSelect={handleArticleSelect}
             />
+  
+            {/* Table to display selected articles */}
             <SelectedArticlesTable
               selectedItems={selectedSorties}
               articles={articles}
               onItemChange={handleSortieChange}
             />
+  
+            {/* Footer Buttons */}
             <div className="modal-footer">
               <button type="submit" className="btn btn-primary">تحديث</button>
-              <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
+              <button 
+                type="button" 
+                className="btn btn-secondary" 
+                onClick={onClose}
+              >
+                إلغاء
+              </button>
             </div>
           </form>
         )}
       </Modal>
     </>
   );
+  
 };
 
 export default TestUpdateBs;
