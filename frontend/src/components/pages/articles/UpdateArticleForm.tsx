@@ -1,6 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import { Article } from "../../../models/articleTypes"; // Import the Article type
+import FormGroup from "../../common/FormGroup";
+import SelectionList from "../../common/SelectionList";
+import { Category } from "../../../models/categoryTypes";
+import useCategories from "../../../services/categories/useCategories";
+import Modal from "../../common/Modal";
+import Input from "../../common/Input";
 
 type Props = {
   onClose: () => void;
@@ -13,10 +19,18 @@ const UpdateArticleForm: React.FC<Props> = ({ onClose, fetchArticles, article })
   const [unite, setUnite] = useState(article.unite);
   const [description, setDescription] = useState(article.description);
   const [remarque, setRemarque] = useState(article.remarque);
-  const [categoryId, setCategoryId] = useState<number>(article.id_category);
-   const [minQuantity,setMinQuantitiy]=useState<number>(article.min_quantity);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+
+  const [minQuantity, setMinQuantitiy] = useState<number>(article.min_quantity);
   const [error, setError] = useState<string | null>(null);
 
+  const { categories } = useCategories();
+  // Set initial category once categories are available
+  useEffect(() => {
+    if (categories.length > 0) {
+      setSelectedCategory(categories.find((category) => category.id === article.id_category) || null);
+    }
+  }, [categories, article.id_category]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -28,7 +42,7 @@ const UpdateArticleForm: React.FC<Props> = ({ onClose, fetchArticles, article })
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ id,name, unite, description, remarque, id_category: categoryId ,min_quantity:minQuantity}),
+        body: JSON.stringify({ id, name, unite, description, remarque, id_category: selectedCategory?.id, min_quantity: minQuantity }),
       });
       if (!response.ok) throw new Error("Failed to update article");
       fetchArticles();
@@ -39,96 +53,99 @@ const UpdateArticleForm: React.FC<Props> = ({ onClose, fetchArticles, article })
   };
 
   return (
-    <div className="modal fade show d-block" tabIndex={-1} role="dialog">
-      <div className="modal-dialog modal-dialog-centered" role="document">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">تحديث العنصر</h5>
-            <button type="button" className="btn-close" onClick={onClose}></button>
+    <>
+      <Modal isOpen={true} onClose={onClose} title="تحديث عنصر جديد
+ ">
+        {error ? (
+          <div className="error-container">
+            <p className="text-danger">{`حدث خطأ: ${error}`}</p>
           </div>
-          <div className="modal-body">
-            {error && <p className="text-danger">{error}</p>}
-            <form onSubmit={handleSubmit}>
-              {/* Name Input */}
-              <div className="mb-3">
-                <label className="form-label">اسم العنصر</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </div>
-  
-              {/* Unit Input */}
-              <div className="mb-3">
-                <label className="form-label">الوحدة</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={unite}
-                  onChange={(e) => setUnite(e.target.value)}
-                />
-              </div>
-  
-              {/* Description Input */}
-              <div className="mb-3">
-                <label className="form-label">الوصف</label>
-                <textarea
-                  className="form-control"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
-  
-              {/* Remark Input */}
-              <div className="mb-3">
-                <label className="form-label">ملاحظات</label>
-                <textarea
-                  className="form-control"
-                  value={remarque}
-                  onChange={(e) => setRemarque(e.target.value)}
-                />
-              </div>
-  
-              {/* Category Input */}
-              <div className="mb-3">
-                <label className="form-label">معرف الفئة</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  value={categoryId}
-                  onChange={(e) => setCategoryId(Number(e.target.value))}
-                  required
-                />
-              </div>
-              
-                  {/* Min Quantitiy Input */}
-                  <div className="mb-3">
-                <label className="form-label">الكمية الدنيا للعنصر </label>
-                <input
-                  type="number"
-                  className="form-control"
-                  placeholder="أدخل  الكمية الدنيا"
-                  value={minQuantity}
-                  onChange={(e) => setMinQuantitiy(Number(e.target.value))}
-                  required
-                />
-              </div>
-  
-              {/* Buttons */}
-              <div className="modal-footer">
-                <button type="submit" className="btn btn-primary">تحديث</button>
-                <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            {/* Article Name Input */}
+            <FormGroup label="اسم العنصر" labelClassName="fw-bold">
+              <Input
+                type="text"
+                className="form-control"
+                placeholder="أدخل اسم العنصر"
+                value={name}
+                name="name"
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </FormGroup>
+
+            {/* Unit Input */}
+            <FormGroup label=" الوحدة" labelClassName="fw-bold">
+              <Input
+                type="text"
+                className="form-control"
+                placeholder="أدخل الوحدة"
+                value={unite}
+                name="unite"
+                onChange={(e) => setUnite(e.target.value)}
+              />
+            </FormGroup>
+
+            {/* Description Input */}
+            <FormGroup label=" الوصف" labelClassName="fw-bold">
+              <textarea
+                className="form-control"
+                placeholder="أدخل الوصف"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </FormGroup>
+
+            {/* Remarks Input */}
+            <FormGroup label=" ملاحظات" labelClassName="fw-bold">
+              <textarea
+                className="form-control"
+                placeholder="أدخل الملاحظات"
+                value={remarque}
+                onChange={(e) => setRemarque(e.target.value)}
+              />
+            </FormGroup>
+
+
+            <FormGroup label=" الفئة" labelClassName="fw-bold">
+
+
+
+              <SelectionList
+                items={categories || []}
+                selectedItem={selectedCategory}
+                onSelect={(category) => setSelectedCategory(category)}
+                getItemLabel={(category) => ` ${category.id} ${category.name_cat}`}
+                emptyMessage="لا توجد فئات متاحة"
+              />
+
+            </FormGroup>
+
+            {/* Min Quantitiy Input */}
+            <FormGroup label=" الكمية الدنيا" labelClassName="fw-bold">
+              <Input
+                type="number"
+                className="form-control"
+                placeholder="أدخل  الكمية الدنيا"
+                value={minQuantity}
+                name="minQuantity"
+                onChange={(e) => setMinQuantitiy(Number(e.target.value))}
+                required
+              />
+            </FormGroup>
+
+            {/* Buttons */}
+            <div className="modal-footer">
+              <button type="submit" className="btn btn-primary">تحديث</button>
+              <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
+            </div>
+          </form>
+        )}
+      </Modal>
+    </>
   );
-  
+
 };
 
 export default UpdateArticleForm;
