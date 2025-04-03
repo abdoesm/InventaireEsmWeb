@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import { Service } from "../../../models/serviceTypes";
+import Modal from "../../common/Modal";
 
 type DeleteProps = {
   onClose: () => void;
@@ -22,9 +23,9 @@ const DeleteServiceForm: React.FC<DeleteProps> = ({ onClose, fetchServices, serv
       const data = await response.json();
       if (!response.ok) {
         setErrorMessage(
-          data.error === "لا يمكن حذف الخدمة لأنها تحتوي على عناصر."
-            ? "لا يمكن حذف هذه الخدمة لأنها تحتوي على عناصر مرتبطة."
-            : "فشل في حذف الخدمة."
+          data.error === "لا يمكن حذف المصلحة لأنها تحتوي على عناصر."
+            ? "لا يمكن حذف هذه المصلحة لأنها تحتوي على عناصر مرتبطة."
+            : "فشل في حذف المصلحة."
         );
         return;
       }
@@ -38,24 +39,17 @@ const DeleteServiceForm: React.FC<DeleteProps> = ({ onClose, fetchServices, serv
   };
 
   return (
-    <div className="modal fade show d-block" tabIndex={-1} role="dialog">
-      <div className="modal-dialog modal-dialog-centered" role="document">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title text-danger">حذف الخدمة</h5>
-            <button type="button" className="btn-close" onClick={onClose}></button>
-          </div>
-          <div className="modal-body">
+    <>
+            <Modal isOpen={true} onClose={onClose} title="حذف  المصلحة">
             {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
-            <p>هل أنت متأكد أنك تريد حذف الخدمة <strong>{service.name}</strong>؟</p>
-          </div>
+            <p>هل أنت متأكد أنك تريد حذف المصلحة <strong>{service.name}</strong>؟</p>
+       
           <div className="modal-footer">
             <button className="btn btn-danger" onClick={handleDelete}>نعم، حذف</button>
             <button className="btn btn-secondary" onClick={onClose}>إلغاء</button>
           </div>
-        </div>
-      </div>
-    </div>
+          </Modal>
+          </>
   );
 };
 

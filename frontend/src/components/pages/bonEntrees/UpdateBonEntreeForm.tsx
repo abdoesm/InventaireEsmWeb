@@ -13,6 +13,7 @@ import useFornisseurs from "../../../services/fornisseurs/useFornisseurs";
 import useFetchArticles from "../../../services/article/usefetchArticles";
 import useBonEntreeDetails from "../../../services/bonEntrees/useBonEntreeDetails";
 import DateInput from "../../common/DateInput";
+import Modal from "../../common/Modal";
 
 type Props = {
     id: string;
@@ -142,20 +143,18 @@ const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) 
 
 
     return (
-        <div className="modal fade show d-block" tabIndex={-1} role="dialog" aria-hidden="true">
-            <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div className="modal-content">
-                    <div className="modal-header">
-                        <h5 className="modal-title">تحديث وصل استلام</h5>
-                        <button type="button" className="btn-close" aria-label="إغلاق" onClick={onClose}></button>
-                    </div>
-                    <div className="modal-body" style={{ maxHeight: "70vh", overflowY: "auto" }}>
-                        {error && <p className="text-danger">{error}</p>}
-
-                        {loading ? (
-                            <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>
-                        ) : (
-                            <form onSubmit={handleSubmit}>
+        <>
+        <Modal isOpen={true} onClose={onClose} title="تحديث وصل إستلام">
+          {loading ? (
+            <div className="loading-container">
+              <p>جارٍ تحميل البيانات...</p>
+            </div>
+          ) : error ? (
+            <div className="error-container">
+              <p className="text-danger">{`حدث خطأ: ${error}`}</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
                                 <div className="row">
                                   
                                         <DateInput label="التاريخ"  name="date" value={data.date} onChange={handleChange} />
@@ -210,12 +209,10 @@ const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) 
                                         إلغاء
                                     </button>
                                 </div>
-                            </form>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </div>
+                                </form>
+        )}
+      </Modal>
+    </>
     );
 };
 

@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import { Service } from "../../../models/serviceTypes";
 import { Employer } from "../../../models/employerType";
+import Modal from "../../common/Modal";
+import FormGroup from "../../common/FormGroup";
+import Input from "../../common/Input";
 
 
 type UpdateProps = {
@@ -82,47 +85,56 @@ const UpdateServiceForm: React.FC<UpdateProps> = ({ onClose, fetchServices, serv
   };
 
   return (
-    <div className="modal fade show d-block" tabIndex={-1} role="dialog">
-      <div className="modal-dialog modal-dialog-centered" role="document">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">تحديث المصلحة</h5>
-            <button type="button" className="btn-close" onClick={onClose}></button>
-          </div>
-          <div className="modal-body">
-            {error && <p className="text-danger">{error}</p>}
-            {loading ? (
-              <p className="text-center">جاري التحميل...</p>
-            ) : (
-              <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                  <label className="form-label">المصلحة</label>
-                  <input
+    <>
+    <Modal isOpen={true} onClose={onClose} title="تحديث وصل خروج">
+      {loading ? (
+        <div className="loading-container">
+          <p>جارٍ تحميل البيانات...</p>
+        </div>
+      ) : error ? (
+        <div className="error-container">
+          <p className="text-danger">{`حدث خطأ: ${error}`}</p>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit}>
+                 <FormGroup label="اسم المصلحة" labelClassName="fw-bold">
+                 <Input
                     type="text"
                     className="form-control"
                     value={name_service}
+                     name="name"
                     onChange={(e) => setName(e.target.value)}
                     required
                   />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">رئيس المصلحة</label>
-                  <select
-                    className="form-control"
-                    value={chef_service_id ?? ""}
-                    onChange={(e) => {
-                      const selectedValue = e.target.value;
-                      setChefServiceId(selectedValue ? Number(selectedValue) : null);
-                    }}
-                  >
-                    <option value="">اختر رئيس المصلحة</option>
-                    {employers.map((emp) => (
-                      <option key={emp.id} value={emp.id}>
-                        {`${emp.fname} ${emp.lname}`}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                </FormGroup>
+                <FormGroup label="رئيس المصلحة" labelClassName="fw-bold">
+                  {
+                    loading ? (
+                      <div className="d-flex align-items-center">
+                        <div className="spinner-border spinner-border-sm text-primary me-2" role="status">
+                          <span className="visually-hidden">Loading...</span>
+                        </div>
+                        <span>جاري تحميل الموظفين...</span>
+                      </div>
+                    ): (
+                    <select
+                      className="form-control"
+                      value={chef_service_id ?? ""}
+                      onChange={(e) => {
+                        const selectedValue = e.target.value;
+                        setChefServiceId(selectedValue ? Number(selectedValue) : null);
+                      }}
+                    >
+                      <option value="">اختر رئيس المصلحة</option>
+                      {employers.map((emp) => (
+                        <option key={emp.id} value={emp.id}>
+                          {`${emp.fname} ${emp.lname}`}
+                        </option>
+                      ))}
+
+                    </select>
+                  )}
+                  </FormGroup>
                 <div className="modal-footer">
                   <button type="submit" className="btn btn-primary">
                     تحديث
@@ -133,10 +145,8 @@ const UpdateServiceForm: React.FC<UpdateProps> = ({ onClose, fetchServices, serv
                 </div>
               </form>
             )}
-          </div>
-        </div>
-      </div>
-    </div>
+           </Modal>
+           </>
   );
 };
 

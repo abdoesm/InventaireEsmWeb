@@ -15,7 +15,6 @@ import HomeBtn from "../../common/HomeBtn";
 
 
 const Services: React.FC = () => {
-  const navigate = useNavigate();
   const [services, setServices] = useState<Service[]>([]);
   const [employers, setEmployers] = useState<Employer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -100,14 +99,14 @@ const Services: React.FC = () => {
   
 
   return (
-    <div className="container mt-5">
+    <>
       {/* Header Section */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         {/* Home Button */}
       <HomeBtn/>
         
         {/* Title */}
-        <h2 className="fw-bold text-center flex-grow-1 text-primary">إدارة الخدمات</h2>
+        <h2 className="fw-bold text-center flex-grow-1 text-primary">إدارة المصالح</h2>
         
         {/* Add Service Button */}
         <button className="btn btn-success px-4 py-2" onClick={() => setShowAddForm(true)}>
@@ -150,7 +149,7 @@ const Services: React.FC = () => {
           fetchServices={fetchServices} 
         />
       )}
-    </div>
+    </>
   );
   
 };

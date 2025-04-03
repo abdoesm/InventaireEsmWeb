@@ -13,6 +13,7 @@ import useFetchArticles from "../../../services/article/usefetchArticles";
 import useEmployers from "../../../services/employers/useEmployers";
 import useService from "../../../services/a_services/useServices";
 import DateInput from "../../common/DateInput";
+import Modal from "../../common/Modal";
 
 
 
@@ -39,9 +40,9 @@ const AddBonSortieForm: React.FC<Props> = ({ onClose, fetchBonSorties }) => {
     const [selectedService, setSelectedService] = useState<Service | null>(null);
 
 
-    const { error: fetchError, loading, employers} = useEmployers();
-    const { articles} =useFetchArticles();
-    const { services }=useService();
+    const { error: loading, employers } = useEmployers();
+    const { articles } = useFetchArticles();
+    const { services } = useService();
 
     const filteredArticles = articles.filter(article =>
         article.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -145,134 +146,107 @@ const AddBonSortieForm: React.FC<Props> = ({ onClose, fetchBonSorties }) => {
     };
 
     return (
-        <div
-            className="modal fade show d-block"
-            tabIndex={-1}
-            role="dialog"
-            aria-labelledby="addBonSortieModalLabel"
-            aria-hidden="true"
-        >
-            <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div className="modal-content">
-                    {/* Modal Header */}
-                    <div className="modal-header">
-                        <h5 className="modal-title" id="addBonSortieModalLabel">
-                            إضافة وصل خروج جديد
-                        </h5>
-                        <button
-                            type="button"
-                            className="btn-close"
-                            aria-label="إغلاق"
-                            onClick={onClose}
-                        ></button>
+        <>
+            <Modal isOpen={true} onClose={onClose} title="إضافة وصل خروج">
+                {loading ? (
+                    <div className="loading-container">
+                        <p>جارٍ تحميل البيانات...</p>
                     </div>
+                ) : error ? (
+                    <div className="error-container">
+                        <p className="text-danger">{`حدث خطأ: ${error}`}</p>
+                    </div>
+                ) : (
+                    <form onSubmit={handleSubmit}>
+                        {/* Date Input */}
+                        <div className="row mb-3">
 
-                    {/* Modal Body */}
-                    <div className="modal-body" style={{ maxHeight: "70vh", overflowY: "auto" }}>
-                        {/* Error Messages */}
-                        {error && <p className="text-danger">{error}</p>}
-                        {fetchError && <p className="text-danger">{fetchError}</p>}
+                            <DateInput
+                                label="تاريخ الخروج"
+                                name="date"
+                                value={data.date}
+                                onChange={handleChange}
 
-                        {/* Loading State */}
-                        {loading ? (
-                            <div className="text-center">
-                                <div className="spinner-border text-secondary" role="status">
-                                    <span className="visually-hidden">جارٍ تحميل البيانات...</span>
-                                </div>
-                            </div>
-                        ) : (
-                            <form onSubmit={handleSubmit}>
-                                {/* Date Input */}
-                                <div className="row mb-3">
-                                   
-                                        <DateInput
-                                        label="تاريخ الخروج"
-                                            name="date"
-                                            value={data.date}
-                                            onChange={handleChange}
-                                    
-                                        />
-                            
-                                </div>
+                            />
 
-                                {/* Employer and Service Selection Side by Side */}
-                                <div className="row mb-3">
-                                    <div className="col-md-6">
-                                        <FormGroup label="الموظف">
-                                            <SearchInput
-                                                placeholder="ابحث عن الموظف..."
-                                                value={employerSearchTerm}
-                                                onChange={(e) => setEmployerSearchTerm(e.target.value)}
-                                            />
-                                            <SelectionList
-                                                items={filteredEmployer}
-                                                selectedItem={selectedEmployer}
-                                                onSelect={handleEmployerSelect}
-                                                getItemLabel={(employer) => `${employer.fname} ${employer.lname}`}
-                                                emptyMessage="لا يوجد موظفون متاحون"
-                                            />
-                                        </FormGroup>
-                                    </div>
+                        </div>
 
-                                    <div className="col-md-6">
-                                        <FormGroup label="المصلحة">
-                                            <SearchInput
-                                                placeholder="ابحث عن المصلحة..."
-                                                value={serviceSearchTerm}
-                                                onChange={(e) => setServiceSearchTerm(e.target.value)}
-                                            />
-                                            <SelectionList
-                                                items={filteredService}
-                                                selectedItem={selectedService}
-                                                onSelect={handleServiceSelect}
-                                                getItemLabel={(service) => service.name}
-                                                emptyMessage="لا يوجد مصالح متاحون"
-                                            />
-
-                                        </FormGroup>
-                                    </div>
-                                </div>
-
-                                {/* Article Selection */}
-                                <FormGroup label="حدد المقالات للخروج">
+                        {/* Employer and Service Selection Side by Side */}
+                        <div className="row mb-3">
+                            <div className="col-md-6">
+                                <FormGroup label="الموظف">
                                     <SearchInput
-                                        placeholder="ابحث عن المقال..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        placeholder="ابحث عن الموظف..."
+                                        value={employerSearchTerm}
+                                        onChange={(e) => setEmployerSearchTerm(e.target.value)}
                                     />
-                                    <ArticleSelection<Sortie>
-                                        articles={filteredArticles}
-                                        selectedEntrees={selectedSorties}
-                                        onArticleSelect={handleArticleSelect}
+                                    <SelectionList
+                                        items={filteredEmployer}
+                                        selectedItem={selectedEmployer}
+                                        onSelect={handleEmployerSelect}
+                                        getItemLabel={(employer) => `${employer.fname} ${employer.lname}`}
+                                        emptyMessage="لا يوجد موظفون متاحون"
                                     />
                                 </FormGroup>
+                            </div>
 
-                                {/* Selected Articles Table */}
-                                <SelectedArticlesTable<Sortie>
-                                    selectedItems={selectedSorties}
-                                    articles={articles}
-                                    onItemChange={handleSortieChange}
-                                />
+                            <div className="col-md-6">
+                                <FormGroup label="المصلحة">
+                                    <SearchInput
+                                        placeholder="ابحث عن المصلحة..."
+                                        value={serviceSearchTerm}
+                                        onChange={(e) => setServiceSearchTerm(e.target.value)}
+                                    />
+                                    <SelectionList
+                                        items={filteredService}
+                                        selectedItem={selectedService}
+                                        onSelect={handleServiceSelect}
+                                        getItemLabel={(service) => service.name}
+                                        emptyMessage="لا يوجد مصالح متاحون"
+                                    />
 
-                                {/* Modal Footer */}
-                                <div className="modal-footer">
-                                    <button type="submit" className="btn btn-primary">
-                                        إضافة
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="btn btn-secondary"
-                                        onClick={onClose}
-                                    >
-                                        إلغاء
-                                    </button>
-                                </div>
-                            </form>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </div>
+                                </FormGroup>
+                            </div>
+                        </div>
+
+                        {/* Article Selection */}
+                        <FormGroup label="حدد المقالات للخروج">
+                            <SearchInput
+                                placeholder="ابحث عن المقال..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            <ArticleSelection<Sortie>
+                                articles={filteredArticles}
+                                selectedEntrees={selectedSorties}
+                                onArticleSelect={handleArticleSelect}
+                            />
+                        </FormGroup>
+
+                        {/* Selected Articles Table */}
+                        <SelectedArticlesTable<Sortie>
+                            selectedItems={selectedSorties}
+                            articles={articles}
+                            onItemChange={handleSortieChange}
+                        />
+
+                        {/* Modal Footer */}
+                        <div className="modal-footer">
+                            <button type="submit" className="btn btn-primary">
+                                إضافة
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={onClose}
+                            >
+                                إلغاء
+                            </button>
+                        </div>
+                    </form>
+                )}
+            </Modal>
+        </>
     );
 
 };

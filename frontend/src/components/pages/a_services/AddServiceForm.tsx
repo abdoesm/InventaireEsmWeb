@@ -5,6 +5,7 @@ import { Employer } from "../../../models/employerType";
 import Input from "../../common/Input";
 import FormGroup from "../../common/FormGroup";
 import { FaUserTie, FaSave, FaTimes } from "react-icons/fa";
+import Modal from "../../common/Modal";
 
 type Props = {
   onClose: () => void;
@@ -40,7 +41,7 @@ const AddServiceForm: React.FC<Props> = ({ onClose, fetchServices }) => {
     e.preventDefault();
     setError(null);
     setIsSubmitting(true);
-    
+
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -71,107 +72,93 @@ const AddServiceForm: React.FC<Props> = ({ onClose, fetchServices }) => {
     }
   };
 
-  return (
-    <div className="modal fade show d-block" tabIndex={-1} role="dialog" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-      <div className="modal-dialog modal-dialog-centered" role="document">
-        <div className="modal-content border-0 shadow-lg">
-          <div className="modal-header bg-primary text-white">
-            <h5 className="modal-title d-flex align-items-center">
-              <FaUserTie className="me-2" /> إضافة مصلحة جديدة
-            </h5>
-            <button 
-              type="button" 
-              className="btn-close btn-close-white" 
-              onClick={onClose}
-              aria-label="Close"
-            ></button>
-          </div>
-          <div className="modal-body">
-            {error && (
-              <div className="alert alert-danger d-flex align-items-center" role="alert">
-                <div className="flex-grow-1">{error}</div>
-                <button 
-                  type="button" 
-                  className="btn-close" 
-                  onClick={() => setError(null)}
-                  aria-label="Close"
-                ></button>
-              </div>
-            )}
+  //              <FaUserTie className="me-2" /> إضافة مصلحة جديدة
 
-            <form onSubmit={handleSubmit}>
-              <FormGroup label="اسم المصلحة" labelClassName="fw-bold">
-                <Input
-                  type="text"
-                  className="form-control rounded-0 border-2 border-primary"
-                  placeholder="أدخل اسم المصلحة"
-                  value={name}
-                  name="name"
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </FormGroup>
-              
-              <FormGroup label="رئيس المصلحة" labelClassName="fw-bold">
-                {isLoading ? (
-                  <div className="d-flex align-items-center">
-                    <div className="spinner-border spinner-border-sm text-primary me-2" role="status">
+
+  return (
+    <>
+      <Modal isOpen={true} onClose={onClose} title=" إضافة مصلحة جديدة">
+        {isLoading ? (
+          <div className="loading-container">
+            <p>جارٍ تحميل البيانات...</p>
+          </div>
+        ) : error ? (
+          <div className="error-container">
+            <p className="text-danger">{`حدث خطأ: ${error}`}</p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <FormGroup label="اسم المصلحة" labelClassName="fw-bold">
+              <Input
+                type="text"
+                className="form-control rounded-0 border-2 border-primary"
+                placeholder="أدخل اسم المصلحة"
+                value={name}
+                name="name"
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </FormGroup>
+
+            <FormGroup label="رئيس المصلحة" labelClassName="fw-bold">
+              {isLoading ? (
+                <div className="d-flex align-items-center">
+                  <div className="spinner-border spinner-border-sm text-primary me-2" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                  <span>جاري تحميل الموظفين...</span>
+                </div>
+              ) : (
+                <select
+                  className="form-select rounded-0 border-2 border-primary"
+                  value={chefServiceId ?? ""}
+                  onChange={(e) => {
+                    const selectedValue = e.target.value;
+                    setChefServiceId(selectedValue ? Number(selectedValue) : null);
+                  }}
+                  aria-label="Select service chief"
+                >
+                  <option value="">-- اختر رئيس المصلحة --</option>
+                  {employers.map((emp) => (
+                    <option key={emp.id} value={emp.id}>
+                      {`${emp.fname} ${emp.lname}`}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </FormGroup>
+
+            <div className="modal-footer border-top-0">
+              <button
+                type="button"
+                className="btn btn-outline-secondary rounded-0 d-flex align-items-center"
+                onClick={onClose}
+              >
+                <FaTimes className="me-2" /> إلغاء
+              </button>
+              <button
+                type="submit"
+                className="btn btn-primary rounded-0 d-flex align-items-center"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="spinner-border spinner-border-sm me-2" role="status">
                       <span className="visually-hidden">Loading...</span>
                     </div>
-                    <span>جاري تحميل الموظفين...</span>
-                  </div>
+                    جاري الحفظ...
+                  </>
                 ) : (
-                  <select
-                    className="form-select rounded-0 border-2 border-primary"
-                    value={chefServiceId ?? ""}
-                    onChange={(e) => {
-                      const selectedValue = e.target.value;
-                      setChefServiceId(selectedValue ? Number(selectedValue) : null);
-                    }}
-                    aria-label="Select service chief"
-                  >
-                    <option value="">-- اختر رئيس المصلحة --</option>
-                    {employers.map((emp) => (
-                      <option key={emp.id} value={emp.id}>
-                        {`${emp.fname} ${emp.lname}`}
-                      </option>
-                    ))}
-                  </select>
+                  <>
+                    <FaSave className="me-2" /> حفظ
+                  </>
                 )}
-              </FormGroup>
-
-              <div className="modal-footer border-top-0">
-                <button 
-                  type="button" 
-                  className="btn btn-outline-secondary rounded-0 d-flex align-items-center"
-                  onClick={onClose}
-                >
-                  <FaTimes className="me-2" /> إلغاء
-                </button>
-                <button 
-                  type="submit" 
-                  className="btn btn-primary rounded-0 d-flex align-items-center"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="spinner-border spinner-border-sm me-2" role="status">
-                        <span className="visually-hidden">Loading...</span>
-                      </div>
-                      جاري الحفظ...
-                    </>
-                  ) : (
-                    <>
-                      <FaSave className="me-2" /> حفظ
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+              </button>
+            </div>
+          </form>
+        )}
+      </Modal>
+    </>
   );
 };
 

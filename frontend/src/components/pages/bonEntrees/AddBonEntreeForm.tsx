@@ -13,6 +13,7 @@ import SelectionList from "../../common/SelectionList";
 import useFetchArticles from "../../../services/article/usefetchArticles";
 import useFornisseurs from "../../../services/fornisseurs/useFornisseurs";
 import DateInput from "../../common/DateInput";
+import Modal from "../../common/Modal";
 
 
 type Props = {
@@ -123,20 +124,18 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
     };
 
     return (
-        <div className="modal fade show d-block" tabIndex={-1} role="dialog" aria-hidden="true">
-            <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div className="modal-content">
-                    <div className="modal-header">
-                        <h5 className="modal-title">إضافة وصل استلام جديد</h5>
-                        <button type="button" className="btn-close" aria-label="إغلاق" onClick={onClose}></button>
-                    </div>
-                    <div className="modal-body" style={{ maxHeight: "70vh", overflowY: "auto" }}>
-                        {error && <p className="text-danger">{error}</p>}
-                        {fetchError && <p className="text-danger">{fetchError}</p>}
-                        {loading ? (
-                            <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>
-                        ) : (
-                            <form onSubmit={handleSubmit}>
+        <>
+        <Modal isOpen={true} onClose={onClose} title="إضافة وصل إستلام">
+          {loading ? (
+            <div className="loading-container">
+              <p>جارٍ تحميل البيانات...</p>
+            </div>
+          ) : error ? (
+            <div className="error-container">
+              <p className="text-danger">{`حدث خطأ: ${error}`}</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
 
                                 {/* Two-column layout */}
                                 <div className="row">
@@ -198,12 +197,10 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
                                     <button type="submit" className="btn btn-primary">إضافة</button>
                                     <button type="button" className="btn btn-secondary" onClick={onClose}>إلغاء</button>
                                 </div>
-                            </form>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </div>
+                                </form>
+        )}
+      </Modal>
+    </>
     );
 };
 
