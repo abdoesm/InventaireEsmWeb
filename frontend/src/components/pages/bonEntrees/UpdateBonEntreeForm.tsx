@@ -21,7 +21,8 @@ type Props = {
 };
 
 const UpdateBonEntreeForm: React.FC<Props> = ({ id, onClose, fetchBonEntrees }) => {
-    const { bonEntree, mapEntrees, loading, error } = useBonEntreeDetails(id ?? "");
+    const { bonEntree, mapEntrees, loading, error } = useBonEntreeDetails(id);
+
     const { fournisseurs } = useFornisseurs();
     const { articles } = useFetchArticles();
     const [data, setData] = useState({
