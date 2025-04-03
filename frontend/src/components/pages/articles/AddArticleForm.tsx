@@ -86,25 +86,7 @@ const AddArticleForm: React.FC<Props> = ({ onClose, fetchArticles }) => {
               />
             </FormGroup>
 
-            {/* Description Input */}
-            <FormGroup label=" الوصف" labelClassName="fw-bold">
-              <textarea
-                className="form-control"
-                placeholder="أدخل الوصف"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </FormGroup>
-
-            {/* Remarks Input */}
-            <FormGroup label=" ملاحظات" labelClassName="fw-bold">
-              <textarea
-                className="form-control"
-                placeholder="أدخل الملاحظات"
-                value={remarque}
-                onChange={(e) => setRemarque(e.target.value)}
-              />
-            </FormGroup>
+          
 
             <FormGroup label=" الفئة" labelClassName="fw-bold">
 
@@ -132,7 +114,25 @@ const AddArticleForm: React.FC<Props> = ({ onClose, fetchArticles }) => {
                 required
               />
               </FormGroup>
+  {/* Description Input */}
+  <FormGroup label=" الوصف" labelClassName="fw-bold">
+              <textarea
+                className="form-control"
+                placeholder="أدخل الوصف"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </FormGroup>
 
+            {/* Remarks Input */}
+            <FormGroup label=" ملاحظات" labelClassName="fw-bold">
+              <textarea
+                className="form-control"
+                placeholder="أدخل الملاحظات"
+                value={remarque}
+                onChange={(e) => setRemarque(e.target.value)}
+              />
+            </FormGroup>
             {/* Buttons */}
             <div className="modal-footer">
               <button type="submit" className="btn btn-primary">إضافة</button>

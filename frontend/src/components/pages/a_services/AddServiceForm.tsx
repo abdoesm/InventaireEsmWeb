@@ -84,7 +84,6 @@ const AddServiceForm: React.FC<Props> = ({ onClose, fetchServices }) => {
 
 
   return (
-    <>
       <Modal isOpen={true} onClose={onClose} title=" إضافة مصلحة جديدة">
         {isLoading ? (
           <div className="loading-container">
@@ -155,7 +154,6 @@ const AddServiceForm: React.FC<Props> = ({ onClose, fetchServices }) => {
           </form>
         )}
       </Modal>
-    </>
   );
 };
 
