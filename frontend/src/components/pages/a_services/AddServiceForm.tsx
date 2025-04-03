@@ -4,8 +4,10 @@ import { Bk_End_SRVR } from "../../../configs/conf";
 import { Employer } from "../../../models/employerType";
 import Input from "../../common/Input";
 import FormGroup from "../../common/FormGroup";
-import { FaUserTie, FaSave, FaTimes } from "react-icons/fa";
+import { FaSave, FaTimes } from "react-icons/fa";
 import Modal from "../../common/Modal";
+import SearchInput from "../../common/SearchInput";
+import SelectionList from "../../common/SelectionList";
 
 type Props = {
   onClose: () => void;
@@ -14,11 +16,17 @@ type Props = {
 
 const AddServiceForm: React.FC<Props> = ({ onClose, fetchServices }) => {
   const [name, setName] = useState("");
-  const [chefServiceId, setChefServiceId] = useState<number | null>(null);
+  const [employerSearchTerm, setEmployerSearchTerm] = useState("");
+  const [selectedEmployerChef, setSelectedEmployer] = useState<Employer | null>(null);
   const [employers, setEmployers] = useState<Employer[]>([]);
+
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const filteredEmployer = employers.filter(employer =>
+    employer.fname.toLowerCase().includes(employerSearchTerm.toLowerCase())
+    || employer.lname.toLowerCase().includes(employerSearchTerm.toLowerCase())
+  );
 
   useEffect(() => {
     const fetchEmployers = async () => {
@@ -55,7 +63,7 @@ const AddServiceForm: React.FC<Props> = ({ onClose, fetchServices }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name, chef_service_id: chefServiceId }),
+        body: JSON.stringify({ name, chef_service_id: selectedEmployerChef?.id }),
       });
 
       if (!response.ok) {
@@ -99,33 +107,22 @@ const AddServiceForm: React.FC<Props> = ({ onClose, fetchServices }) => {
                 required
               />
             </FormGroup>
-
             <FormGroup label="رئيس المصلحة" labelClassName="fw-bold">
-              {isLoading ? (
-                <div className="d-flex align-items-center">
-                  <div className="spinner-border spinner-border-sm text-primary me-2" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                  <span>جاري تحميل الموظفين...</span>
-                </div>
-              ) : (
-                <select
-                  className="form-select rounded-0 border-2 border-primary"
-                  value={chefServiceId ?? ""}
-                  onChange={(e) => {
-                    const selectedValue = e.target.value;
-                    setChefServiceId(selectedValue ? Number(selectedValue) : null);
-                  }}
-                  aria-label="Select service chief"
-                >
-                  <option value="">-- اختر رئيس المصلحة --</option>
-                  {employers.map((emp) => (
-                    <option key={emp.id} value={emp.id}>
-                      {`${emp.fname} ${emp.lname}`}
-                    </option>
-                  ))}
-                </select>
-              )}
+
+              <SearchInput
+                placeholder="ابحث عن الموظف..."
+                value={employerSearchTerm}
+                onChange={(e) => setEmployerSearchTerm(e.target.value)}
+              />
+
+              <SelectionList
+                items={filteredEmployer}
+                selectedItem={selectedEmployerChef}
+                onSelect={(employer) => setSelectedEmployer(employer)}
+                getItemLabel={(employer) => `${employer.fname} ${employer.lname}`}
+                emptyMessage="لا يوجد موظفون متاحون"
+              />
+
             </FormGroup>
 
             <div className="modal-footer border-top-0">
