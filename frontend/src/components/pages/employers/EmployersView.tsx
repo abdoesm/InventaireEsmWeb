@@ -10,6 +10,7 @@ import ActionButtons from "../../common/ActionButtons";
 import HomeBtn from "../../common/HomeBtn";
 import useEmployers from "../../../services/employers/useEmployers";
 import CreateBtn from "../../common/CreateBtn";
+import { Title } from "../../common/Title";
 
 
 const Employers: React.FC = () => {
@@ -66,7 +67,7 @@ const Employers: React.FC = () => {
     <>
       <div className="d-flex justify-content-between align-items-center mb-4">
       <HomeBtn/>
-        <h2 className="fw-bold text-center">إدارة الموظفين</h2>
+        <Title name="إدارة الموظفين" />
             <CreateBtn lunch={setShowAddEmployerForm} name="إضافة موظف" />
       </div>
 

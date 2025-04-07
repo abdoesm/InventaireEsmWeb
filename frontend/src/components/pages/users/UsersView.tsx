@@ -11,6 +11,8 @@ import ActionButtons from "../../common/ActionButtons";
 import useFetchUsers from "../../../services/user/useFetchUsers";
 import HomeBtn from "../../common/HomeBtn";
 import CreateBtn from "../../common/CreateBtn";
+import { Title } from "../../common/Title";
+import HeaderContainer from "../../common/HeaderContainer";
 
 
 const Users: React.FC = () => {
@@ -45,11 +47,11 @@ const Users: React.FC = () => {
 
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <HeaderContainer>
       <HomeBtn/>
-        <h2 className="fw-bold text-center">إدارة المستخدمين</h2>
-                            <CreateBtn  lunch={setShowAddUserForm} name="إضافة مستخدم" />
-      </div>
+      <Title name="إدارة المستخدمين" />
+      <CreateBtn  lunch={setShowAddUserForm} name="إضافة مستخدم" />
+      </HeaderContainer>
 
       {loading ? (
         <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>

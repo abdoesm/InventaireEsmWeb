@@ -10,6 +10,8 @@ import ActionButtons from "../../common/ActionButtons";
 import HomeBtn from "../../common/HomeBtn";
 import useCategories from "../../../services/categories/useCategories";
 import CreateBtn from "../../common/CreateBtn";
+import { Title } from "../../common/Title";
+import HeaderContainer from "../../common/HeaderContainer";
 
 const Categories: React.FC = () => {
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
@@ -41,12 +43,11 @@ const Categories: React.FC = () => {
 
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <HeaderContainer>
       <HomeBtn/>
-        <h2 className="fw-bold text-center">إدارة الفئات</h2>
-      
-                            <CreateBtn lunch={setShowAddForm} name="إضافة فئة" />
-      </div>
+      <Title name="إدارة الفئات" />
+      <CreateBtn lunch={setShowAddForm} name="إضافة فئة" />
+      </HeaderContainer>
 
       {loading ? (
         <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>

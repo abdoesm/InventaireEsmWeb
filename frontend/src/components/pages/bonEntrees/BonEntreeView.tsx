@@ -15,6 +15,8 @@ import useFornisseurs from "../../../services/fornisseurs/useFornisseurs";
 import SearchInput from "../../common/SearchInput";
 import useBonEntree from "../../../services/bonEntrees/useBonEntree";
 import CreateBtn from "../../common/CreateBtn";
+import { Title } from "../../common/Title";
+import HeaderContainer from "../../common/HeaderContainer";
 
 
 
@@ -79,17 +81,10 @@ const BonEntreeView: React.FC = () => {
 
   return (
     <>
-      {/* Header Section */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <HomeBtn />
-        <h2 className="fw-bold text-center flex-grow-1">إدارة وصول الاستلام</h2>
-      
-      <CreateBtn lunch={setShowAddBonEntreeForm} name="إضافة وصل استلام" />
-      </div>
-
-      {/* Search Input Field */}
-      <div className="mb-4">
-        <div className="input-group">
+   
+      <HeaderContainer>
+      <HomeBtn />
+      <Title name="إدارة وصول الاستلام" />
           <SearchInput
             type="text"
             className="form-control"
@@ -97,11 +92,8 @@ const BonEntreeView: React.FC = () => {
             value={searchQuery}
             onChange={handleSearch}
           />
-          <span className="input-group-text">
-            <FaSearch />
-          </span>
-        </div>
-      </div>
+      <CreateBtn lunch={setShowAddBonEntreeForm} name="إضافة وصل استلام" />
+    </HeaderContainer>
 
       {/* Table or Loading/Error Message */}
       {loading ? (
@@ -110,7 +102,6 @@ const BonEntreeView: React.FC = () => {
         <p className="text-center text-danger fw-bold">{error}</p>
       ) : (
         <DataTable
-          title="قائمة وصول الاستلام"
           columns={columns}
           data={filteredBonEntrees}
           pagination

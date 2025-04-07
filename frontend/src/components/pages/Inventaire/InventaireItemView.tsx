@@ -16,6 +16,8 @@ import useInventaireItems from "../../../services/Inventaire/useInventaireItem";
 import useEmployers from "../../../services/employers/useEmployers";
 import useFetchArticles from "../../../services/article/usefetchArticles";
 import CreateBtn from "../../common/CreateBtn";
+import { Title } from "../../common/Title";
+import HeaderContainer from "../../common/HeaderContainer";
 
 const InventaireItemView: React.FC = () => {
 
@@ -91,11 +93,12 @@ const { inventaireItems, loading, error, fetchInventaireItems } =useInventaireIt
 
   return (
     <>
+    <HeaderContainer>
       <HomeBtn />
-      <h2 className="fw-bold text-center">إدارة الجرد</h2>
-  
+      <Title name="إدارة الجرد" />
 
       <CreateBtn lunch={setShowAddInventaireItemForm} name="إضافة جرد" />
+      </HeaderContainer>
       {loading ? (
         <p className="text-center mt-5">جار التحميل...</p>
       ) : error ? (

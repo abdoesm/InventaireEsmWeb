@@ -13,23 +13,37 @@ import HomeBtn from "../../common/HomeBtn";
 import useEmployers from "../../../services/employers/useEmployers";
 import useBonRetour from "../../../services/bonRetours/useBonRetour";
 import CreateBtn from "../../common/CreateBtn";
-
+import { Title } from "../../common/Title";
+import HeaderContainer from "../../common/HeaderContainer";
+import SearchInput from "../../common/SearchInput";
 
 
 const BonRetourView: React.FC = () => {
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
 
  
   const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
+   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showAddBonRetourForm, setShowAddBonRetourForm] = useState<boolean>(false);
   const [showUpdateBonRetourForm, setShowUpdateBonRetourForm] = useState<boolean>(false);
   const [selectedBonRetour, setSelectedBonRetour] = useState<BonRetour | null>(null);
- 
-
 
 const {employers}= useEmployers();
 
- const {bonRetours,error,loading,fetchBonRetours}= useBonRetour();
 
+
+ const {bonRetours,error,loading,fetchBonRetours}= useBonRetour();
+ const filteredBonSorties = bonRetours.filter((bon) =>
+bon.return_reason?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+ bon.id?.toString().includes(searchQuery) ||
+ bon.date.includes(searchQuery) 
+ ||
+ employers.find(e => e.id === bon.id_employeur)?.fname.toLowerCase().includes(searchQuery.toLowerCase()) 
+
+ );
+ 
     const columns = [
       { 
         name: "المعرف", 
@@ -75,11 +89,19 @@ const {employers}= useEmployers();
     
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <HeaderContainer>
       <HomeBtn/>
-        <h2 className="fw-bold text-center">إدارة وصول الإرجاع </h2>
-                    <CreateBtn lunch={setShowAddBonRetourForm} name="إضافة وصل إرجاع" />
-      </div>
+      <Title name="إدارة وصول الإرجاع" />
+      <SearchInput
+            type="text"
+            className="form-control"
+            placeholder="ابحث برقم الوثيقة أو التاريخ أو المورد..."
+            value={searchQuery}
+            onChange={handleSearch}
+          />
+                <CreateBtn lunch={setShowAddBonRetourForm} name="إضافة وصل إرجاع" />
+
+      </HeaderContainer>
 
       {loading ? (
         <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>
@@ -89,7 +111,7 @@ const {employers}= useEmployers();
         <DataTable
           title="قائمة وصول الإرجاع"
           columns={columns}
-          data={bonRetours}
+          data={filteredBonSorties}
           pagination
           highlightOnHover
           responsive

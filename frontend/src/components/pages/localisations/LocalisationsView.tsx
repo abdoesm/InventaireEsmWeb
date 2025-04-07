@@ -11,6 +11,8 @@ import HomeBtn from "../../common/HomeBtn";
 import useLocation from "../../../services/localisations/useLocation";
 import useService from "../../../services/a_services/useServices";
 import CreateBtn from "../../common/CreateBtn";
+import { Title } from "../../common/Title";
+import HeaderContainer from "../../common/HeaderContainer";
 
 const LocalisationsView: React.FC = () => {
 
@@ -71,11 +73,11 @@ const LocalisationsView: React.FC = () => {
 
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <HeaderContainer>
       <HomeBtn/>
-        <h2 className="fw-bold text-center">إدارة المواقع</h2>
+        <Title  name="إدارة المواقع" />
                             <CreateBtn lunch={setShowAddForm} name="إضافة موقع" />
-      </div>
+      </HeaderContainer>
 
       {loading ? (
         <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>

@@ -11,6 +11,8 @@ import DeleteFournisseurForm from "./DeleteFournisseurForm";
 import HomeBtn from "../../common/HomeBtn";
 import useFornisseurs from "../../../services/fornisseurs/useFornisseurs";
 import CreateBtn from "../../common/CreateBtn";
+import { Title } from "../../common/Title";
+import HeaderContainer from "../../common/HeaderContainer";
 
 const FournisseurView: React.FC = () => {
  
@@ -23,12 +25,12 @@ const {fournisseurs,error,loading,fetchFournisseurs}=useFornisseurs();
 
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <HeaderContainer>
       <HomeBtn/>
-        <h2 className="fw-bold text-center">إدارة الموردين</h2>
-    
+    <Title    name="إدارة الموردين" />
                             <CreateBtn lunch={setShowAddForm} name="إضافة مورد" />
-      </div>
+          </HeaderContainer>
+    
 
       {loading ? (
         <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>

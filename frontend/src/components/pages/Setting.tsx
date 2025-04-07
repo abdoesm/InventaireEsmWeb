@@ -4,6 +4,7 @@ import { FaHome, FaDatabase, FaUsers, FaSignOutAlt } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { Bk_End_SRVR } from "../../configs/conf";
+import LogoutBtn from "../common/LogoutBtn";
 
 // ✅ Define Props Interface
 interface SettingProps {
@@ -73,11 +74,8 @@ const Setting: React.FC<SettingProps> = ({ logout }) => {
         </button>
       </div>
 
-      {/* Logout Button */}
-      <button onClick={handleLogout} className="btn btn-danger btn-sm position-fixed bottom-0 end-0 m-3 d-flex align-items-center shadow" style={{ width: "auto", whiteSpace: "nowrap" }}>
-        <FaSignOutAlt className="me-1" />
-        <span>تسجيل الخروج</span>
-      </button>
+ 
+      <LogoutBtn logout={handleLogout} />
 
 
     </div>

@@ -17,6 +17,8 @@ import useEmployers from "../../../services/employers/useEmployers";
 import useService from "../../../services/a_services/useServices";
 import useBonSortie from "../../../services/bonSorties/useBonSortie";
 import CreateBtn from "../../common/CreateBtn";
+import { Title } from "../../common/Title";
+import HeaderContainer from "../../common/HeaderContainer";
 
 
 
@@ -95,15 +97,9 @@ const BonSortieView: React.FC = () => {
 
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <HeaderContainer>
         <HomeBtn />
-        <h2 className="fw-bold text-center">إدارة وصول الخروج</h2>
-          <CreateBtn lunch={setShowAddBonSortieForm} name="إضافة وصل" />
-      </div>
-
-      {/* Search Input Field */}
-      <div className="mb-4">
-
+        <Title name="  إدارة وصول الخروج" />
         <SearchInput
           type="text"
           className="form-control"
@@ -111,8 +107,11 @@ const BonSortieView: React.FC = () => {
           value={searchQuery}
           onChange={handleSearch}
         />
+        <CreateBtn lunch={setShowAddBonSortieForm} name="إضافة وصل" />
+      </HeaderContainer>
 
-      </div>
+      {/* Search Input Field */}
+
 
 
       {loading ? (
@@ -145,8 +144,8 @@ const BonSortieView: React.FC = () => {
         />
       )}
 
-      
-    
+
+
 
 
       {showDeleteForm && selectedBonSortie && (

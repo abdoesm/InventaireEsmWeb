@@ -1,4 +1,5 @@
 import React, { ChangeEvent } from "react";
+import { FaSearch } from "react-icons/fa";
 
 interface InputProps {
   name?: string;
@@ -15,7 +16,9 @@ const SearchInput: React.FC<InputProps> = ({
   onChange,
   className = "form-control mb-2",
 }) => (
-  <form className="d-flex input-group w-auto ms-lg-3 my-3 my-lg-0">
+<>
+  <div>
+        <div className="input-group">
   <input
     type="search"
     className={className}
@@ -23,7 +26,13 @@ const SearchInput: React.FC<InputProps> = ({
     value={value}
     onChange={onChange} // Correctly passing the event
   />
-  </form>
+   <span className="input-group-text">
+     <FaSearch />
+  </span>
+
+  </div>
+  </div>
+</>
 );
 
 
