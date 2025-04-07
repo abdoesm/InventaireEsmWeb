@@ -10,6 +10,14 @@ interface Article {
     id_category: number;
     min_quantity: number;
 }
+export interface Adjustement {
+    id: number;
+    article_id: number;
+    adjustment_date: string;  // ISO format like "2024-04-07"
+    quantity: number;
+    adjustment_type: "ADD" | "REMOVE" | "UPDATE";  // optional union type (if consistent)
+  }
+  
 
 export class ArticleModel {
     async getAllArticlesNames(): Promise<string[]> {
@@ -33,6 +41,37 @@ export class ArticleModel {
             return [];
         }
     }
+   
+     
+    
+    async getAdjustments(): Promise<Adjustement[]> {
+        try {
+            console.log("getAdjustments model")
+            const query = `
+                SELECT 
+                    id,
+                    article_id, 
+                    adjustment_type, 
+                    quantity, 
+                    adjustment_date 
+                FROM stock_adjustment 
+                ORDER BY adjustment_date DESC;
+            `;
+            
+            const [rows] = await pool.query(query);
+    
+            // Ensure rows are returned correctly, as the type definition might not match
+            if (Array.isArray(rows)) {
+                return rows as Adjustement[];  // Cast to Adjustement[] type
+            }
+    
+            throw new Error("Unexpected database response");  // If rows is not an array, throw an error
+        } catch (error) {
+            console.error("Error fetching adjustments:", error);
+            throw new Error("Database query failed");  // Throwing a custom error for easier handling
+        }
+    }
+    
 
     async getArticleById(id: number): Promise<Article | null> {
         if (!id || isNaN(id)) {

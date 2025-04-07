@@ -22,6 +22,7 @@ export const getArticles = async (_req: Request, res: Response) => {
     }
 };
 
+
 export const getArticleById = async (req: Request, res: Response) => {
     try {
         const id = Number(req.params.id);
@@ -30,6 +31,7 @@ export const getArticleById = async (req: Request, res: Response) => {
         if (isNaN(id)) {
             console.warn(`Invalid article ID received: ${req.params.id}`);
              res.status(400).json({ error: "Invalid article ID" }); // ✅ Return immediately
+             return
         }
 
         const article = await articleModel.getArticleById(id);
@@ -37,6 +39,7 @@ export const getArticleById = async (req: Request, res: Response) => {
 
         if (!article) {
             res.status(404).json({ error: "Article not found" }); // ✅ Return immediately
+            return
         }
 
          res.json(article); // ✅ Explicit return
@@ -45,6 +48,7 @@ export const getArticleById = async (req: Request, res: Response) => {
 
         if (!res.headersSent) {  // ✅ Prevents duplicate responses
             res.status(500).json({ error: "Internal server error" });
+            return
         }
     }
 };
@@ -137,3 +141,35 @@ export const getTotalQuantitiesByArticle = async (_req: Request, res: Response) 
         res.status(500).json({ error: "Failed to retrieve total quantities." });
     }
 }
+
+
+
+
+export const getAdjustments = async (req: Request, res: Response) => {
+    try {
+        console.log("getAdjustments controller" + req.body)
+        // Fetch all adjustments from the database
+        const adjustments = await articleModel.getAdjustments();
+
+        if (adjustments.length > 0) {
+            // Send adjustments to the client
+            res.json(adjustments);
+            return
+        }
+
+        // If no adjustments are found, return a 404 response
+         res.status(404).json({ message: "No adjustments found" });
+         return
+    } catch (err) {
+        console.error("Error fetching adjustments:", err);
+        // If headers aren't sent, send a 500 error
+        if (!res.headersSent) {
+           res.status(500).json({ message: "Failed to fetch adjustments" });
+           return
+        }
+    }
+};
+
+  
+
+

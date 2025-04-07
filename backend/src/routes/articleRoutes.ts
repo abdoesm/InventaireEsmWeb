@@ -2,7 +2,8 @@
 import express from "express";
 
 import { verifyToken } from "../middleware/auth";
-import { getAllArticlesNames, getArticles,  addArticle, addArticles, updateArticle, deleteArticle, getArticleIdByName, getTotalQuantityByArticleId, getTotalQuantitiesByArticle, getArticleById } from "../controllers/articleController";
+import {getAllArticlesNames, getArticles,  addArticle, addArticles, updateArticle,
+     deleteArticle, getArticleIdByName, getTotalQuantityByArticleId, getTotalQuantitiesByArticle, getArticleById, getAdjustments } from "../controllers/articleController";
 
 const router = express.Router(); 
 
@@ -15,5 +16,10 @@ router.delete("/:id", verifyToken, deleteArticle);
 router.get("/name/:name", getArticleIdByName);
 router.get("/quantity/:id", getTotalQuantityByArticleId);
 router.get("/quantities", getTotalQuantitiesByArticle);
+router.get("/adjustments",getAdjustments);
+
+// put this function last alwais
 router.get("/:id", getArticleById);
+
+
 export default router;
