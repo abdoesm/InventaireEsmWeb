@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import {  FaPlus } from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import AddCategoryForm from "./AddCategoryForm";
@@ -10,10 +9,9 @@ import { Category } from "../../../models/categoryTypes";
 import ActionButtons from "../../common/ActionButtons";
 import HomeBtn from "../../common/HomeBtn";
 import useCategories from "../../../services/categories/useCategories";
+import CreateBtn from "../../common/CreateBtn";
 
 const Categories: React.FC = () => {
-  const navigate = useNavigate();
-
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
   const [showUpdateForm, setShowUpdateForm] = useState<boolean>(false);
   const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
@@ -46,8 +44,8 @@ const Categories: React.FC = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
       <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة الفئات</h2>
-         <button className="btn btn-success px-4 py-2" onClick={() => setShowAddForm(true)}>
-                            <FaPlus className="me-2" /> إضافة فئة          </button>
+      
+                            <CreateBtn lunch={setShowAddForm} name="إضافة فئة" />
       </div>
 
       {loading ? (

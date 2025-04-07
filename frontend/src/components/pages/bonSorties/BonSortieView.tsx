@@ -16,6 +16,7 @@ import SearchInput from "../../common/SearchInput";
 import useEmployers from "../../../services/employers/useEmployers";
 import useService from "../../../services/a_services/useServices";
 import useBonSortie from "../../../services/bonSorties/useBonSortie";
+import CreateBtn from "../../common/CreateBtn";
 
 
 
@@ -97,8 +98,7 @@ const BonSortieView: React.FC = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <HomeBtn />
         <h2 className="fw-bold text-center">إدارة وصول الخروج</h2>
-        <button className="btn btn-success px-4 py-2" onClick={() => setShowAddBonSortieForm(true)}>
-          <FaPlus className="me-2" /> إضافة وصل          </button>
+          <CreateBtn lunch={setShowAddBonSortieForm} name="إضافة وصل" />
       </div>
 
       {/* Search Input Field */}

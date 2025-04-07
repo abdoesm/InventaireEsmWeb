@@ -40,20 +40,20 @@ const SelectedArticlesTable = <T extends Entree | Sortie | Retour>({
     const totalTTC = useMemo(() => totalHT + tvaAmount, [totalHT, tvaAmount]);
 
     if (articles.length === 0) {
-        return <p>جاري تحميل المقالات...</p>;
+        return <p>جاري تحميل المواد...</p>;
     }
 
     return (
         <div className="mb-3">
-            <h5>📌 المقالات المحددة</h5>
+            <h5>📌 المواد المحددة</h5>
             {selectedItems.length === 0 ? (
-                <p className="text-muted">لم يتم تحديد أي مقالات.</p>
+                <p className="text-muted">لم يتم تحديد أي مواد.</p>
             ) : (
                 <div style={{ maxHeight: "150px",  overflowX: "auto" }}>
                     <table className="table  text-center">
                         <thead className="table-light">
                             <tr>
-                                <th style={{ width: "30%" }}>المقال</th>
+                                <th style={{ width: "30%" }}>العنصر</th>
                                 <th style={{ width: "15%" }}>الكمية</th>
                                 {hasEntriesWithUnitPrice && <th style={{ width: "15%" }}>سعر الوحدة</th>}
                                 {hasEntriesWithUnitPrice && <th style={{ width: "20%" }}>المبلغ HT</th>}

@@ -11,60 +11,25 @@ import { Service } from "../../../models/serviceTypes";
 import { Employer } from "../../../models/employerType";
 import ActionButtons from "../../common/ActionButtons";
 import HomeBtn from "../../common/HomeBtn";
+import CreateBtn from "../../common/CreateBtn";
+import useService from "../../../services/a_services/useServices";
+import useEmployers from "../../../services/employers/useEmployers";
 
 
 
 const Services: React.FC = () => {
-  const [services, setServices] = useState<Service[]>([]);
-  const [employers, setEmployers] = useState<Employer[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+ 
+
+
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
   const [showUpdateForm, setShowUpdateForm] = useState<boolean>(false);
   const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
 
-  const fetchServices = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("No token found. Please log in.");
-        setLoading(false);
-        return;
-      }
+ const {services,fetchServices , loading,error}= useService(); // Custom hook to manage services
+const {employers}= useEmployers(); // Custom hook to manage employers
 
-      const response = await fetch(`${Bk_End_SRVR}:5000/api/services`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
 
-      if (!response.ok) throw new Error("Failed to fetch services.");
-
-      const data: Service[] = await response.json();
-      setServices(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred.");
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    fetchServices();
-  }, []);
-  useEffect(() => {
-    const fetchEmployers = async () => {
-      try {
-        const response = await fetch(`${Bk_End_SRVR}:5000/api/employers`);
-        if (!response.ok) throw new Error("Failed to fetch employers");
-        const data = await response.json();
-        setEmployers(data);
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchEmployers();
-  }, []);
   const columns = [
     { name: "المعرف", selector: (row: Service) => row.id, sortable: true },
     { name: "الاسم", selector: (row: Service) => row.name, sortable: true },
@@ -108,10 +73,8 @@ const Services: React.FC = () => {
         {/* Title */}
         <h2 className="fw-bold text-center flex-grow-1 text-primary">إدارة المصالح</h2>
         
-        {/* Add Service Button */}
-        <button className="btn btn-success px-4 py-2" onClick={() => setShowAddForm(true)}>
-          <FaPlus className="me-2" /> إضافة مصلحة
-        </button>
+
+        <CreateBtn lunch={setShowAddForm} name="إضافة مصلحة" />
       </div>
   
       {/* Display Data Table */}

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Bk_End_SRVR } from "../../../configs/conf";
+
 import AddBonRetourForm from "./AddBonRetourForm";
 import UpdateBonRetourForm from "./UpdateBonRetourForm";
 import DeleteBonRetourForm from "./DeleteBonRetourForm";
@@ -12,6 +12,7 @@ import { BonRetour } from "../../../models/bonRetourTypes";
 import HomeBtn from "../../common/HomeBtn";
 import useEmployers from "../../../services/employers/useEmployers";
 import useBonRetour from "../../../services/bonRetours/useBonRetour";
+import CreateBtn from "../../common/CreateBtn";
 
 
 
@@ -77,8 +78,7 @@ const {employers}= useEmployers();
       <div className="d-flex justify-content-between align-items-center mb-4">
       <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة وصول الإرجاع </h2>
-         <button className="btn btn-success px-4 py-2" onClick={() => setShowAddBonRetourForm(true)}>
-                    <FaPlus className="me-2" /> إضافة وصل          </button>
+                    <CreateBtn lunch={setShowAddBonRetourForm} name="إضافة وصل إرجاع" />
       </div>
 
       {loading ? (

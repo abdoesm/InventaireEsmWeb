@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { FaHome, FaPlus, FaUserPlus } from "react-icons/fa";
+import React, { useState } from "react";
+import { FaPlus } from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import AddEmployerForm from "./AddEmployerForm";
 import UpdateEmployerForm from "./UpdateEmployerForm";
 import DeleteEmployerForm from "./DeleteEmployerForm";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Bk_End_SRVR } from "../../../configs/conf";
 import { Employer } from "../../../models/employerType";
 import ActionButtons from "../../common/ActionButtons";
 import HomeBtn from "../../common/HomeBtn";
 import useEmployers from "../../../services/employers/useEmployers";
+import CreateBtn from "../../common/CreateBtn";
 
 
 const Employers: React.FC = () => {
@@ -68,8 +67,7 @@ const Employers: React.FC = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
       <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة الموظفين</h2>
-         <button className="btn btn-success px-4 py-2" onClick={() => setShowAddEmployerForm(true)}>
-                    <FaPlus className="me-2" /> إضافة موظف         </button>
+            <CreateBtn lunch={setShowAddEmployerForm} name="إضافة موظف" />
       </div>
 
       {loading ? (

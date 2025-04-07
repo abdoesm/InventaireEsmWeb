@@ -14,6 +14,7 @@ import { BonEntree } from "../../../models/BonEntreeTypes";
 import useFornisseurs from "../../../services/fornisseurs/useFornisseurs";
 import SearchInput from "../../common/SearchInput";
 import useBonEntree from "../../../services/bonEntrees/useBonEntree";
+import CreateBtn from "../../common/CreateBtn";
 
 
 
@@ -82,12 +83,8 @@ const BonEntreeView: React.FC = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <HomeBtn />
         <h2 className="fw-bold text-center flex-grow-1">إدارة وصول الاستلام</h2>
-        <button
-          className="btn btn-success d-flex align-items-center px-4"
-          onClick={() => setShowAddBonEntreeForm(true)}
-        >
-          <FaPlus className="me-2" /> إضافة وصل استلام
-        </button>
+      
+      <CreateBtn lunch={setShowAddBonEntreeForm} name="إضافة وصل استلام" />
       </div>
 
       {/* Search Input Field */}

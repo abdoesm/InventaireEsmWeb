@@ -10,6 +10,7 @@ import { User } from "../../../models/userType";
 import ActionButtons from "../../common/ActionButtons";
 import useFetchUsers from "../../../services/user/useFetchUsers";
 import HomeBtn from "../../common/HomeBtn";
+import CreateBtn from "../../common/CreateBtn";
 
 
 const Users: React.FC = () => {
@@ -47,8 +48,7 @@ const Users: React.FC = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
       <HomeBtn/>
         <h2 className="fw-bold text-center">إدارة المستخدمين</h2>
-          <button className="btn btn-success px-4 py-2" onClick={() => setShowAddUserForm(true)}>
-                            <FaPlus className="me-2" /> إضافة مستخدم         </button>
+                            <CreateBtn  lunch={setShowAddUserForm} name="إضافة مستخدم" />
       </div>
 
       {loading ? (
