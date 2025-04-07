@@ -9,6 +9,7 @@ import { Adjustement } from "../../../models/adjustementTypes";
 import { Article } from "../../../models/articleTypes";
 import useFetchArticles from "../../../services/article/usefetchArticles";
 import useFetchAdjustements from "../../../services/article/useFetchAdjustements";
+import AddAdjustementForm from "./AddAdjustementForm";
 
 const AdjustementView: React.FC = () => {
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
@@ -16,8 +17,8 @@ const AdjustementView: React.FC = () => {
   const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
   const [selectedAdjustement, setSelectedAdjustement] = useState<Adjustement | null>(null);
 
-  const { articles, loading: loadingArticles, error: articlesError } = useFetchArticles();
-  const { adjustments, loading: loadingAdjustments, error: adjustmentsError } = useFetchAdjustements();  // Using the new hook
+  const { articles, loading: loadingArticles, error: articlesError  } = useFetchArticles();
+  const { adjustments, loading: loadingAdjustments, error: adjustmentsError  ,fetchAdjustments} = useFetchAdjustements();  // Using the new hook
 
   useEffect(() => {
     // The adjustments are fetched when the component mounts
@@ -102,6 +103,10 @@ const AdjustementView: React.FC = () => {
           responsive
         />
       )}
+
+{showAddForm && <AddAdjustementForm fetchAdjustments={fetchAdjustments}  onClose={() => setShowAddForm(false)} />}
+
+    
     </div>
   );
 };
