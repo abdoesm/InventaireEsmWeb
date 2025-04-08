@@ -170,6 +170,56 @@ export const getAdjustments = async (req: Request, res: Response) => {
     }
 };
 
+export const addAdjustment = async (req: Request, res: Response) => {
+    try {
+        console.log("addAdjustment controller" + req.body)
+        const adjustment = await articleModel.addAdjustment(req.body);
+        res.status(201).json(adjustment);
+    } catch (error) {
+        console.error("Error adding adjustment:", error);
+        res.status(500).json({ message: "Failed to add adjustment" });
+    }
+};
+export const updateAdjustment = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const updated = await articleModel.updateAdjustment({
+            ...req.body,
+            id: Number(id),
+         });
+        if (!updated) {
+          res.status(404).json({ message: "Adjustment not found" });
+          return 
+        }else { 
+          res.status(200).json({ message: "Adjustment updated successfully" });
+          return 
+        }
+
+    } catch (error) {
+        console.error("Error updating adjustment:", error);
+        res.status(500).json({ message: "Failed to update adjustment" });
+    }
+}
+
+export const deleteAdjustment = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const deleted = await articleModel.deleteAdjustment(Number(id));
+
+        if (!deleted) {
+            res.status(404).json({ message: "Adjustment not found" });
+            return;
+        } else {
+            res.status(200).json({ message: "Adjustment deleted successfully" });
+            return;
+        }
+    } catch (error) {
+        console.error("Error deleting adjustment:", error);
+        res.status(500).json({ message: "Failed to delete adjustment" });
+    }
+};
+
+
   
 
 

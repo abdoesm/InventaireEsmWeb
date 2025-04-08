@@ -10,6 +10,8 @@ import { Article } from "../../../models/articleTypes";
 import useFetchArticles from "../../../services/article/usefetchArticles";
 import useFetchAdjustements from "../../../services/article/useFetchAdjustements";
 import AddAdjustementForm from "./AddAdjustementForm";
+import UpdateAdjustementForm from "./UpdateAdjustementForm";
+import DeleteAdjustmentForm from "./DeleteAdjustementForm";
 
 const AdjustementView: React.FC = () => {
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
@@ -105,6 +107,22 @@ const AdjustementView: React.FC = () => {
       )}
 
 {showAddForm && <AddAdjustementForm fetchAdjustments={fetchAdjustments}  onClose={() => setShowAddForm(false)} />}
+
+{showUpdateForm && selectedAdjustement && (
+  <UpdateAdjustementForm
+    fetchAdjustments={fetchAdjustments}
+    onClose={() => setShowUpdateForm(false)}
+    adjustment={selectedAdjustement}
+  />
+)}
+
+{showDeleteForm && selectedAdjustement && (
+        <DeleteAdjustmentForm
+          adjustment_id={selectedAdjustement.id}
+          fetchAdjustments={fetchAdjustments}
+          onClose={() => setShowDeleteForm(false)}
+        />
+      )}
 
     
     </div>

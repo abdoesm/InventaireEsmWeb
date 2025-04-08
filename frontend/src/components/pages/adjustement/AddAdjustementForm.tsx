@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Bk_End_SRVR } from "../../../configs/conf"; // Assuming this is your backend URL configuration
 import Modal from "../../common/Modal"; // Modal component for wrapping the form
 import Input from "../../common/Input"; // Input component for handling inputs
@@ -8,6 +8,7 @@ import { FaPlus } from "react-icons/fa"; // Icon for adding new adjustment
 import SearchInput from "../../common/SearchInput";
 import ArticleSelection from "../../common/ArticleSelection";
 import useFetchArticles from "../../../services/article/usefetchArticles";
+import { checkAuth, UserType } from "../../../App";
 
 type Props = {
   onClose: () => void;
@@ -18,6 +19,7 @@ const AddAdjustementForm: React.FC<Props> = ({ onClose, fetchAdjustments }) => {
   const [quantity, setQuantity] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [adjustmentType, setAdjustmentType] = useState<string>("increase");
+    const [user, setUser] = useState<UserType>();
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [adjustmentDate, setAdjustmentDate] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
@@ -28,9 +30,12 @@ const AddAdjustementForm: React.FC<Props> = ({ onClose, fetchAdjustments }) => {
     article.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleArticleSelect = (article: Article) => {
-    setSelectedArticle(article);
-  };
+  useEffect(() => {
+         const authenticatedUser = checkAuth();
+         console.log("Authenticated User:", authenticatedUser);
+         setUser(authenticatedUser);
+     }, []);
+     
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +49,7 @@ const AddAdjustementForm: React.FC<Props> = ({ onClose, fetchAdjustments }) => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${Bk_End_SRVR}:5000/api/adjustments`, {
+      const response = await fetch(`${Bk_End_SRVR}:5000/api/articles/adjustments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -53,6 +58,7 @@ const AddAdjustementForm: React.FC<Props> = ({ onClose, fetchAdjustments }) => {
         body: JSON.stringify({
           article_id: selectedArticle.id,
           quantity,
+          user_id: user?.id,
           adjustment_type: adjustmentType,
           adjustment_date: adjustmentDate,
         }),

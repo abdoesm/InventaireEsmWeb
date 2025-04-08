@@ -1,6 +1,6 @@
 import { ResultSetHeader } from "mysql2";
 import pool from "../config/db";
-
+import { format } from 'date-fns';
 interface Article {
     id?: number;
     name: string;
@@ -13,6 +13,7 @@ interface Article {
 export interface Adjustement {
     id: number;
     article_id: number;
+    user_id: number;  // optional if user_id is not always present
     adjustment_date: string;  // ISO format like "2024-04-07"
     quantity: number;
     adjustment_type: "ADD" | "REMOVE" | "UPDATE";  // optional union type (if consistent)
@@ -214,6 +215,75 @@ export class ArticleModel {
             return 0;
         }
     }
+
+    async addAdjustment(adjustment: Adjustement): Promise<boolean> {
+        try {
+            console.log("Adding adjustment:", adjustment);
+            const query = `
+                INSERT INTO stock_adjustment (article_id, adjustment_date,user_id, quantity, adjustment_type) 
+                VALUES (?, ?, ?,?, ?)`;
+            const [result] = await pool.execute(query, [
+                adjustment.article_id,
+                adjustment.adjustment_date,
+                adjustment.user_id,
+                adjustment.quantity,
+                adjustment.adjustment_type,
+            ]);
+            return (result as ResultSetHeader).affectedRows > 0;
+        } catch (error) {
+            console.error("Error adding adjustment:", error);
+            return false;
+        }
+    }
+
+    async updateAdjustment(adjustment: Adjustement): Promise<boolean> {
+        try {
+              const formattedDate = adjustment.adjustment_date
+                            ? format(new Date(adjustment.adjustment_date), 'yyyy-MM-dd HH:mm:ss')
+                            : null;
+            console.log("Updating adjustment:", adjustment);
+            const query = `
+                UPDATE stock_adjustment 
+                SET article_id = ?, 
+                    adjustment_date = ?, 
+                    user_id = ?, 
+                    quantity = ?, 
+                    adjustment_type = ?
+                WHERE id = ?`;
+    
+            const [result] = await pool.execute(query, [
+                adjustment.article_id,
+                formattedDate, // Use the formatted date
+                adjustment.user_id,
+                adjustment.quantity,
+                adjustment.adjustment_type,
+                adjustment.id, // Don't forget the ID for WHERE condition
+            ]);
+    
+            return (result as ResultSetHeader).affectedRows > 0;
+        } catch (error) {
+            console.error("Error updating adjustment:", error);
+            return false;
+        }
+    }
+
+    
+    async deleteAdjustment(id: number): Promise<boolean> {
+        try {
+            console.log("Deleting adjustment with ID:", id);
+            const query = `
+                DELETE FROM stock_adjustment
+                WHERE id = ?`;
+    
+            const [result] = await pool.execute(query, [id]);
+    
+            return (result as ResultSetHeader).affectedRows > 0;
+        } catch (error) {
+            console.error("Error deleting adjustment:", error);
+            return false;
+        }
+    }
+    
     
     async getTotalQuantityByArticleId(articleId: number): Promise<number> {
         try {
