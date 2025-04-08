@@ -5,22 +5,38 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import ActionButtons from "../../common/ActionButtons";
 import HomeBtn from "../../common/HomeBtn";
 import { Adjustement } from "../../../models/adjustementTypes";
-  // Now using the new hook
+// Now using the new hook
 import { Article } from "../../../models/articleTypes";
 import useFetchArticles from "../../../services/article/usefetchArticles";
 import useFetchAdjustements from "../../../services/article/useFetchAdjustements";
 import AddAdjustementForm from "./AddAdjustementForm";
 import UpdateAdjustementForm from "./UpdateAdjustementForm";
 import DeleteAdjustmentForm from "./DeleteAdjustementForm";
+import HeaderContainer from "../../common/HeaderContainer";
+import { Title } from "../../common/Title";
+import CreateBtn from "../../common/CreateBtn";
+import SearchInput from "../../common/SearchInput";
 
 const AdjustementView: React.FC = () => {
   const [showAddForm, setShowAddForm] = useState<boolean>(false);
   const [showUpdateForm, setShowUpdateForm] = useState<boolean>(false);
+    const [searchQuery, setSearchQuery] = useState<string>("");
+  
   const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
   const [selectedAdjustement, setSelectedAdjustement] = useState<Adjustement | null>(null);
 
-  const { articles, loading: loadingArticles, error: articlesError  } = useFetchArticles();
-  const { adjustments, loading: loadingAdjustments, error: adjustmentsError  ,fetchAdjustments} = useFetchAdjustements();  // Using the new hook
+  const { articles, loading: loadingArticles, error: articlesError } = useFetchArticles();
+  const { adjustments, loading: loadingAdjustments, error: adjustmentsError, fetchAdjustments } = useFetchAdjustements();  // Using the new hook
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const filteredAdjustments = adjustments.filter((adjustment) =>
+    adjustment.id.toString().includes(searchQuery) ||
+    adjustment.adjustment_date.includes(searchQuery) ||
+    adjustment.adjustment_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    articles.find(article => article.id === adjustment.article_id)?.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     // The adjustments are fetched when the component mounts
@@ -41,7 +57,7 @@ const AdjustementView: React.FC = () => {
       },
       sortable: true,
     },
-    { name: "النوع", selector: (row: Adjustement) => row.adjustment_type ?? "غير متوفر"  },
+    { name: "النوع", selector: (row: Adjustement) => row.adjustment_type ?? "غير متوفر" },
     {
       name: "الكمية",
       selector: (row: Adjustement) => row.quantity ?? 0,
@@ -82,14 +98,19 @@ const AdjustementView: React.FC = () => {
 
 
   return (
-    <div className="container mt-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
+    <>
+    <HeaderContainer>
         <HomeBtn />
-        <h3 className="text-center">إدارة التعديلات</h3>
-        <button className="btn btn-success" onClick={() => setShowAddForm(true)}>
-          <FaPlus /> إضافة تعديل
-        </button>
-      </div>
+        <Title name="إدارة التعديلات" />
+        <SearchInput
+            type="text"
+            className="form-control"
+            placeholder="ابحث بالاسم أو النوع او المعرف  أو التاريخ  ..."
+            value={searchQuery}
+            onChange={handleSearch}
+          />
+        <CreateBtn lunch={setShowAddForm} name="إضافة تعديل" />
+        </HeaderContainer>
 
       {loadingAdjustments || loadingArticles ? (
         <p className="text-center text-secondary">جارٍ تحميل البيانات...</p>
@@ -98,7 +119,7 @@ const AdjustementView: React.FC = () => {
       ) : (
         <DataTable
           columns={columns}
-          data={adjustments}
+          data={filteredAdjustments}
           progressPending={loadingAdjustments}
           pagination
           highlightOnHover
@@ -106,17 +127,17 @@ const AdjustementView: React.FC = () => {
         />
       )}
 
-{showAddForm && <AddAdjustementForm fetchAdjustments={fetchAdjustments}  onClose={() => setShowAddForm(false)} />}
+      {showAddForm && <AddAdjustementForm fetchAdjustments={fetchAdjustments} onClose={() => setShowAddForm(false)} />}
 
-{showUpdateForm && selectedAdjustement && (
-  <UpdateAdjustementForm
-    fetchAdjustments={fetchAdjustments}
-    onClose={() => setShowUpdateForm(false)}
-    adjustment={selectedAdjustement}
-  />
-)}
+      {showUpdateForm && selectedAdjustement && (
+        <UpdateAdjustementForm
+          fetchAdjustments={fetchAdjustments}
+          onClose={() => setShowUpdateForm(false)}
+          adjustment={selectedAdjustement}
+        />
+      )}
 
-{showDeleteForm && selectedAdjustement && (
+      {showDeleteForm && selectedAdjustement && (
         <DeleteAdjustmentForm
           adjustment_id={selectedAdjustement.id}
           fetchAdjustments={fetchAdjustments}
@@ -124,8 +145,8 @@ const AdjustementView: React.FC = () => {
         />
       )}
 
-    
-    </div>
+
+    </>
   );
 };
 
