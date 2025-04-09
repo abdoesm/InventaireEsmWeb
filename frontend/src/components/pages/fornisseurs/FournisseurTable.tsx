@@ -11,8 +11,9 @@ interface Props {
 
 const FournisseurTable: React.FC<Props> = ({ fournisseurs, onEdit, onDelete, onAddition }) => {
   const columns = [
-    { name: "المعرف", selector: (row: Fournisseur) => row.id, sortable: true },
-    { name: "الاسم", selector: (row: Fournisseur) => row.name, sortable: true },
+    { name: "المعرف", selector: (row: Fournisseur) => row.id, sortable: true , maxWidth: "10px"},
+    { name: "الاسم", selector: (row: Fournisseur) => row.name, sortable: true  ,  minWidth: "300px",
+      maxWidth: "520px", },
     { name: "السجل التجاري", selector: (row: Fournisseur) => row.RC, sortable: true },
     { name: "NIF", selector: (row: Fournisseur) => row.NIF, sortable: true },
     { name: "AI", selector: (row: Fournisseur) => row.AI, sortable: true },
@@ -38,8 +39,8 @@ const FournisseurTable: React.FC<Props> = ({ fournisseurs, onEdit, onDelete, onA
   ];
 
   return (
+    <div dir="rtl" >
     <DataTable
-      title="قائمة الموردين"
       columns={columns}
       data={fournisseurs}
       pagination
@@ -50,6 +51,7 @@ const FournisseurTable: React.FC<Props> = ({ fournisseurs, onEdit, onDelete, onA
       fixedHeaderScrollHeight="600px"
       persistTableHead
     />
+     </div>
   );
 };
 

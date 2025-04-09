@@ -29,6 +29,7 @@ const AddAdjustementForm: React.FC<Props> = ({ onClose, fetchAdjustments }) => {
   const filteredArticles = articles.filter(article =>
     article.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+ 
 
   useEffect(() => {
          const authenticatedUser = checkAuth();
