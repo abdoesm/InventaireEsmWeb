@@ -339,28 +339,51 @@ export class ArticleModel {
             console.log("getTotalQuantitiesByArticle model");
     
             const query = `
-                SELECT 
-                    a.id AS article_id,
-                    COALESCE(SUM(e.quantity), 0) AS total_entree,
-                    COALESCE(SUM(s.quantity), 0) AS total_sortie,
-                    COALESCE(SUM(r.quantity), 0) AS total_retour,
-                    COALESCE(SUM(CASE WHEN sa.adjustment_type = 'increase' THEN sa.quantity ELSE 0 END), 0) -
-                    COALESCE(SUM(CASE WHEN sa.adjustment_type = 'decrease' THEN sa.quantity ELSE 0 END), 0) AS net_adjustment,
-                    
-                    -- Calculate final stock directly in the query
-                    (COALESCE(SUM(e.quantity), 0) 
-                    - COALESCE(SUM(s.quantity), 0) 
-                    + COALESCE(SUM(r.quantity), 0) 
-                    + (COALESCE(SUM(CASE WHEN sa.adjustment_type = 'increase' THEN sa.quantity ELSE 0 END), 0) 
-                       - COALESCE(SUM(CASE WHEN sa.adjustment_type = 'decrease' THEN sa.quantity ELSE 0 END), 0))) AS total_quantity
-    
-                FROM article a
-                LEFT JOIN entree e ON e.id_article = a.id
-                LEFT JOIN sortie s ON s.id_article = a.id
-                LEFT JOIN retour r ON r.id_article = a.id
-                LEFT JOIN stock_adjustment sa ON sa.article_id = a.id
-                GROUP BY a.id
-                ORDER BY total_quantity DESC, a.id ASC;
+               SELECT 
+    a.id AS article_id,
+    COALESCE(e.total_entree, 0) AS total_entree,
+    COALESCE(s.total_sortie, 0) AS total_sortie,
+    COALESCE(r.total_retour, 0) AS total_retour,
+    COALESCE(sa.increase_qty, 0) - COALESCE(sa.decrease_qty, 0) AS net_adjustment,
+
+    -- Final stock calculation
+    (
+        COALESCE(e.total_entree, 0)
+        - COALESCE(s.total_sortie, 0)
+        + COALESCE(r.total_retour, 0)
+        + (COALESCE(sa.increase_qty, 0) - COALESCE(sa.decrease_qty, 0))
+    ) AS total_quantity
+
+FROM article a
+LEFT JOIN (
+    SELECT id_article, SUM(quantity) AS total_entree
+    FROM entree
+    GROUP BY id_article
+) e ON e.id_article = a.id
+
+LEFT JOIN (
+    SELECT id_article, SUM(quantity) AS total_sortie
+    FROM sortie
+    GROUP BY id_article
+) s ON s.id_article = a.id
+
+LEFT JOIN (
+    SELECT id_article, SUM(quantity) AS total_retour
+    FROM retour
+    GROUP BY id_article
+) r ON r.id_article = a.id
+
+LEFT JOIN (
+    SELECT 
+        article_id,
+        SUM(CASE WHEN adjustment_type = 'increase' THEN quantity ELSE 0 END) AS increase_qty,
+        SUM(CASE WHEN adjustment_type = 'decrease' THEN quantity ELSE 0 END) AS decrease_qty
+    FROM stock_adjustment
+    GROUP BY article_id
+) sa ON sa.article_id = a.id
+
+ORDER BY total_quantity DESC, a.id ASC;
+
             `;
     
             const [rows] = await pool.query(query);
