@@ -22,6 +22,8 @@ const AddAdjustementForm: React.FC<Props> = ({ onClose, fetchAdjustments }) => {
     const [user, setUser] = useState<UserType>();
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [adjustmentDate, setAdjustmentDate] = useState<string>("");
+  const [availableQuantity, setAvailableQuantity] = useState<number>(0);
+
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);  // Added state to track submitting
   const { articles } = useFetchArticles();
@@ -37,6 +39,14 @@ const AddAdjustementForm: React.FC<Props> = ({ onClose, fetchAdjustments }) => {
          setUser(authenticatedUser);
      }, []);
      
+     useEffect(() => {
+      if (selectedArticle) {
+        const article = articles.find((a) => a.id === selectedArticle.id);
+        if (article) {
+          setAvailableQuantity(article.totalQuantity ?? 0);
+        }
+      }
+    }, [selectedArticle, articles]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +55,16 @@ const AddAdjustementForm: React.FC<Props> = ({ onClose, fetchAdjustments }) => {
       setError("يرجى اختيار المقال");
       return;
     }
-
+    console.log("Available Quantity:", availableQuantity);
+    if (adjustmentType === "decrease" && quantity > availableQuantity) {
+      setError("الكمية المدخلة أكبر من الكمية المتوفرة للعنصر.");
+      return;
+    }
+  if(quantity <= 0) {
+      setError("الكمية يجب أن تكون أكبر من 0.");
+      return;
+    }
+ 
     setIsSubmitting(true); // Start submitting
 
     try {
@@ -78,11 +97,7 @@ const AddAdjustementForm: React.FC<Props> = ({ onClose, fetchAdjustments }) => {
 
   return (
     <Modal isOpen={true} onClose={onClose} title="إضافة تعديل جديد">
-      {error && (
-        <div className="error-container">
-          <p className="text-danger">{`حدث خطأ: ${error}`}</p>
-        </div>
-      )}
+    
       <form onSubmit={handleSubmit}>
 
 
@@ -180,6 +195,11 @@ const AddAdjustementForm: React.FC<Props> = ({ onClose, fetchAdjustments }) => {
           </button>
         </div>
       </form>
+      {error && (
+        <div className="error-container">
+          <p className="text-danger">{`حدث خطأ: ${error}`}</p>
+        </div>
+      )}
     </Modal>
   );
 };

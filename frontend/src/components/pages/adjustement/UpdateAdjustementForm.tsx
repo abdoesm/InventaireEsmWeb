@@ -39,11 +39,15 @@ const UpdateAdjustementForm: React.FC<Props> = ({ onClose, fetchAdjustments, adj
 
     setIsSubmitting(true);
     setError(null);
-
+   
     // Check if the quantity for decrease is valid
     if (adjustmentType === "decrease" && quantity > availableQuantity) {
-      setError("الكمية المدخلة أكبر من الكمية المتوفرة للمقال.");
+      setError("الكمية المدخلة أكبر من الكمية المتوفرة للعنصر.");
       setIsSubmitting(false);
+      return;
+    }
+    if(quantity <= 0) {
+      setError("الكمية يجب أن تكون أكبر من 0.");
       return;
     }
 
@@ -105,8 +109,8 @@ const UpdateAdjustementForm: React.FC<Props> = ({ onClose, fetchAdjustments, adj
         {error && <div className="text-red-500">{error}</div>}
 
         <div className="modal-footer">
-          <button type="submit" disabled={isSubmitting} className="btn btn-primary">
-            {isSubmitting ? "جاري التحديث..." : "تعديل"}
+          <button type="submit" className="btn btn-primary">
+             تعديل
           </button>
           <button type="button" onClick={onClose} className="btn btn-secondary">
             إلغاء
