@@ -94,6 +94,10 @@ const AddBonEntreeForm: React.FC<Props> = ({ onClose, fetchBonEntrees }) => {
             setError("الرجاء إضافة مقالات.");
             return;
         }
+        if(selectedEntrees.some(entree => entree.quantity <= 0)) {
+            setError("الرجاء إدخال كمية أكبر من 0.");
+            return;
+        }
 
         try {
             const token = localStorage.getItem("token");

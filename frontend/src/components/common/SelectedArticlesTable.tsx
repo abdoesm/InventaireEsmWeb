@@ -102,13 +102,13 @@ const SelectedArticlesTable = <T extends Entree | Sortie | Retour>({
                     {hasEntriesWithUnitPrice && (
                         <div className="text-end mt-3">
                             <p>
-                                <strong>💰 المبلغ HT:</strong> {totalHT.toFixed(2)} DA
+                                <strong> المبلغ HT:</strong> {totalHT.toFixed(2)} DA
                             </p>
                             <p>
-                                <strong>📊 مبلغ TVA (19%):</strong> {tvaAmount.toFixed(2)} DA
+                                <strong> مبلغ TVA (19%):</strong> {tvaAmount.toFixed(2)} DA
                             </p>
                             <h5 className="text-success">
-                                <strong>🛒 المجموع TTC:</strong> {totalTTC.toFixed(2)} DA
+                                <strong> المجموع TTC:</strong> {totalTTC.toFixed(2)} DA
                             </h5>
                         </div>
                     )}

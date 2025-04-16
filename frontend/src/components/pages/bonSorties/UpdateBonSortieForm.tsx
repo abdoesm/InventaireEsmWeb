@@ -26,15 +26,16 @@ const UpdateBonSortieForm: React.FC<Props> = ({ id, onClose, fetchBonSorties }) 
   const [selectedEmployer, setSelectedEmployer] = useState<Employer | null>(null);
   const [selectedSorties, setSelectedSorties] = useState<Sortie[]>([]);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [availableQuantity, setAvailableQuantity] = useState<number>(0);
   const [employerSearchTerm, setEmployerSearchTerm] = useState('');
   const [articleSearchTerm, setArticleSearchTerm] = useState('');
   const [serviceSearchTerm, setServiceSearchTerm] = useState('');
-  
+     const [error, setError] = useState<string | null>(null);
   // Initialize form fields once the data is available
   const [bonSortie, setBonSortie] = useState<BonSortie | null>(null);
 
   // Fetching bonSortie details and other data
-  const { bonSortie: fetchedBonSortie, mapSorties, loading, error } = useBonSortieDetails(id);
+  const { bonSortie: fetchedBonSortie, mapSorties, loading } = useBonSortieDetails(id);
   const { employers } = useEmployers();
   const { articles } = useFetchArticles();
   const { services } = useService();
@@ -69,6 +70,7 @@ const UpdateBonSortieForm: React.FC<Props> = ({ id, onClose, fetchBonSorties }) 
     }
   }, [selectedSorties]); // Triggered when selectedSorties change
 
+  
   const filteredEmployers = employers.filter((employer) =>
     employer.fname.toLowerCase().includes(employerSearchTerm.toLowerCase()) ||
     employer.lname.toLowerCase().includes(employerSearchTerm.toLowerCase())
@@ -93,19 +95,33 @@ const UpdateBonSortieForm: React.FC<Props> = ({ id, onClose, fetchBonSorties }) 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     try {
+
+      if (selectedSorties.length === 0) {
+        setError("الرجاء إضافة مقالات.");
+        return;
+    }
+    for (const sortie of selectedSorties) {
+      const article = articles.find((a) => a.id === sortie.idArticle);
+      const availableQty = article?.totalQuantity ?? 0;
+    
+      if (sortie.quantity > availableQty) {
+        setError(`الكمية المدخلة أكبر من الكمية المتوفرة للمادة ${article?.name}`);
+        return;
+      }
+    }
+    
+    
+    if (selectedSorties.some(s => s.quantity <= 0)) {
+        setError("الكمية يجب أن تكون أكبر  0.");
+        return;
+    }
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No token found. Please log in.');
       if (!bonSortie) {
         console.error('No bonSortie data available to update.');
         return;
       }
-  /**
-   * bonsortie data 
-   *     id: number;
-    id_employeur: number;
-    id_service: number;
-    date: string;
-   */
+
       // Ensure the updated 'selectedSorties' are synced into 'bonSortie'
       const updatedBonSortie = {
         ...bonSortie,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Bk_End_SRVR } from "../../../configs/conf";
 import FormGroup from "../../common/FormGroup";
 import SearchInput from "../../common/SearchInput";
@@ -38,11 +38,12 @@ const AddBonSortieForm: React.FC<Props> = ({ onClose, fetchBonSorties }) => {
     const [serviceSearchTerm, setServiceSearchTerm] = useState("");
     const [selectedEmployer, setSelectedEmployer] = useState<Employer | null>(null);
     const [selectedService, setSelectedService] = useState<Service | null>(null);
-
+ 
 
     const { error: loading, employers } = useEmployers();
     const { articles } = useFetchArticles();
     const { services } = useService();
+  
 
     const filteredArticles = articles.filter(article =>
         article.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -116,7 +117,20 @@ const AddBonSortieForm: React.FC<Props> = ({ onClose, fetchBonSorties }) => {
             setError("الرجاء إضافة مقالات.");
             return;
         }
-
+        if (selectedSorties.some(s => s.quantity <= 0)) {
+            setError("الكمية يجب أن تكون أكبر من 0.");
+            return;
+        }
+        
+        if (selectedSorties.some(s => {
+            const article = articles.find(article => article.id === s.idArticle);
+            return article && s.quantity > (article.totalQuantity ?? 0);
+        })) {
+            setError("الكمية يجب أن لا تتجاوز الكمية المتوفرة.");
+            return;
+        }
+        
+       
         try {
             const token = localStorage.getItem("token");
             if (!token) {

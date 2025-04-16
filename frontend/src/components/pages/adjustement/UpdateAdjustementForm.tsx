@@ -17,7 +17,7 @@ const UpdateAdjustementForm: React.FC<Props> = ({ onClose, fetchAdjustments, adj
   const [quantity, setQuantity] = useState<number>(0);
   const [adjustmentType, setAdjustmentType] = useState<string>(adjustment.adjustment_type);
   const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [, setIsSubmitting] = useState(false);
   const [user, setUser] = useState<UserType | null>(null);
   const { articles } = useFetchArticles(); // Using your custom hook to fetch articles
 

@@ -19,7 +19,7 @@ const AddAdjustementForm: React.FC<Props> = ({ onClose, fetchAdjustments }) => {
   const [quantity, setQuantity] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [adjustmentType, setAdjustmentType] = useState<string>("increase");
-    const [user, setUser] = useState<UserType>();
+  const [user, setUser] = useState<UserType>();
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [adjustmentDate, setAdjustmentDate] = useState<string>("");
   const [availableQuantity, setAvailableQuantity] = useState<number>(0);
