@@ -104,6 +104,8 @@ const AddAdjustementForm: React.FC<Props> = ({ onClose, fetchAdjustments }) => {
         {/* Search Input for Articles */}
         <FormGroup label="حدد المقالات لإضافتها" labelClassName="fw-bold">
           <SearchInput
+            type="text"
+            className="form-control"
             placeholder="ابحث عن المقال..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}

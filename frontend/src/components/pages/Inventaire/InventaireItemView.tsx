@@ -18,9 +18,10 @@ import useFetchArticles from "../../../services/article/usefetchArticles";
 import CreateBtn from "../../common/CreateBtn";
 import { Title } from "../../common/Title";
 import HeaderContainer from "../../common/HeaderContainer";
+import { useNavigate } from "react-router-dom";
 
 const InventaireItemView: React.FC = () => {
-
+  const navigate = useNavigate();
 
   const [, setUser] = useState<UserType>();
   const [showDeleteForm, setShowDeleteForm] = useState<boolean>(false);
@@ -36,6 +37,10 @@ const { inventaireItems, loading, error, fetchInventaireItems } =useInventaireIt
     setUser(checkAuth());
   }, []);
 
+   const handleRowDoubleClick = (row: InventaireItem) => {
+      navigate(`/inventaire/${row.id}`);
+    };
+  
 
   const columns = [
     { name: " المعرف", selector: (row: InventaireItem) => row.id ?? 0, sortable: true },
@@ -112,6 +117,7 @@ const { inventaireItems, loading, error, fetchInventaireItems } =useInventaireIt
           highlightOnHover
           responsive
           striped
+          onRowDoubleClicked={handleRowDoubleClick}
         />
       )}
 
@@ -133,7 +139,6 @@ const { inventaireItems, loading, error, fetchInventaireItems } =useInventaireIt
       {showDeleteForm && selectedInventaireItem && (
         <DeleteInventaireItem
           onClose={() => setShowDeleteForm(false)}
-
           InventaireItemId={selectedInventaireItem.id ?? 0}
           fetchInventaireItems={fetchInventaireItems}
         />

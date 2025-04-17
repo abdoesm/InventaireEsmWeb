@@ -18,6 +18,7 @@ import InventaireItemView from "./components/pages/Inventaire/InventaireItemView
 import BonSortieDetails from "./components/pages/bonSorties/BonSortieDetails";
 import BonEntreeDetails from "./components/pages/bonEntrees/BonEntreeDetails";
 import AdjustementView from "./components/pages/adjustement/AdjustementView";
+import InventaireItemDetails from "./components/pages/Inventaire/InventaireItemDetails";
  
 
 interface JwtPayload {
@@ -98,8 +99,11 @@ const App = () => {
           <Route path="/bonsorties/:id" element={user ? <BonSortieDetails /> : <Navigate to="/login" replace />} />
 
           <Route path="/bonretours" element={user ? <BonRetourView /> : <Navigate to="/login" replace />} />
+          
           <Route path="/inventaire" element={user ? <InventaireItemView /> : <Navigate to="/login" replace />} />
+          <Route path="/inventaire/:id" element={user ? <InventaireItemDetails /> : <Navigate to="/login" replace />} />
 
+          {/* Adjustement route */}
           <Route path="/adjustment" element={user ? <AdjustementView /> : <Navigate to="/login" replace />} />
         </Route>
 
